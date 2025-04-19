@@ -1,6 +1,6 @@
 services:
   # ==============================
-  # Servicio: Pi-hole
+  # Service: Pi-hole
   # ==============================
   svcPihole:
     container_name: pihole
@@ -11,12 +11,9 @@ services:
       - "80:80"           # ui
     environment:
       TZ: "America/Bogota" # time zone
-      WEBPASSWORD: "yourpass" # password
+      FTLCONF_webserver_api_password: ${PIHOLE_PASS}
+      FTLCONF_dns_listeningMode: 'all'
+      FTLCONF_dns_upstreams: '1.1.1.1;8.8.8.8'
     volumes:
-      - /mnt/data/pihole/etc-pihole:/etc/pihole        # config
-      - /mnt/data/pihole/etc-dnsmasq.d:/etc/dnsmasq.d # config dns
+      - /mnt/data/pihole/etc-pihole-v2:/etc/pihole # config
     restart: unless-stopped
-    dns:
-      - 127.0.0.1         # DNS primario (autoreference)
-      - 1.1.1.1           # DNS secundario (cloudflare)
-
