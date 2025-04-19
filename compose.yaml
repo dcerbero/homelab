@@ -13,7 +13,7 @@ services:
       TZ: "America/Bogota" # time zone
       FTLCONF_webserver_api_password: ${PIHOLE_PASS}
       FTLCONF_dns_listeningMode: 'all'
-      FTLCONF_dns_upstreams: '1.1.1.1;8.8.8.8'
+      FTLCONF_dns_upstreams: '1.1.1.1;8.8.8.8,2606:4700:4700::1111,2001:4860:4860::8888'
     volumes:
       - /mnt/data/pihole/etc-pihole-v2:/etc/pihole # config
     restart: unless-stopped
