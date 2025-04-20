@@ -17,3 +17,22 @@ services:
     volumes:
       - /mnt/data/pihole/etc-pihole-v2:/etc/pihole # config
     restart: unless-stopped
+  # ==============================
+  # Service: Transmission
+  # ==============================
+  svcTransmission:
+    container_name: transmission
+    image: linuxserver/transmission:arm64v8-4.0.6
+    ports:
+      - 8082:9091         # ui
+      - 51413:51413       # port (TCP)
+      - 51413:51413/udp   # port (UDP)
+    volumes:
+      - /mnt/data/transmission/config:/config        # config
+      - /mnt/data/transmission/downloads:/downloads # downloads
+      - /mnt/data/transmission/watch:/watch        
+    environment:
+      - PUID=1000         # user id
+      - PGID=1000         # group id
+      - TZ=America/Bogota # tz
+    restart: unless-stopped
