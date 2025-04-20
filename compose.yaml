@@ -51,3 +51,20 @@ services:
       - PGID=1000         # group id
       - TZ=America/Bogota # tz
     restart: unless-stopped
+  # ==============================
+  # Service: Sonarr
+  # ==============================
+  svcSonarr:
+    image: linuxserver/sonarr:arm64v8-4.0.14
+    container_name: sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Bogota
+    volumes:
+      - /mnt/data/sonarr/data:/config
+      - /mnt/data/media/tvseries:/tv 
+      - /mnt/data/transmission/downloads:/downloads 
+    ports:
+      - 8084:8989
+    restart: unless-stopped
