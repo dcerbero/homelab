@@ -81,7 +81,7 @@ services:
         - PGID=1000
         - TZ=America/Bogota
       volumes:
-        - /path/to/jellyfin/library:/config
+        - /mnt/data/jellyfin/library:/config
         - /mnt/data/media/tvseries:/data/tvshows
         - /mnt/data/media/movies:/data/movies
       devices:
