@@ -30,7 +30,7 @@ services:
     volumes:
       - /mnt/data/transmission/config:/config        # config
       - /mnt/data/media/downloads:/downloads # downloads
-      - /mnt/data/transmission/watch:/watch        
+      - /mnt/data/media/watch:/watch        
     environment:
       - PUID=1000         # user id
       - PGID=1000         # group id
@@ -63,7 +63,8 @@ services:
       - TZ=America/Bogota
     volumes:
       - /mnt/data/sonarr/data:/config
-      - /mnt/data/media:/data 
+      - /mnt/data/media/tvseries:/tv 
+      - /mnt/data/media/downloads:/downloads 
     ports:
       - 8084:8989
     restart: unless-stopped
