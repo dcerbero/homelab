@@ -29,7 +29,7 @@ services:
       - 51413:51413/udp   # port (UDP)
     volumes:
       - /mnt/data/transmission/config:/config        # config
-      - /mnt/data/transmission/downloads:/downloads # downloads
+      - /mnt/data/media/downloads:/downloads # downloads
       - /mnt/data/transmission/watch:/watch        
     environment:
       - PUID=1000         # user id
@@ -63,8 +63,7 @@ services:
       - TZ=America/Bogota
     volumes:
       - /mnt/data/sonarr/data:/config
-      - /mnt/data/media/tvseries:/tv 
-      - /mnt/data/transmission/downloads:/downloads 
+      - /mnt/data/media:/data 
     ports:
       - 8084:8989
     restart: unless-stopped
