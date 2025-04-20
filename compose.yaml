@@ -37,7 +37,7 @@ services:
       - TZ=America/Bogota # tz
     restart: unless-stopped
   # ==============================
-  # Service: Jackett
+  # Service: Prowlarr
   # ==============================
   svcProwlarr:
     image: lscr.io/linuxserver/prowlarr:arm64v8-nightly-1.34.1.5018-ls196
@@ -47,7 +47,7 @@ services:
       - PGID=1000
       - TZ=America/Bogota
     volumes:
-      - /mnt/prowlarr:/config
+      - /mnt/data/prowlarr:/config
     ports:
       - 8083:9696
     restart: unless-stopped
