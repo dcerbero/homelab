@@ -7,7 +7,7 @@ services:
     image: pihole/pihole:2025.04.0
     ports:
       - "53:53/tcp" # port DNS (TCP)
-      - "53:53/udp" # prt DNS (UDP)
+      - "53:53/udp" # port DNS (UDP)
       - "8081:80" # ui
     environment:
       TZ: "America/Bogota" # time zone
@@ -68,3 +68,23 @@ services:
     ports:
       - 8084:8989
     restart: unless-stopped
+  # ==============================
+  # Service: jellyfin
+  # ==============================    
+  svcJellyfin:
+      image: lscr.io/linuxserver/jellyfin:arm64v8-10.10.7
+      container_name: jellyfin
+      privileged: true
+      network_mode: host
+      environment:
+        - PUID=1000
+        - PGID=1000
+        - TZ=America/Bogota
+      volumes:
+        - /path/to/jellyfin/library:/config
+        - /mnt/data/media/tvseries:/data/tvshows
+        - /mnt/data/media/movies:/data/movies
+      devices:
+        - /dev/dri/renderD128:/dev/dri/renderD128  
+        - /dev/vchiq:/dev/vchiq
+      restart: unless-stopped
