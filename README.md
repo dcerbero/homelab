@@ -8,3 +8,6 @@ This is my small homelab. The repository contains the configuration of my Raspbe
 ```
 PIHOLE_PASS=yourpass
 ```
+
+### 📁 Config Folder 
+- 📁 noTranscodig: This folder contains a custom format for Sonarr that avoids downloading videos which would require transcoding on a Raspberry Pi 4.
