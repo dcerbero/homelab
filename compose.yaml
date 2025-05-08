@@ -10,7 +10,7 @@ services:
       - PGID=1000
       - TZ="America/Bogota" 
     volumes:
-      - /mnt/data/heimdall/config:/config
+      - "${PATH_DATA}/heimdall/config:/config"
     ports:
       - 80:80
       - 443:443
@@ -31,7 +31,7 @@ services:
       FTLCONF_dns_listeningMode: 'all'
       FTLCONF_dns_upstreams: '1.1.1.1;8.8.8.8;2606:4700:4700::1111;2001:4860:4860::8888'
     volumes:
-      - /mnt/data/pihole/etc-pihole-v2:/etc/pihole # config
+      - ${PATH_DATA}/pihole/etc-pihole-v2:/etc/pihole # config
     restart: unless-stopped
   # ==============================
   # Service: Transmission
@@ -44,9 +44,9 @@ services:
       - 51413:51413       # port (TCP)
       - 51413:51413/udp   # port (UDP)
     volumes:
-      - /mnt/data/transmission/config:/config        # config
-      - /mnt/data/media/downloads:/downloads # downloads
-      - /mnt/data/media/watch:/watch        
+      - ${PATH_DATA}/transmission/config:/config        # config
+      - ${PATH_DATA}/media/downloads:/downloads # downloads
+      - ${PATH_DATA}/media/watch:/watch        
     environment:
       - PUID=1000         # user id
       - PGID=1000         # group id
@@ -63,7 +63,7 @@ services:
       - PGID=1000
       - TZ=America/Bogota
     volumes:
-      - /mnt/data/prowlarr:/config
+      - "${PATH_DATA}/prowlarr:/config
     ports:
       - 8083:9696
     restart: unless-stopped
@@ -78,9 +78,9 @@ services:
       - PGID=1000
       - TZ=America/Bogota
     volumes:
-      - /mnt/data/sonarr/data:/config
-      - /mnt/data/media/tvseries:/tv 
-      - /mnt/data/media/downloads:/downloads 
+      - "${PATH_DATA}/sonarr/data:/config"
+      - "${PATH_DATA}/media/tvseries:/tv" 
+      - "${PATH_DATA}/media/downloads:/downloads" 
     ports:
       - 8084:8989
     restart: unless-stopped
@@ -88,19 +88,19 @@ services:
   # Service: jellyfin
   # ==============================    
   svcJellyfin:
-      image: lscr.io/linuxserver/jellyfin:arm64v8-10.10.7
-      container_name: jellyfin
-      privileged: true
-      network_mode: host
-      environment:
-        - PUID=1000
-        - PGID=1000
-        - TZ=America/Bogota
-      volumes:
-        - /mnt/data/jellyfin/library:/config
-        - /mnt/data/media/tvseries:/data/tvshows
-        - /mnt/data/media/movies:/data/movies
-      devices:
-        - /dev/dri/renderD128:/dev/dri/renderD128  
-        - /dev/vchiq:/dev/vchiq
-      restart: unless-stopped
+    image: lscr.io/linuxserver/jellyfin:arm64v8-10.10.7
+    container_name: jellyfin
+    privileged: true
+    network_mode: host
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Bogota
+    volumes:
+      - "${PATH_DATA}/jellyfin/library:/config"
+      - "${PATH_DATA}/media/tvseries:/data/tvshows"
+      - "${PATH_DATA}/media/movies:/data/movies"
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128  
+      - /dev/vchiq:/dev/vchiq
+    restart: unless-stopped
