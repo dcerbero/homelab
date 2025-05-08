@@ -63,7 +63,7 @@ services:
       - PGID=1000
       - TZ=America/Bogota
     volumes:
-      - "${PATH_DATA}/prowlarr:/config
+      - "${PATH_DATA}/prowlarr:/config"
     ports:
       - 8083:9696
     restart: unless-stopped
