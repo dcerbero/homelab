@@ -1,0 +1,23 @@
+- name: Install Docker on Ubuntu
+  hosts: homeserver
+  remote_user: baldo  #user in HomeServer
+  become: true
+  vars:
+    arch_mapping:  # Map ansible architecture {{ ansible_architecture }} names to Docker's architecture names
+      x86_64: amd64
+      aarch64: arm64
+
+  tasks:
+    - name: Update and upgrade all packages to the latest version
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: dist
+        cache_valid_time: 3600
+  
+    - name: Install a list of packages
+      ansible.builtin.apt:
+        pkg:
+        - ca-certificates
+        - curl
+    - name: Add Docker's official GPG key
+      command: install -m 0755 -d /etc/apt/keyrings | curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc | chmod a+r /etc/apt/keyrings/docker.asc
