@@ -4,14 +4,6 @@ This is my small homelab. The repository contains the configuration of my Raspbe
 ### Eschema ✏️
 ![Alt text](assets/homelab.drawio.png)
 
-### configure environment file .env ⚙️
-```
-PIHOLE_PASS=yourpass
-```
-
-### 📁 Config Folder 
-- 📁 noTranscodig: This folder contains a custom format for Sonarr that avoids downloading videos which would require transcoding on a Raspberry Pi 4.
-
 ### Config raspberry
 - SO: Ubuntu 24.04.2 LTS
 - Configure static ip in (/etc/netplan/), and desactivate dns service
@@ -49,3 +41,19 @@ Edit file fstab in /etc/ and add:
 ```
 UUID=your-uuid  /mnt/name  ext4  defaults,nofail  0  2
 ```
+
+### Install docker with Ansible
+![Alt text](assets/installDocker.png)
+
+```bash
+ansible-playbook playbook.yaml -i inventoryHomeServer.ini -K
+```
+Flag -K: Request sudo password from the user via terminal
+
+### configure environment file .env ⚙️
+```
+PIHOLE_PASS=yourpass
+```
+
+### 📁 Config Folder 
+- 📁 noTranscodig: This folder contains a custom format for Sonarr that avoids downloading videos which would require transcoding on a Raspberry Pi 4.
