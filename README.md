@@ -6,7 +6,7 @@ This is my small homelab. The repository contains the configuration of my Raspbe
 
 ### Config raspberry
 - SO: Ubuntu 24.04.2 LTS
-- Configure static ip in (/etc/netplan/), and desactivate dns service
+- Configure static ip in (/etc/netplan/)
 ```yaml
 # static ip
 network:
@@ -24,6 +24,13 @@ network:
           - 1.1.1.1
           - 8.8.8.8
 ```
+- Disable the use of port 53:
+In /etc/systemd/resolved.conf.d
+```
+[Resolve]
+DNSStubListener=no
+```
+
 - Mount hdd
     - View uuid
 ```
