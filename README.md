@@ -60,6 +60,7 @@ Flag -K: Request sudo password from the user via terminal
 ### configure environment file .env ⚙️
 ```
 PIHOLE_PASS=yourpass
+PATH_DATA=your_disk_path
 ```
 
 ### 📁 Config Folder 
