@@ -2,7 +2,19 @@
 This is my small homelab. The repository contains the configuration of my Raspberry Pi 4 server 💪
 
 ### Eschema ✏️
-![Alt text](assets/homelab.drawio.png)
+```mermaid
+graph TD
+    Internet[☁️ Internet]
+    RouterISP[🌐 ISP]
+    TPLink[🖧 Router TP-Link]
+    Pi[🖥 Raspberry]
+    Devices[📱 Home devices]
+    PiHole[🔒 Pi-hole DNS]
+
+    Internet --> RouterISP --> TPLink
+    TPLink --> Pi --> PiHole
+    TPLink --> Devices
+```
 
 ### Config raspberry
 - SO: Ubuntu 24.04.2 LTS
