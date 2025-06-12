@@ -15,12 +15,14 @@ graph TD
     Prowlarr[🔎 Prowlarr]
     Sonarr[📺 Sonarr]
     Jellyfin[🎬 Jellyfin ]
-    Docker[Docker]
+    cAdvisor [📊 cAdvisor]
+    Docker[🐋 Docker]
 
     Internet --> RouterISP --> TPLink
     TPLink --> Pi 
     Pi --> Docker
     subgraph Ubuntu server
+    Docker --> cAdvisor
     Docker --> Heimdall
     Docker --> PiHole
     Docker --> Transmission
