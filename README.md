@@ -15,7 +15,7 @@ graph TD
     Prowlarr[🔎 Prowlarr]
     Sonarr[📺 Sonarr]
     Jellyfin[🎬 Jellyfin ]
-    cAdvisor [📊 cAdvisor]
+    cAdvisor[📊 cAdvisor]
     Docker[🐋 Docker]
 
     Internet --> RouterISP --> TPLink
