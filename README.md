@@ -7,12 +7,27 @@ graph TD
     Internet[☁️ Internet]
     RouterISP[🌐 ISP]
     TPLink[🖧 Router TP-Link]
-    Pi[🖥 Raspberry]
+    Pi[🍓  Raspberry]
     Devices[📱 Home devices]
-    PiHole[🔒 Pi-hole DNS]
+    PiHole[🛡️  Pi-hole DNS]
+    Heimdall[🗂️ Heimdall]
+    Transmission[📤 Transmission]
+    Prowlarr[🔎 Prowlarr]
+    Sonarr[📺 Sonarr]
+    Jellyfin[🎬 Jellyfin ]
+    Docker[Docker]
 
     Internet --> RouterISP --> TPLink
-    TPLink --> Pi --> PiHole
+    TPLink --> Pi 
+    Pi --> Docker
+    subgraph Ubuntu server
+    Docker --> Heimdall
+    Docker --> PiHole
+    Docker --> Transmission
+    Docker --> Prowlarr
+    Docker --> Sonarr
+    Docker --> Jellyfin
+    end
     TPLink --> Devices
 ```
 
