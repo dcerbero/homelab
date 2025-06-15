@@ -2,7 +2,7 @@ services:
   # ==============================
   # Service: heimdall
   # ==============================    
-  heimdall:
+  svcHeimdall:
     image: lscr.io/linuxserver/heimdall:arm64v8-2.6.3
     container_name: heimdall
     environment:
@@ -11,9 +11,6 @@ services:
       - TZ="America/Bogota" 
     volumes:
       - "${PATH_DATA}/heimdall/config:/config"
-    ports:
-      - 80:80
-      - 443:443
     restart: unless-stopped
   # ==============================
   # Service: Pi-hole
@@ -129,4 +126,4 @@ services:
         - "80:80"
         - "443:443"
       volumes:
-        - ./nginx/conf.d:/etc/nginx/conf.d:ro
+        - "${PATH_DATA}/compose/homelab/nginx/conf.d:/etc/nginx/conf.d:ro"
