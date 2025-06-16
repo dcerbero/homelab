@@ -126,4 +126,4 @@ services:
         - "80:80"
         - "443:443"
       volumes:
-        - "${PATH_DATA}/compose/homelab/nginx/conf.d:/etc/nginx/conf.d:ro"
+        - "${PATH_DATA}/compose/homelab/config/nginx/conf.d:/etc/nginx/conf.d:ro"
