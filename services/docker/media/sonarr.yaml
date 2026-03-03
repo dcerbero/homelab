@@ -1,0 +1,15 @@
+services:
+  svcSonarr:
+    image: linuxserver/sonarr:arm64v8-4.0.14
+    container_name: sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Bogota
+    volumes:
+      - "${PATH_DATA}/sonarr/data:/config"
+      - "${PATH_DATA}/media/tvseries:/tv"
+      - "${PATH_DATA}/media/downloads:/downloads"
+    ports:
+      - 8084:8989
+    restart: unless-stopped

@@ -1,0 +1,10 @@
+services:
+  svcNginx:
+    image: nginx:1.27.5-bookworm
+    container_name: nginx_proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "${PATH_DATA}/compose/homelab/config/nginx/conf.d:/etc/nginx/conf.d:ro"

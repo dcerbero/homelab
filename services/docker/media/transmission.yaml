@@ -1,0 +1,17 @@
+services:
+  svcTransmission:
+    container_name: transmission
+    image: linuxserver/transmission:arm64v8-4.0.6
+    ports:
+      - 8082:9091
+      - 51413:51413
+      - 51413:51413/udp
+    volumes:
+      - ${PATH_DATA}/transmission/config:/config
+      - ${PATH_DATA}/media/downloads:/downloads
+      - ${PATH_DATA}/media/watch:/watch
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Bogota
+    restart: unless-stopped

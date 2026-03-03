@@ -1,0 +1,11 @@
+services:
+  svcHeimdall:
+    image: lscr.io/linuxserver/heimdall:arm64v8-2.6.3
+    container_name: heimdall
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ="America/Bogota" 
+    volumes:
+      - "${PATH_DATA}/heimdall/config:/config"
+    restart: unless-stopped
