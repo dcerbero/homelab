@@ -2,6 +2,8 @@ services:
   svcNginx:
     image: nginx:1.27.5-bookworm
     container_name: nginx_proxy
+    profiles:
+      - infra
     restart: unless-stopped
     ports:
       - "80:80"

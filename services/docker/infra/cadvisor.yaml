@@ -2,6 +2,8 @@ services:
   svccAdvisor:
     image: gcr.io/cadvisor/cadvisor:v0.49.1
     container_name: cadvisor
+    profiles:
+      - infra
     volumes:
       - "/:/rootfs:ro"
       - "/var/run:/var/run:rw"

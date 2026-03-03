@@ -2,6 +2,8 @@ services:
   svcSonarr:
     image: linuxserver/sonarr:arm64v8-4.0.14
     container_name: sonarr
+    profiles:
+      - media-download
     environment:
       - PUID=1000
       - PGID=1000
