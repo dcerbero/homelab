@@ -2,6 +2,8 @@ services:
   svcProwlarr:
     image: lscr.io/linuxserver/prowlarr:arm64v8-nightly-1.34.1.5018-ls196
     container_name: prowlarr
+    profiles:
+      - media-download
     environment:
       - PUID=1000
       - PGID=1000
