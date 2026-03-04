@@ -13,12 +13,24 @@
         update_cache: true
         upgrade: dist
         cache_valid_time: 3600
+    
+    - name: Disable DNS stub listener on port 53
+      ansible.builtin.copy:
+        content: |
+          [Resolve]
+          DNSStubListener=no
+        dest: /etc/systemd/resolved.conf.d/dns.conf
+        owner: root
+        group: root
+        mode: '0644'
+      notify: restart systemd-resolved
   
     - name: Install a list of packages
       ansible.builtin.apt:
         pkg:
         - ca-certificates
         - curl
+    
     - name: Add Docker's official GPG key
       ansible.builtin.shell: |
         install -m 0755 -d /etc/apt/keyrings 
@@ -29,12 +41,20 @@
         $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
         tee /etc/apt/sources.list.d/docker.list > /dev/null
         apt-get update
+    
     - name: Install the Docker packages
       ansible.builtin.shell: |
         apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+    
     - name: Linux post-installation steps for Docker Engine
       ansible.builtin.shell: |
         groupadd docker
         usermod -aG docker $USER
         systemctl enable docker.service
         systemctl enable containerd.service
+
+  handlers:
+    - name: restart systemd-resolved
+      ansible.builtin.systemd:
+        name: systemd-resolved
+        state: restarted
