@@ -14,6 +14,12 @@
         upgrade: dist
         cache_valid_time: 3600
     
+    - name: Create DNS config directory
+      ansible.builtin.file:
+        path: /etc/systemd/resolved.conf.d
+        state: directory
+        mode: '0755'
+    
     - name: Disable DNS stub listener on port 53
       ansible.builtin.copy:
         content: |
