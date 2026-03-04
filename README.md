@@ -34,7 +34,7 @@ graph TD
 ```
 
 ### Config raspberry
-- SO: Ubuntu 24.04.2 LTS
+- SO: Ubuntu 24.04.04 LTS
 - Configure static ip in (/etc/netplan/)
 ```yaml
 # static ip
@@ -42,12 +42,12 @@ network:
   version: 2
   ethernets:
     eth0:
-      dhcp4: true
+      dhcp4: no
       addresses:
-        - your-ip/24
+        - [INTERNAL_IP/24]
       routes:
         - to: default
-          via: your-gateway
+          via: [INTERNAL_IP]
       nameservers:
         addresses:
           - 1.1.1.1
@@ -93,4 +93,4 @@ PATH_DATA=your_disk_path
 ```
 
 ### 📁 Config Folder 
-- 📁 noTranscodig: This folder contains a custom format for Sonarr that avoids downloading videos which would require transcoding on a Raspberry Pi 4.
+- 📁 noTranscodig: This folder contains a custom format for Sonarr that avoids downloading videos which would require transcoding on a Raspberry Pi 4. 
