@@ -78,12 +78,13 @@ Edit file fstab in /etc/ and add:
 UUID=your-uuid  /mnt/name  ext4  defaults,nofail  0  2
 ```
 
-### Install docker with Ansible
+### Install packages with Ansible
 ![Alt text](assets/installDocker.png)
 
 ```bash
-ansible-playbook playbook.yaml -i inventoryHomeServer.ini -K
+ansible-playbook playbook.yaml -i inventoryHomeServer.ini -k -K
 ```
+Flag -k: Ask for SSH password for the connection
 Flag -K: Request sudo password from the user via terminal
 
 ### configure environment file .env ⚙️
@@ -93,4 +94,4 @@ PATH_DATA=your_disk_path
 ```
 
 ### 📁 Config Folder 
-- 📁 noTranscodig: This folder contains a custom format for Sonarr that avoids downloading videos which would require transcoding on a Raspberry Pi 4. 
+- 📁 noTranscodig: This folder contains a custom format for Sonarr that avoids downloading videos which would require transcoding on a Raspberry Pi 4.
