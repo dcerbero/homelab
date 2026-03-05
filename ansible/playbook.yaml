@@ -58,7 +58,19 @@
         usermod -aG docker $USER
         systemctl enable docker.service
         systemctl enable containerd.service
-
+    - name: create folder for services
+      ansible.builtin.file:
+        path: "/home/{{ ansible_user }}/services"
+        state: directory
+        mode: '0755'
+      become: no
+    - name: download homelab code
+      ansible.builtin.git:
+        repo: 'https://github.com/dcerbero/homelab.git'
+        dest: "/home/{{ ansible_user }}/services/homelab"
+        version: feature/enero2026
+        clone: yes
+        update: yes
   handlers:
     - name: restart systemd-resolved
       ansible.builtin.systemd:
