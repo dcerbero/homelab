@@ -1,6 +1,6 @@
 include:
   - core/heimdall.yaml
-  - core/pihole.yaml
+  - dns/pihole.yaml
   - media/transmission.yaml
   - media/prowlarr.yaml
   - media/sonarr.yaml
