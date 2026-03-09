@@ -30,7 +30,13 @@ Executes all roles in sequence on the `homeserver` inventory with `become: true`
 
 ```ini
 [homeserver]
-192.168.0.2 ansible_user=baldo
+<SERVER_IP> ansible_user=<USERNAME>
+```
+
+**Example:**
+```ini
+[homeserver]
+192.168.x.x ansible_user=ubuntu
 ```
 
 ## Variables
