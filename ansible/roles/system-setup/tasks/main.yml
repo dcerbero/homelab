@@ -1,0 +1,45 @@
+---
+- name: Update and upgrade all packages to the latest version
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: dist
+    cache_valid_time: 3600
+
+- name: Create DNS config directory
+  ansible.builtin.file:
+    path: /etc/systemd/resolved.conf.d
+    state: directory
+    mode: "0755"
+
+- name: Disable DNS stub listener on port 53
+  ansible.builtin.copy:
+    content: |
+      [Resolve]
+      DNSStubListener=no
+    dest: /etc/systemd/resolved.conf.d/dns.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: restart systemd-resolved
+
+- name: create folder for services
+  ansible.builtin.file:
+    path: "/home/{{ ansible_user }}/services"
+    state: directory
+    mode: "0755"
+
+- name: download homelab code
+  ansible.builtin.git:
+    repo: "https://github.com/dcerbero/homelab.git"
+    dest: "/home/{{ ansible_user }}/services/homelab"
+    version: feature/enero2026
+    clone: yes
+    update: yes
+- name: Display system-init summary
+  debug:
+    msg: |
+      ✅ Initial setup completed:
+      - System packages updated
+      - DNS stub listener disabled (port 53 freed)
+      - Services directory created: /home/{{ ansible_user }}/services
+      - Homelab code downloaded to: /home/{{ ansible_user }}/services/homelab

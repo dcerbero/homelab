@@ -1,0 +1,16 @@
+---
+- name: Setup homeserver
+  hosts: homeserver
+  become: true
+  
+  roles:
+    - system-setup
+    - docker
+
+  post_tasks:
+    - name: homeserver setup completed
+      debug:
+        msg: |
+          ✅ homeserver setup completed successfully!   
+          Servicios instalados:
+          - Docker: Instalado y corriendo
