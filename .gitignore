@@ -16,9 +16,12 @@ Thumbs.db
 *.tmp
 *.bak
 
-# Editors
+# Editors & IDE
 .idea/
 .vscode/
 *.swp
 *.swo
 *~
+
+# Claude
+.claude/
