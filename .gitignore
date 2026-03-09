@@ -4,9 +4,7 @@
 .env.*.local
 
 # Ansible
-ansible/inventoryHomeServer.ini
-
-# Ansible
+*.ini
 *.retry
 
 # OS
