@@ -78,20 +78,30 @@ Edit file fstab in /etc/ and add:
 UUID=your-uuid  /mnt/name  ext4  defaults,nofail  0  2
 ```
 
-### Install packages with Ansible
-![Alt text](assets/installDocker.png)
+### Setup with Ansible
+
+Navigate to the `ansible/` directory and execute:
 
 ```bash
-ansible-playbook playbook.yaml -i inventoryHomeServer.ini -k -K
-```
-Flag -k: Ask for SSH password for the connection
-Flag -K: Request sudo password from the user via terminal
-
-### configure environment file .env ⚙️
-```
-PIHOLE_PASS=yourpass
-PATH_DATA=your_disk_path
+cd ansible/
+cp .env.example .env  # Configure your credentials and paths
+bash run.sh
 ```
 
-### 📁 Config Folder 
-- 📁 noTranscodig: This folder contains a custom format for Sonarr that avoids downloading videos which would require transcoding on a Raspberry Pi 4.
+The script installs: Docker, system utilities, and Pi-hole via Ansible roles.
+
+### Environment Configuration
+
+Create `.env` in the `ansible/` directory:
+
+```env
+PIHOLE_PASS=your_password
+PATH_DATA=/path/to/data
+```
+
+### Directory Structure
+
+- **ansible/**: Infrastructure provisioning via Ansible roles (system-setup, docker, pihole)
+- **services/docker/**: Docker Compose configurations with profiles (dns, dashboard, media-download, media-streaming, infra)
+- **config/**: Custom configurations (nginx, Sonarr)
+- **security/**: SSH hardening guidelines
