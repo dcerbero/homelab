@@ -1,14 +1,15 @@
-# ⚡ My small homelab 
-This is my small homelab. The repository contains the configuration of my Raspberry Pi 4 server 💪
+# ⚡ Mi homeserver
+Este es mi servidor casero. El repositorio contiene la configuración de mi Raspberry Pi 4 💪
 
-### Eschema ✏️
+### Esquema ✏️
 ```mermaid
 graph TD
     Internet[☁️ Internet]
     RouterISP[🌐 ISP]
     TPLink[🖧 Router TP-Link]
     Pi[🍓  Raspberry]
-    Devices[📱 Home devices]
+    Devices[📱 Dispositivos del hogar]
+    Tailscale[🔐 Tailscale VPN]
     PiHole[🛡️  Pi-hole DNS]
     Heimdall[🗂️ Heimdall]
     Transmission[📤 Transmission]
@@ -19,8 +20,9 @@ graph TD
     Docker[🐋 Docker]
 
     Internet --> RouterISP --> TPLink
-    TPLink --> Pi 
+    TPLink --> Pi
     Pi --> Docker
+    Pi --> Tailscale
     subgraph Ubuntu server
     Docker --> cAdvisor
     Docker --> Heimdall
@@ -31,66 +33,79 @@ graph TD
     Docker --> Jellyfin
     end
     TPLink --> Devices
+    Tailscale -.->|Acceso remoto| Internet
 ```
 
-### Config raspberry
-- SO: Ubuntu 24.04.2 LTS
-- Configure static ip in (/etc/netplan/)
+### Configuración de la Raspberry
+- SO: Ubuntu 24.04.04 LTS
+- Configurar IP estática en `/etc/netplan/`
 ```yaml
-# static ip
+# ip estática
 network:
   version: 2
   ethernets:
     eth0:
-      dhcp4: true
+      dhcp4: no
       addresses:
-        - your-ip/24
+        - [INTERNAL_IP/24]
       routes:
         - to: default
-          via: your-gateway
+          via: [INTERNAL_IP]
       nameservers:
         addresses:
           - 1.1.1.1
           - 8.8.8.8
 ```
-- Disable the use of port 53:
-In /etc/systemd/resolved.conf.d
+- Deshabilitar el uso del puerto 53 en `/etc/systemd/resolved.conf.d`:
 ```
 [Resolve]
 DNSStubListener=no
 ```
 
-- Mount hdd
-    - View uuid
+- Montar disco duro
+  - Ver UUID:
 ```
 lsblk -f
 ```
 
-Create folder 
+Crear carpeta:
 
 ```
-sudo mkdir -p /mnt/name
+sudo mkdir -p /mnt/nombre
 ```
 
-Edit file fstab in /etc/ and add:
+Editar `/etc/fstab` y agregar:
 
 ```
-UUID=your-uuid  /mnt/name  ext4  defaults,nofail  0  2
+UUID=tu-uuid  /mnt/nombre  ext4  defaults,nofail  0  2
 ```
 
-### Install docker with Ansible
-![Alt text](assets/installDocker.png)
+### Configuración con Ansible
+
+Navegar al directorio `ansible/` y ejecutar:
 
 ```bash
-ansible-playbook playbook.yaml -i inventoryHomeServer.ini -K
-```
-Flag -K: Request sudo password from the user via terminal
-
-### configure environment file .env ⚙️
-```
-PIHOLE_PASS=yourpass
-PATH_DATA=your_disk_path
+cd ansible/
+cp .env.example .env  # Configurar credenciales y rutas
+bash run.sh
 ```
 
-### 📁 Config Folder 
-- 📁 noTranscodig: This folder contains a custom format for Sonarr that avoids downloading videos which would require transcoding on a Raspberry Pi 4.
+El script instala: Docker, utilitarios del sistema y Pi-hole mediante roles de Ansible.
+
+### Variables de entorno
+
+Crear `.env` en el directorio `ansible/`:
+
+```env
+PIHOLE_PASS=tu_contraseña
+PATH_DATA=/ruta/a/datos
+TAILSCALE_AUTH_KEY=tskey-auth-xxxxx
+TAILSCALE_HOSTNAME=homeserver
+```
+
+### Estructura de directorios
+
+- **ansible/**: Aprovisionamiento de infraestructura mediante roles de Ansible (system-setup, docker, pihole, tailscale)
+- **services/docker/**: Configuraciones de Docker Compose con perfiles (dns, dashboard, media-download, media-streaming, infra)
+- **config/**: Configuraciones personalizadas (nginx, Sonarr)
+- **security/**: Guías de hardening SSH

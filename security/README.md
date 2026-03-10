@@ -1,6 +1,6 @@
-# 🛡️ Security basics
+# 🛡️ Principios de seguridad
 
-### 👮🏻‍♂️ Disabled password access, SSH key only
+### 👮🏻‍♂️ Acceso SSH deshabilitado por contraseña, solo con clave
 ```bash
 sudo nano /etc/ssh/sshd_config
 PasswordAuthentication no

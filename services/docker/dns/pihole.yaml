@@ -1,7 +1,7 @@
 services:
   svcPihole:
     container_name: pihole
-    image: pihole/pihole:2025.04.0
+    image: pihole/pihole:2026.02.0
     profiles:
       - dns
     ports:
@@ -15,4 +15,14 @@ services:
       FTLCONF_dns_upstreams: '1.1.1.1;8.8.8.8;2606:4700:4700::1111;2001:4860:4860::8888'
     volumes:
       - ${PATH_DATA}/pihole/etc-pihole-v2:/etc/pihole
+      - ${PATH_DATA}/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
     restart: unless-stopped
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    healthcheck:
+      test: ["CMD", "dig", "+short", "pi.hole", "@127.0.0.1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
