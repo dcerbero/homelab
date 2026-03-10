@@ -1,0 +1,40 @@
+---
+- name: Add Tailscale repository key
+  shell: |
+    curl -fsSL https://pkgs.tailscale.com/stable/{{ ansible_distribution | lower }}/{{ ansible_distribution_release }}.gpg | sudo apt-key add -
+
+- name: Add Tailscale repository
+  shell: |
+    curl -fsSL https://pkgs.tailscale.com/stable/{{ ansible_distribution | lower }}/{{ ansible_distribution_release }}.list | sudo tee /etc/apt/sources.list.d/tailscale.list
+
+- name: Update apt cache 
+  apt:
+    update_cache: yes
+
+- name: Install Tailscale
+  apt:
+    name: tailscale
+    state: present
+
+- name: Start Tailscale service
+  systemd:
+    name: tailscaled
+    state: started
+    enabled: yes
+
+- name: Authenticate Tailscale with auth key
+  shell: tailscale up --authkey={{ TAILSCALE_AUTH_KEY }} \
+    --hostname={{ TAILSCALE_HOSTNAME }}
+  ignore_errors: true
+
+- name: Get Tailscale IP
+  shell: tailscale ip -4
+  register: tailscale_ip
+  changed_when: false
+
+- name: Display Tailscale information
+  debug:
+    msg: |
+      ✅ Tailscale configured successfully
+      IP: {{ tailscale_ip.stdout }}
+      Hostname: {{ TAILSCALE_HOSTNAME }}
