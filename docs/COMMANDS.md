@@ -1,12 +1,12 @@
-# Command utils
-This file contains useful commands for day-to-day use.
+# Comandos útiles
+Comandos de uso frecuente para el día a día.
 
-### Scan network
-- List active hosts on your network
+### Escaneo de red
+- Listar hosts activos en la red:
 ```
-nmap start-ip/24
+nmap inicio-ip/24
 ```
-- List the process using a specific port
+- Listar el proceso que usa un puerto específico:
 ```
-sudo lsof -i :port
+sudo lsof -i :puerto
 ```

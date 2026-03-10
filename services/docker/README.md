@@ -1,110 +1,110 @@
-# Docker Compose Services
+# Servicios Docker Compose
 
-Deploy homelab services using Docker Compose profiles.
+Desplegar servicios del homeserver usando perfiles de Docker Compose.
 
-## Profiles
+## Perfiles
 
-**5 independent deployment profiles:**
+**5 perfiles de despliegue independientes:**
 
-| Profile | Servicios | Descripción |
-|---------|-----------|-------------|
+| Perfil | Servicios | Descripción |
+|--------|-----------|-------------|
 | `dns` | Pi-hole | Servidor DNS/bloqueador de anuncios |
-| `dashboard` | Heimdall | Panel de control del homelab |
+| `dashboard` | Heimdall | Panel de control del homeserver |
 | `media-streaming` | Jellyfin | Servidor de streaming multimedia |
 | `media-download` | Transmission, Prowlarr, Sonarr | Descarga y gestión de contenido |
 | `infra` | nginx, cAdvisor | Infraestructura (proxy reverso, monitorización) |
 
-## Setup
+## Configuración
 
-Create `.env` in `services/docker/`:
+Crear `.env` en `services/docker/`:
 
 ```env
-PIHOLE_PASS=your_password
-PATH_DATA=/path/to/persistent/data
+PIHOLE_PASS=tu_contraseña
+PATH_DATA=/ruta/a/datos/persistentes
 ```
 
-## Deployment
+## Despliegue
 
-**Single profile:**
+**Un único perfil:**
 ```bash
 docker compose --profile dns up -d
 ```
 
-**Multiple profiles:**
+**Múltiples perfiles:**
 ```bash
 docker compose --profile dns --profile dashboard --profile infra up -d
 ```
 
-**All services:**
+**Todos los servicios:**
 ```bash
 docker compose up -d
 ```
 
-**Teardown:**
+**Detener:**
 ```bash
 docker compose down
-docker compose --profile dns down  # specific profile
+docker compose --profile dns down  # perfil específico
 ```
 
-## Ports by Profile
+## Puertos por perfil
 
-| Profile | Servicio | Puerto | Descripción |
-|---------|----------|--------|-------------|
+| Perfil | Servicio | Puerto | Descripción |
+|--------|----------|--------|-------------|
 | dns | Pi-hole | 53 | DNS (TCP/UDP) |
 | dns | Pi-hole | 8081 | Web UI |
-| dashboard | Heimdall | 80 | Dashboard (via nginx) |
+| dashboard | Heimdall | 80 | Dashboard (vía nginx) |
 | media-streaming | Jellyfin | host | Host network |
-| media-download | Transmission | 8082 | UI |
+| media-download | Transmission | 8082 | Interfaz |
 | media-download | Transmission | 51413 | Torrent (TCP/UDP) |
-| media-download | Prowlarr | 8083 | Indexer API |
-| media-download | Sonarr | 8084 | Series management |
-| infra | nginx | 80, 443 | Reverse proxy |
-| infra | cAdvisor | 8085 | Container metrics |
+| media-download | Prowlarr | 8083 | API del indexador |
+| media-download | Sonarr | 8084 | Gestión de series |
+| infra | nginx | 80, 443 | Proxy reverso |
+| infra | cAdvisor | 8085 | Métricas de contenedores |
 
-## Management
+## Administración
 
-**Logs:**
+**Registros:**
 ```bash
 docker compose logs -f svcPihole
 ```
 
-**Container shell:**
+**Shell del contenedor:**
 ```bash
 docker compose exec svcPihole bash
 ```
 
-**Status:**
+**Estado:**
 ```bash
 docker compose ps
 ```
 
-**Restart service:**
+**Reiniciar servicio:**
 ```bash
 docker compose restart svcSonarr
 ```
 
-## Directory Structure
+## Estructura de directorios
 
 ```
 services/docker/
 ├─ compose.yaml           (principal con includes)
 ├─ core/
-│  ├─ heimdall.yaml      (dashboard profile)
-│  └─ pihole.yaml        (dns profile)
+│  ├─ heimdall.yaml      (perfil dashboard)
+│  └─ pihole.yaml        (perfil dns)
 ├─ media/
-│  ├─ transmission.yaml  (media-download profile)
-│  ├─ prowlarr.yaml      (media-download profile)
-│  ├─ sonarr.yaml        (media-download profile)
-│  └─ jellyfin.yaml      (media-streaming profile)
+│  ├─ transmission.yaml  (perfil media-download)
+│  ├─ prowlarr.yaml      (perfil media-download)
+│  ├─ sonarr.yaml        (perfil media-download)
+│  └─ jellyfin.yaml      (perfil media-streaming)
 ├─ infra/
-│  ├─ cadvisor.yaml      (infra profile)
-│  └─ nginx.yaml         (infra profile)
+│  ├─ cadvisor.yaml      (perfil infra)
+│  └─ nginx.yaml         (perfil infra)
 └─ README.md             (este archivo)
 ```
 
-## Persistent Storage
+## Almacenamiento persistente
 
-All data paths use `${PATH_DATA}` variable (set in `.env`):
+Todas las rutas de datos usan la variable `${PATH_DATA}` (establecida en `.env`):
 
 ```
 ${PATH_DATA}/
@@ -122,19 +122,19 @@ ${PATH_DATA}/
    └─ watch
 ```
 
-## Troubleshooting
+## Solución de problemas
 
-**Port conflicts:**
+**Conflictos de puertos:**
 ```bash
 sudo lsof -i :53
 ```
 
-**Container logs:**
+**Registros del contenedor:**
 ```bash
 docker compose logs svcPihole
 ```
 
-**Volume permissions:**
+**Permisos del volumen:**
 ```bash
 sudo chown -R 1000:1000 ${PATH_DATA}
 ```
