@@ -17,6 +17,7 @@ bash run.sh
 | `system-setup` | OS packages, networking, disk mounting |
 | `docker` | Docker & Docker Compose installation |
 | `pihole` | Pi-hole DNS container setup |
+| `tailscale` | Tailscale VPN configuration and setup |
 
 ## Playbook
 
@@ -46,6 +47,8 @@ Executes all roles in sequence on the `homeserver` inventory with `become: true`
 ```env
 PIHOLE_PASS=your_pihole_password
 PATH_DATA=/mnt/data  # Persistent storage mount point
+TAILSCALE_AUTH_KEY=tskey-auth-xxxxx  # Auth key from Tailscale admin console
+TAILSCALE_HOSTNAME=homelab-server  # Custom hostname for the device in Tailscale
 ```
 
 ## Execution
