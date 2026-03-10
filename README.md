@@ -9,6 +9,7 @@ graph TD
     TPLink[🖧 Router TP-Link]
     Pi[🍓  Raspberry]
     Devices[📱 Home devices]
+    Tailscale[🔐 Tailscale VPN]
     PiHole[🛡️  Pi-hole DNS]
     Heimdall[🗂️ Heimdall]
     Transmission[📤 Transmission]
@@ -19,8 +20,9 @@ graph TD
     Docker[🐋 Docker]
 
     Internet --> RouterISP --> TPLink
-    TPLink --> Pi 
+    TPLink --> Pi
     Pi --> Docker
+    Pi --> Tailscale
     subgraph Ubuntu server
     Docker --> cAdvisor
     Docker --> Heimdall
@@ -31,6 +33,7 @@ graph TD
     Docker --> Jellyfin
     end
     TPLink --> Devices
+    Tailscale -.->|Remote access| Internet
 ```
 
 ### Config raspberry
@@ -97,11 +100,13 @@ Create `.env` in the `ansible/` directory:
 ```env
 PIHOLE_PASS=your_password
 PATH_DATA=/path/to/data
+TAILSCALE_AUTH_KEY=tskey-auth-xxxxx
+TAILSCALE_HOSTNAME=homelab-server
 ```
 
 ### Directory Structure
 
-- **ansible/**: Infrastructure provisioning via Ansible roles (system-setup, docker, pihole)
+- **ansible/**: Infrastructure provisioning via Ansible roles (system-setup, docker, pihole, tailscale)
 - **services/docker/**: Docker Compose configurations with profiles (dns, dashboard, media-download, media-streaming, infra)
 - **config/**: Custom configurations (nginx, Sonarr)
 - **security/**: SSH hardening guidelines
