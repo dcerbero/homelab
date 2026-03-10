@@ -1,14 +1,14 @@
-# ⚡ My small homelab 
-This is my small homelab. The repository contains the configuration of my Raspberry Pi 4 server 💪
+# ⚡ Mi homeserver
+Este es mi servidor casero. El repositorio contiene la configuración de mi Raspberry Pi 4 💪
 
-### Eschema ✏️
+### Esquema ✏️
 ```mermaid
 graph TD
     Internet[☁️ Internet]
     RouterISP[🌐 ISP]
     TPLink[🖧 Router TP-Link]
     Pi[🍓  Raspberry]
-    Devices[📱 Home devices]
+    Devices[📱 Dispositivos del hogar]
     Tailscale[🔐 Tailscale VPN]
     PiHole[🛡️  Pi-hole DNS]
     Heimdall[🗂️ Heimdall]
@@ -33,14 +33,14 @@ graph TD
     Docker --> Jellyfin
     end
     TPLink --> Devices
-    Tailscale -.->|Remote access| Internet
+    Tailscale -.->|Acceso remoto| Internet
 ```
 
-### Config raspberry
+### Configuración de la Raspberry
 - SO: Ubuntu 24.04.04 LTS
-- Configure static ip in (/etc/netplan/)
+- Configurar IP estática en `/etc/netplan/`
 ```yaml
-# static ip
+# ip estática
 network:
   version: 2
   ethernets:
@@ -56,57 +56,56 @@ network:
           - 1.1.1.1
           - 8.8.8.8
 ```
-- Disable the use of port 53:
-In /etc/systemd/resolved.conf.d
+- Deshabilitar el uso del puerto 53 en `/etc/systemd/resolved.conf.d`:
 ```
 [Resolve]
 DNSStubListener=no
 ```
 
-- Mount hdd
-    - View uuid
+- Montar disco duro
+  - Ver UUID:
 ```
 lsblk -f
 ```
 
-Create folder 
+Crear carpeta:
 
 ```
-sudo mkdir -p /mnt/name
+sudo mkdir -p /mnt/nombre
 ```
 
-Edit file fstab in /etc/ and add:
+Editar `/etc/fstab` y agregar:
 
 ```
-UUID=your-uuid  /mnt/name  ext4  defaults,nofail  0  2
+UUID=tu-uuid  /mnt/nombre  ext4  defaults,nofail  0  2
 ```
 
-### Setup with Ansible
+### Configuración con Ansible
 
-Navigate to the `ansible/` directory and execute:
+Navegar al directorio `ansible/` y ejecutar:
 
 ```bash
 cd ansible/
-cp .env.example .env  # Configure your credentials and paths
+cp .env.example .env  # Configurar credenciales y rutas
 bash run.sh
 ```
 
-The script installs: Docker, system utilities, and Pi-hole via Ansible roles.
+El script instala: Docker, utilitarios del sistema y Pi-hole mediante roles de Ansible.
 
-### Environment Configuration
+### Variables de entorno
 
-Create `.env` in the `ansible/` directory:
+Crear `.env` en el directorio `ansible/`:
 
 ```env
-PIHOLE_PASS=your_password
-PATH_DATA=/path/to/data
+PIHOLE_PASS=tu_contraseña
+PATH_DATA=/ruta/a/datos
 TAILSCALE_AUTH_KEY=tskey-auth-xxxxx
-TAILSCALE_HOSTNAME=homelab-server
+TAILSCALE_HOSTNAME=homeserver
 ```
 
-### Directory Structure
+### Estructura de directorios
 
-- **ansible/**: Infrastructure provisioning via Ansible roles (system-setup, docker, pihole, tailscale)
-- **services/docker/**: Docker Compose configurations with profiles (dns, dashboard, media-download, media-streaming, infra)
-- **config/**: Custom configurations (nginx, Sonarr)
-- **security/**: SSH hardening guidelines
+- **ansible/**: Aprovisionamiento de infraestructura mediante roles de Ansible (system-setup, docker, pihole, tailscale)
+- **services/docker/**: Configuraciones de Docker Compose con perfiles (dns, dashboard, media-download, media-streaming, infra)
+- **config/**: Configuraciones personalizadas (nginx, Sonarr)
+- **security/**: Guías de hardening SSH
