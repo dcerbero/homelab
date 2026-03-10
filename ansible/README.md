@@ -1,40 +1,40 @@
-# Ansible Configuration
+# Configuración de Ansible
 
-Automates Ubuntu server provisioning for the homelab infrastructure.
+Automatiza el aprovisionamiento del servidor Ubuntu para la infraestructura del homeserver.
 
-## Quick Start
+## Inicio rápido
 
 ```bash
 cp .env.example .env
-# Edit .env with your credentials and paths
+# Editar .env con tus credenciales y rutas
 bash run.sh
 ```
 
 ## Roles
 
-| Role | Purpose |
-|------|---------|
-| `system-setup` | OS packages, networking, disk mounting |
-| `docker` | Docker & Docker Compose installation |
-| `pihole` | Pi-hole DNS container setup |
-| `tailscale` | Tailscale VPN configuration and setup |
+| Rol | Descripción |
+|-----|-------------|
+| `system-setup` | Paquetes del SO, red, montaje de disco |
+| `docker` | Instalación de Docker y Docker Compose |
+| `pihole` | Configuración del contenedor Pi-hole DNS |
+| `tailscale` | Configuración de Tailscale VPN |
 
 ## Playbook
 
-**File:** `playbook.yml`
+**Archivo:** `playbook.yml`
 
-Executes all roles in sequence on the `homeserver` inventory with `become: true` (sudo).
+Ejecuta todos los roles en secuencia en el inventario `homeserver` con `become: true` (sudo).
 
-## Inventory
+## Inventario
 
-**File:** `inventoryHomeServer.ini` (gitignored for security)
+**Archivo:** `inventoryHomeServer.ini` (en .gitignore por seguridad)
 
 ```ini
 [homeserver]
-<SERVER_IP> ansible_user=<USERNAME>
+<IP_SERVIDOR> ansible_user=<USUARIO>
 ```
 
-**Example:**
+**Ejemplo:**
 ```ini
 [homeserver]
 192.168.x.x ansible_user=ubuntu
@@ -42,19 +42,19 @@ Executes all roles in sequence on the `homeserver` inventory with `become: true`
 
 ## Variables
 
-**File:** `.env` (locally sourced by `run.sh`)
+**Archivo:** `.env` (cargado localmente por `run.sh`)
 
 ```env
-PIHOLE_PASS=your_pihole_password
-PATH_DATA=/mnt/data  # Persistent storage mount point
-TAILSCALE_AUTH_KEY=tskey-auth-xxxxx  # Auth key from Tailscale admin console
-TAILSCALE_HOSTNAME=homelab-server  # Custom hostname for the device in Tailscale
+PIHOLE_PASS=tu_contraseña_pihole
+PATH_DATA=/mnt/data  # Punto de montaje del almacenamiento persistente
+TAILSCALE_AUTH_KEY=tskey-auth-xxxxx  # Clave de autenticación desde la consola de Tailscale
+TAILSCALE_HOSTNAME=homeserver  # Nombre del dispositivo en Tailscale
 ```
 
-## Execution
+## Ejecución
 
 ```bash
 bash run.sh
 ```
 
-Prompts for SSH password (`-k`) and sudo password (`-K`). Runs in verbose mode (`-v`).
+Solicita contraseña SSH (`-k`) y contraseña de sudo (`-K`). Corre en modo verbose (`-v`).
