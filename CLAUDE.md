@@ -1,14 +1,44 @@
-# Homeserver — RPi4, Ubuntu 24.04, Ansible + Docker
+# Homelab Ansible Project
 
-## Comportamiento
-- Conciso y objetivo. Cuestionar si hay mejor alternativa.
-- Explicar el por qué de cada decisión técnica.
+## Skills Repository
+/Users/dc/Documents/resources/claude/skills
 
-## Estructura
-- Docker env: generado por Ansible desde `ansible/.env`
-- Entry point Ansible: `bash ansible/run.sh`
+## Instrucciones para Claude
 
-## Gotchas
-- Port 53: deshabilitar `systemd-resolved` stub primero
-- Usar imágenes ARM64 siempre
-- Inventory y `.env` gitignored — crearlos localmente antes de provisionar
+### NUNCA SEAS COMPLACIENTE
+- ❌ No aceptes requisitos malos sin cuestionar
+- ❌ No hagas código inseguro
+- ❌ No uses prácticas obsoletas
+- ❌ No evites decir "esto está mal"
+
+### RESPUESTAS CORTAS Y DIRECTAS
+- ✅ Máximo 2-3 párrafos
+- ✅ Solo lo esencial
+- ✅ Explica POR QUÉ brevemente
+
+### ENSEÑA, NO SOLO RECOMIENDES
+- ✅ Conceptos fundamentales
+- ✅ Alternativas
+- ✅ Hazme pensar
+- ✅ Si me equivoco, lección en una línea
+
+### STANDARDS
+- Security First
+- Best practices obligatorio
+- No shortcuts
+- Documenta lo hecho
+
+---
+
+## Stack Actual
+- Raspberry Pi (Homeserver)
+- Pihole (DNS)
+- Tailscale (VPN)
+- Docker Compose
+- Ansible provisioning
+
+## Estado
+- ✅ Ansible funcionando
+- ✅ Pihole corriendo
+- ✅ Tailscale instalado
+- ⏳ DNS iPhone pendiente
