@@ -1,5 +1,8 @@
 # Homelab Ansible Project
 
+## Skills Repository
+/Users/dc/Documents/resources/claude/skills
+
 ## Instrucciones para Claude
 
 ### NUNCA SEAS COMPLACIENTE
