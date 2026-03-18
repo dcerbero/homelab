@@ -1,8 +1,8 @@
 ---
-- name: Start pihole service
+- name: Start cadvisor service
   shell: |
     cd /home/{{ ansible_user }}/services/homelab/services/docker
-    PIHOLE_PASS={{ PIHOLE_PASS }} PATH_DATA={{ PATH_DATA }} docker compose --profile dns up -d
+    docker compose --profile monitoring up -d
   register: docker_compose_result
 - name: Show Docker Compose status
   shell: |
@@ -14,4 +14,3 @@
 - name: Display services
   debug:
     msg: "{{ docker_compose_status.stdout_lines }}"
-
