@@ -16,3 +16,7 @@ services:
     restart: unless-stopped
     ports:
       - 8085:8080
+    command:
+      - --housekeeping_interval=10s
+      - --max_housekeeping_interval=15s
+      - --global_housekeeping_interval=1m
