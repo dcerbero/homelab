@@ -1,14 +1,18 @@
 services:
   svccAdvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    image: ghcr.io/google/cadvisor:0.56.2
     container_name: cadvisor
+    privileged: true
+    devices:
+      - /dev/kmsg
     profiles:
-      - infra
+      - monitoring
     volumes:
       - "/:/rootfs:ro"
-      - "/var/run:/var/run:rw"
+      - "/var/run:/var/run:ro"
       - "/sys:/sys:ro"
       - "/var/lib/docker/:/var/lib/docker:ro"
+      - "/dev/disk/:/dev/disk:ro"
     restart: unless-stopped
     ports:
       - 8085:8080

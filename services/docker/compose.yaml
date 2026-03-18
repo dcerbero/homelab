@@ -5,5 +5,5 @@ include:
   - media/prowlarr.yaml
   - media/sonarr.yaml
   - media/jellyfin.yaml
-  - infra/cadvisor.yaml
+  - monitoring/cadvisor.yaml
   - infra/nginx.yaml
