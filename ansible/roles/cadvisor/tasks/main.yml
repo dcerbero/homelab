@@ -1,0 +1,16 @@
+---
+- name: Start cadvisor service
+  shell: |
+    cd /home/{{ ansible_user }}/services/homelab/services/docker
+    docker compose --profile monitoring up -d
+  register: docker_compose_result
+- name: Show Docker Compose status
+  shell: |
+    cd /home/{{ ansible_user }}/services/homelab/services/docker
+    docker compose ps
+  register: docker_compose_status
+  changed_when: false
+
+- name: Display services
+  debug:
+    msg: "{{ docker_compose_status.stdout_lines }}"
