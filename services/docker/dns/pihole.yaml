@@ -1,28 +1,71 @@
 services:
   svcPihole:
+    # Identificación básica
     container_name: pihole
     image: pihole/pihole:2026.02.0
     profiles:
       - dns
+    restart: always  # Infraestructura crítica (router + VPN DNS)
+
+    # Seguridad
+    privileged: false
+    user: "1000:1000"
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE  # Bind a puertos <1024 (53)
+      - NET_ADMIN         # Configuración de red
+      - NET_RAW           # Raw sockets para DNS
+    security_opt:
+      - no-new-privileges:true
+
+    # Networking
     ports:
       - "53:53/tcp"
       - "53:53/udp"
       - "8081:80"
-    environment:
-      TZ: "America/Bogota"
-      FTLCONF_webserver_api_password: ${PIHOLE_PASS}
-      FTLCONF_dns_listeningMode: 'all'
-      FTLCONF_dns_upstreams: '1.1.1.1;8.8.8.8;2606:4700:4700::1111;2001:4860:4860::8888'
-    volumes:
-      - ${PATH_DATA}/pihole/etc-pihole-v2:/etc/pihole
-      - ${PATH_DATA}/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
-    restart: unless-stopped
     dns:
       - 1.1.1.1
       - 8.8.8.8
+
+    # Volúmenes de persistencia
+    volumes:
+      - ${PATH_DATA}/pihole/etc-pihole-v2:/etc/pihole
+      - ${PATH_DATA}/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
+
+    # Healthcheck mejorado
     healthcheck:
-      test: ["CMD", "dig", "+short", "pi.hole", "@127.0.0.1"]
+      test: ["CMD", "dig", "+time=2", "+tries=1", "google.com", "@127.0.0.1"]
       interval: 30s
-      timeout: 10s
+      timeout: 5s
       retries: 3
-      start_period: 20s
+      start_period: 60s
+
+    # Variables de entorno organizadas por categoría
+    environment:
+      # Configuración básica
+      TZ: "America/Bogota"
+      WEBTHEME: "default-dark"
+      FTLCONF_webserver_api_password: ${PIHOLE_PASS}
+
+      # Configuración DNS básica
+      FTLCONF_dns_listeningMode: 'all'
+      FTLCONF_dns_upstreams: '1.1.1.1;8.8.8.8;2606:4700:4700::1111;2001:4860:4860::8888'
+
+      # Optimizaciones de Logging
+      FTLCONF_maxlogage: "168"    # 7 días de logs
+      FTLCONF_maxlogsize: "50"     # 50MB máximo
+
+      # Optimizaciones de Cache DNS
+      FTLCONF_dns_cache_size: "20000"      # 20,000 entradas cache
+      FTLCONF_dns_max_cache_ttl: "1800"    # TTL máximo: 30 minutos
+
+      # Blocking Mode
+      FTLCONF_blockingmode: "NULL"         # 0.0.0.0 para bloqueados (más rápido)
+
+      # Extensiones y optimizaciones DNS
+      FTLCONF_dns_edns0: "yes"             # Extensiones DNS modernas
+      FTLCONF_dns_check_aaaa: "yes"        # IPv6 habilitado
+      FTLCONF_dns_compress: "yes"          # Compresión DNS
+      FTLCONF_dns_prefetch: "yes"          # Prefetch de dominios comunes
+      FTLCONF_dns_forward_max: "150"       # Límite conexiones concurrentes
