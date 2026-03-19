@@ -6,6 +6,29 @@ services:
     profiles:
       - dns
     restart: always  # Infraestructura crítica (router + VPN DNS)
+
+    # Seguridad - Capabilities necesarias para Pi-hole
+    privileged: false
+    user: "1000:1000"
+    cap_drop:
+      - ALL
+    cap_add:
+      # Networking esencial
+      - NET_BIND_SERVICE  # Bind a puertos <1024 (53)
+      - NET_ADMIN         # Configuración de red
+      - NET_RAW           # Raw sockets para DNS
+      # Filesystem operations (para chown, temp files)
+      - DAC_OVERRIDE      # Bypass permission checks
+      - FOWNER            # Bypass permission checks para operaciones de archivo
+      # Para pihole-FTL
+      - SYS_ADMIN         # Administración del sistema (necesario para FTL)
+      - SYS_PTRACE        # Trace procesos (FTL debugging)
+      # Para crond
+      - SETUID            # Set UID (para crond SUID)
+      - SETGID            # Set GID (para crond SUID)
+    security_opt:
+      - no-new-privileges:true
+
     # Networking
     ports:
       - "53:53/tcp"
