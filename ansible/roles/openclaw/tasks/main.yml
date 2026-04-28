@@ -1,7 +1,7 @@
 ---
 - name: Start openclaw service
   shell: |
-    cd /home/{{ ansible_user }}/services/homelab/services/ia
+    cd /home/{{ ansible_user }}/services/homelab/services/docker
     PATH_DATA={{ PATH_DATA }} docker compose --profile ia up -d
   register: docker_compose_result
 - name: Show Docker Compose status
