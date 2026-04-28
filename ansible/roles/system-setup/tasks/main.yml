@@ -32,7 +32,7 @@
   ansible.builtin.git:
     repo: "https://github.com/dcerbero/homelab.git"
     dest: "/home/{{ ansible_user }}/services/homelab"
-    version: feature/enero2026
+    version: feature/main
     clone: yes
     update: yes
     force: yes  # Force overwrite local modifications
