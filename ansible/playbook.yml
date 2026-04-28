@@ -9,12 +9,10 @@
     - pihole
     - tailscale
     - cadvisor
+    - openclaw
 
   post_tasks:
     - name: homeserver setup completed
       debug:
         msg: |
-          ✅ homeserver setup completed successfully!   
-          Servicios instalados:
-          - Docker: Instalado y corriendo
-          - Pi-hole: Instalado y corriendo
+          ✅ homeserver setup completed successfully!
