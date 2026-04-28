@@ -12,7 +12,7 @@ services:
       - OPENCLAW_SANDBOX=true
       - OPENCLAW_DISABLE_BONJOUR=true
       - DEFAULT_MODEL=gemma4:e2b
-      - OPENCLAW_ALLOWED_ORIGINS=http://192.168.0.2:18789
+      - OPENCLAW_ALLOWED_ORIGINS=*
     volumes:
       - ${PATH_DATA}/ia/openclaw:/app/data
       - /var/run/docker.sock:/var/run/docker.sock 
