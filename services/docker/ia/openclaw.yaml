@@ -1,0 +1,17 @@
+services:
+  openclaw:
+    container_name: openclaw
+    image: ghcr.io/openclaw/openclaw:latest
+    profiles:
+      - ia
+    restart: always
+    ports:
+      - "18789:18789"
+    environment:
+      - OLLAMA_BASE_URL=https://ollama-server-2.tail019d1b.ts.net
+      - OPENCLAW_SANDBOX=true
+      - OPENCLAW_DISABLE_BONJOUR=true
+      - DEFAULT_MODEL=gemma4:e2b
+    volumes:
+      - ${PATH_DATA}/ia/openclaw:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock 

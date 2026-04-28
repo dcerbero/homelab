@@ -1,12 +1,12 @@
 ---
-- name: Start pihole service
+- name: Start openclaw service
   shell: |
-    cd /home/{{ ansible_user }}/services/homelab/services/docker
-    PIHOLE_PASS={{ PIHOLE_PASS }} PATH_DATA={{ PATH_DATA }} docker compose --profile dns up -d
+    cd /home/{{ ansible_user }}/services/homelab/services/ia
+    PATH_DATA={{ PATH_DATA }} docker compose --profile ia up -d
   register: docker_compose_result
 - name: Show Docker Compose status
   shell: |
-    cd /home/{{ ansible_user }}/services/homelab/services/docker
+    cd /home/{{ ansible_user }}/services/homelab/services/ia
     docker compose ps
   register: docker_compose_status
   changed_when: false
