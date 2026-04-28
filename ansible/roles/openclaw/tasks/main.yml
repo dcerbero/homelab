@@ -6,7 +6,7 @@
   register: docker_compose_result
 - name: Show Docker Compose status
   shell: |
-    cd /home/{{ ansible_user }}/services/homelab/services/ia
+    cd /home/{{ ansible_user }}/services/homelab/services/docker
     docker compose ps
   register: docker_compose_status
   changed_when: false
