@@ -14,5 +14,6 @@ services:
       - DEFAULT_MODEL=gemma4:e2b
       - OPENCLAW_CORS_ALLOWED_ORIGINS=*
     volumes:
-      - ${PATH_DATA}/ia/openclaw:/app/data
+      - ${PATH_DATA}/ia/openclaw/config:/home/node/.openclaw
+      - ${PATH_DATA}/ia/openclaw/workspace:/home/node/.openclaw/workspace 
       - /var/run/docker.sock:/var/run/docker.sock 
