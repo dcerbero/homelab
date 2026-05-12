@@ -1,5 +1,5 @@
 ---
-- name: Asegurar permisos de la carpeta de datos
+- name: Add permissions for openclaw data directory
   ansible.builtin.file:
     path: "{{ PATH_DATA }}/ia/openclaw"
     state: directory
