@@ -10,9 +10,6 @@ services:
     environment:
       - OPENCLAW_SANDBOX=true
       - OPENCLAW_DISABLE_BONJOUR=1
-      - OPENCLAW_OLLAMA_BASE_URL=http://ollama-server-2.tail019d1b.ts.net:11434
-      - OPENCLAW_PRIMARY_MODEL=ollama/gemma4:e2b
-      - OPENCLAW_STATE_DIR=/home/node/.openclaw
     volumes:
       - ${PATH_DATA}/ia/openclaw:/home/node/.openclaw
-      - /var/run/docker.sock:/var/run/docker.sock 
+      - /var/run/docker.sock:/var/run/docker.sock
