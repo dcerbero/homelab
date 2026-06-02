@@ -2,6 +2,7 @@ services:
   openclaw:
     container_name: openclaw
     image: ghcr.io/openclaw/openclaw:latest
+    pull_policy: always
     profiles:
       - ia
     restart: always
