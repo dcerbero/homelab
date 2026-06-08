@@ -123,7 +123,7 @@ Indexador de torrents. Se integra con Sonarr.
 
 ### OpenClaw (ia)
 
-Interfaz de IA local que se conecta a Ollama en Oracle Cloud vía Tailscale.
+Interfaz de IA local. Usa **DeepSeek API** para chat/inferencia y **Ollama (nomic-embed-text)** en Oracle Cloud vía Tailscale para embeddings y búsqueda semántica en memoria.
 
 - **Puerto:** `18789:18789`
 - **Volúmenes:** `$PATH_DATA/ia/openclaw`
