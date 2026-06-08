@@ -1,7 +1,27 @@
-# Created by https://www.toptal.com/developers/gitignore/api/ansible
-# Edit at https://www.toptal.com/developers/gitignore?templates=ansible
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
 
-### Ansible ###
+# Ansible
+*.ini
 *.retry
 
-# End of https://www.toptal.com/developers/gitignore/api/ansible
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs & Temporals
+*.log
+*.tmp
+*.bak
+
+# Editors & IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Claude
+.claude/

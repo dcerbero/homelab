@@ -1,96 +1,50 @@
-# ⚡ My small homelab 
-This is my small homelab. The repository contains the configuration of my Raspberry Pi 4 server 💪
+# ⚡ Homelab
 
-### Eschema ✏️
-```mermaid
-graph TD
-    Internet[☁️ Internet]
-    RouterISP[🌐 ISP]
-    TPLink[🖧 Router TP-Link]
-    Pi[🍓  Raspberry]
-    Devices[📱 Home devices]
-    PiHole[🛡️  Pi-hole DNS]
-    Heimdall[🗂️ Heimdall]
-    Transmission[📤 Transmission]
-    Prowlarr[🔎 Prowlarr]
-    Sonarr[📺 Sonarr]
-    Jellyfin[🎬 Jellyfin ]
-    cAdvisor[📊 cAdvisor]
-    Docker[🐋 Docker]
+Infraestructura híbrida: servidor local (Raspberry Pi 4) + recursos en la nube (Oracle Cloud).
 
-    Internet --> RouterISP --> TPLink
-    TPLink --> Pi 
-    Pi --> Docker
-    subgraph Ubuntu server
-    Docker --> cAdvisor
-    Docker --> Heimdall
-    Docker --> PiHole
-    Docker --> Transmission
-    Docker --> Prowlarr
-    Docker --> Sonarr
-    Docker --> Jellyfin
-    end
-    TPLink --> Devices
-```
+## Stack
 
-### Config raspberry
-- SO: Ubuntu 24.04.2 LTS
-- Configure static ip in (/etc/netplan/)
-```yaml
-# static ip
-network:
-  version: 2
-  ethernets:
-    eth0:
-      dhcp4: true
-      addresses:
-        - your-ip/24
-      routes:
-        - to: default
-          via: your-gateway
-      nameservers:
-        addresses:
-          - 1.1.1.1
-          - 8.8.8.8
-```
-- Disable the use of port 53:
-In /etc/systemd/resolved.conf.d
-```
-[Resolve]
-DNSStubListener=no
-```
+| Componente | Tecnología |
+|---|---|
+| Servidor | Raspberry Pi 4 — Ubuntu 24.04 |
+| Orquestación | Ansible |
+| Contenedores | Docker + Docker Compose |
+| DNS | Pi-hole |
+| VPN | Tailscale |
+| Proxy | nginx |
+| Dashboard | Heimdall |
+| Streaming | Jellyfin |
+| Descargas | Sonarr + Prowlarr + Transmission |
+| IA Local | OpenClaw (+ Ollama en Oracle Cloud) |
+| Monitorización | cAdvisor |
 
-- Mount hdd
-    - View uuid
-```
-lsblk -f
-```
+## Documentación
 
-Create folder 
+Toda la documentación está en [`docs/`](docs/README.md):
 
-```
-sudo mkdir -p /mnt/name
-```
+| Archivo | Contenido |
+|---|---|
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Topología de red, flujos, puertos |
+| [`docs/SETUP.md`](docs/SETUP.md) | Configuración inicial de la Raspberry Pi |
+| [`docs/ANSIBLE.md`](docs/ANSIBLE.md) | Roles de Ansible, playbook, variables |
+| [`docs/DOCKER.md`](docs/DOCKER.md) | Servicios Docker, perfiles, backup, actualización |
+| [`docs/COMMANDS.md`](docs/COMMANDS.md) | Comandos de uso diario, monitorización |
+| [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) | Problemas comunes y soluciones |
+| [`docs/SECURITY.md`](docs/SECURITY.md) | Hardening SSH, Tailscale, firewall |
 
-Edit file fstab in /etc/ and add:
-
-```
-UUID=your-uuid  /mnt/name  ext4  defaults,nofail  0  2
-```
-
-### Install docker with Ansible
-![Alt text](assets/installDocker.png)
+## Inicio Rápido
 
 ```bash
-ansible-playbook playbook.yaml -i inventoryHomeServer.ini -K
-```
-Flag -K: Request sudo password from the user via terminal
+# 1. Setup inicial de la Raspberry (IP estática, disco, DNS)
+#    Ver docs/SETUP.md
 
-### configure environment file .env ⚙️
-```
-PIHOLE_PASS=yourpass
-PATH_DATA=your_disk_path
-```
+# 2. Aprovisionar con Ansible
+cd ansible/
+cp .env.example .env
+# Editar .env con credenciales y rutas
+bash run.sh
 
-### 📁 Config Folder 
-- 📁 noTranscodig: This folder contains a custom format for Sonarr that avoids downloading videos which would require transcoding on a Raspberry Pi 4.
+# 3. Desplegar servicios Docker
+cd services/docker/
+docker compose --profile dns --profile dashboard --profile infra up -d
+```
