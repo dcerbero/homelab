@@ -1,9 +1,10 @@
 include:
   - core/heimdall.yaml
-  - core/pihole.yaml
+  - dns/pihole.yaml
   - media/transmission.yaml
   - media/prowlarr.yaml
   - media/sonarr.yaml
   - media/jellyfin.yaml
-  - infra/cadvisor.yaml
+  - monitoring/cadvisor.yaml
   - infra/nginx.yaml
+  - ia/openclaw.yaml

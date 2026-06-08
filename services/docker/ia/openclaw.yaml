@@ -1,0 +1,16 @@
+services:
+  openclaw:
+    container_name: openclaw
+    image: ghcr.io/openclaw/openclaw:latest
+    pull_policy: always
+    profiles:
+      - ia
+    restart: always
+    ports:
+      - "18789:18789"
+    environment:
+      - OPENCLAW_SANDBOX=true
+      - OPENCLAW_DISABLE_BONJOUR=1
+    volumes:
+      - ${PATH_DATA}/ia/openclaw:/home/node/.openclaw
+      - /var/run/docker.sock:/var/run/docker.sock

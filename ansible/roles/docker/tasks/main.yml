@@ -1,0 +1,77 @@
+---
+# Install Docker from official repository with architecture detection
+- name: Update apt cache
+  apt:
+    update_cache: yes
+
+- name: Install prerequisites
+  apt:
+    name:
+      - ca-certificates
+      - curl
+      - gnupg
+    state: present
+
+- name: Add Docker's official GPG key
+  shell: |
+    install -m 0755 -d /etc/apt/keyrings
+    curl -fsSL https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg -o /etc/apt/keyrings/docker.asc
+    chmod a+r /etc/apt/keyrings/docker.asc
+
+- name: Get system architecture
+  set_fact:
+    docker_arch: "{{ docker_arch_mapping[ansible_architecture] }}"
+
+- name: Add Docker repository
+  shell: |
+    echo \
+      "deb [arch={{ docker_arch }} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/{{ ansible_distribution | lower }} \
+      $(. /etc/os-release && echo "${VERSION_CODENAME}") stable" | \
+      tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+- name: Update apt cache after adding Docker repo
+  apt:
+    update_cache: yes
+  become: true
+
+- name: Install Docker packages
+  apt:
+    name: "{{ docker_packages }}"
+    state: present
+  notify: Restart Docker
+
+- name: Create docker group
+  group:
+    name: "{{ docker_group }}"
+    state: present
+
+- name: Add current user to docker group
+  user:
+    name: "{{ docker_user }}"
+    groups: "{{ docker_group }}"
+    append: yes
+  notify: Restart Docker
+
+- name: Enable Docker service
+  systemd:
+    name: docker.service
+    enabled: yes
+    state: started
+
+- name: Enable containerd service
+  systemd:
+    name: containerd.service
+    enabled: yes
+
+- name: Verify Docker installation
+  command: docker --version
+  register: docker_version
+  changed_when: false
+
+- name: Display Docker version and architecture
+  debug:
+    msg: |
+      ✅ Docker installed successfully
+      Version: {{ docker_version.stdout }}
+      Architecture: {{ docker_arch }}
+      User: {{ docker_user }}
