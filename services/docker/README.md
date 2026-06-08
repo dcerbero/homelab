@@ -1,198 +1,140 @@
-# Docker Compose Services Deployment
+# Servicios Docker Compose
 
-Este README explica cómo desplegar los servicios del homelab usando Docker Compose profiles.
+Desplegar servicios del homeserver usando perfiles de Docker Compose.
 
-## 📋 Profiles disponibles
+## Perfiles
 
-El repositorio está organizado en **5 profiles independientes**:
+**5 perfiles de despliegue independientes:**
 
-| Profile | Servicios | Descripción |
-|---------|-----------|-------------|
+| Perfil | Servicios | Descripción |
+|--------|-----------|-------------|
 | `dns` | Pi-hole | Servidor DNS/bloqueador de anuncios |
-| `dashboard` | Heimdall | Panel de control del homelab |
+| `dashboard` | Heimdall | Panel de control del homeserver |
 | `media-streaming` | Jellyfin | Servidor de streaming multimedia |
 | `media-download` | Transmission, Prowlarr, Sonarr | Descarga y gestión de contenido |
 | `infra` | nginx, cAdvisor | Infraestructura (proxy reverso, monitorización) |
 
----
+## Configuración
 
-## 🚀 Uso de profiles
+Crear `.env` en `services/docker/`:
 
-### **Levantar un profile específico**
+```env
+PIHOLE_PASS=tu_contraseña
+PATH_DATA=/ruta/a/datos/persistentes
+```
+
+## Despliegue
+
+**Un único perfil:**
 ```bash
 docker compose --profile dns up -d
 ```
 
-### **Levantar múltiples profiles**
-```bash
-docker compose --profile dns --profile dashboard up -d
-docker compose --profile media-streaming --profile media-download up -d
-```
-
-### **Levantar todos los servicios**
-```bash
-docker compose up -d
-```
-
-### **Detener servicios**
-```bash
-docker compose down
-docker compose --profile dns down  # solo dns
-```
-
----
-
-## 📦 Configuración del entorno
-
-Antes de desplegar, asegúrate de que existe un archivo `.env` en la raíz del repositorio con:
-
-```env
-PIHOLE_PASS=tu_contraseña_pihole
-PATH_DATA=/ruta/a/tus/datos
-```
-
----
-
-## 🔧 Combinaciones de despliegue comunes
-
-### **Mínimo (solo esenciales)**
+**Múltiples perfiles:**
 ```bash
 docker compose --profile dns --profile dashboard --profile infra up -d
 ```
-Levanta: Pi-hole + Heimdall + nginx + cAdvisor
 
-### **Streaming únicamente**
-```bash
-docker compose --profile media-streaming up -d
-```
-Levanta: Jellyfin
-
-### **Descarga y organización**
-```bash
-docker compose --profile media-download up -d
-```
-Levanta: Transmission + Prowlarr + Sonarr
-
-### **Todo el homelab multimedia**
-```bash
-docker compose --profile media-streaming --profile media-download up -d
-```
-Levanta: Jellyfin + Transmission + Prowlarr + Sonarr
-
-### **Instalación completa (producción)**
+**Todos los servicios:**
 ```bash
 docker compose up -d
 ```
-Levanta: todos los servicios
 
----
-
-## 📝 Puertos por profile
-
-| Profile | Servicio | Puerto | Descripción |
-|---------|----------|--------|-------------|
-| dns | Pi-hole | 53 | DNS (TCP/UDP) |
-| dns | Pi-hole | 8081 | UI |
-| dashboard | Heimdall | 80 | Interfaz (vía nginx) |
-| media-streaming | Jellyfin | host | Red en host |
-| media-download | Transmission | 8082 | UI |
-| media-download | Transmission | 51413 | Torrent (TCP/UDP) |
-| media-download | Prowlarr | 8083 | API de indexadores |
-| media-download | Sonarr | 8084 | Gestión de series |
-| infra | nginx | 80, 443 | Proxy reverso |
-| infra | cAdvisor | 8085 | Monitorización |
-
----
-
-## 🛑 Gestión de servicios
-
-### **Ver logs**
+**Detener:**
 ```bash
-docker compose logs -f svcPihole
-docker compose logs -f --all  # todos
+docker compose down
+docker compose --profile dns down  # perfil específico
 ```
 
-### **Ejecutar comando en contenedor**
+## Puertos por perfil
+
+| Perfil | Servicio | Puerto | Descripción |
+|--------|----------|--------|-------------|
+| dns | Pi-hole | 53 | DNS (TCP/UDP) |
+| dns | Pi-hole | 8081 | Web UI |
+| dashboard | Heimdall | 80 | Dashboard (vía nginx) |
+| media-streaming | Jellyfin | host | Host network |
+| media-download | Transmission | 8082 | Interfaz |
+| media-download | Transmission | 51413 | Torrent (TCP/UDP) |
+| media-download | Prowlarr | 8083 | API del indexador |
+| media-download | Sonarr | 8084 | Gestión de series |
+| infra | nginx | 80, 443 | Proxy reverso |
+| infra | cAdvisor | 8085 | Métricas de contenedores |
+
+## Administración
+
+**Registros:**
+```bash
+docker compose logs -f svcPihole
+```
+
+**Shell del contenedor:**
 ```bash
 docker compose exec svcPihole bash
 ```
 
-### **Ver estado**
+**Estado:**
 ```bash
 docker compose ps
 ```
 
-### **Reiniciar un servicio**
+**Reiniciar servicio:**
 ```bash
 docker compose restart svcSonarr
 ```
 
----
-
-## 📁 Estructura de directorios
+## Estructura de directorios
 
 ```
 services/docker/
 ├─ compose.yaml           (principal con includes)
 ├─ core/
-│  ├─ heimdall.yaml      (dashboard profile)
-│  └─ pihole.yaml        (dns profile)
+│  ├─ heimdall.yaml      (perfil dashboard)
+│  └─ pihole.yaml        (perfil dns)
 ├─ media/
-│  ├─ transmission.yaml  (media-download profile)
-│  ├─ prowlarr.yaml      (media-download profile)
-│  ├─ sonarr.yaml        (media-download profile)
-│  └─ jellyfin.yaml      (media-streaming profile)
+│  ├─ transmission.yaml  (perfil media-download)
+│  ├─ prowlarr.yaml      (perfil media-download)
+│  ├─ sonarr.yaml        (perfil media-download)
+│  └─ jellyfin.yaml      (perfil media-streaming)
 ├─ infra/
-│  ├─ cadvisor.yaml      (infra profile)
-│  └─ nginx.yaml         (infra profile)
+│  ├─ cadvisor.yaml      (perfil infra)
+│  └─ nginx.yaml         (perfil infra)
 └─ README.md             (este archivo)
 ```
 
----
+## Almacenamiento persistente
 
-## ⚙️ Variables de entorno
-
-Todas las rutas de datos se configuran a través de la variable `PATH_DATA` en `.env`:
+Todas las rutas de datos usan la variable `${PATH_DATA}` (establecida en `.env`):
 
 ```
 ${PATH_DATA}/
 ├─ heimdall/config
 ├─ pihole/etc-pihole-v2
+├─ pihole/etc-dnsmasq.d
 ├─ transmission/config
-├─ media/
-│  ├─ downloads
-│  ├─ tvseries
-│  ├─ movies
-│  └─ watch
 ├─ sonarr/data
 ├─ prowlarr/
 ├─ jellyfin/library
-└─ compose/homelab/config/nginx/conf.d
+└─ media/
+   ├─ downloads
+   ├─ tvseries
+   ├─ movies
+   └─ watch
 ```
 
----
+## Solución de problemas
 
-## 🐛 Troubleshooting
-
-### **Puerto ya en uso**
+**Conflictos de puertos:**
 ```bash
-sudo lsof -i :53  # ver qué ocupa el puerto DNS
+sudo lsof -i :53
 ```
 
-### **Contenedor no se levanta**
+**Registros del contenedor:**
 ```bash
-docker compose logs svcPihole  # ver errores
+docker compose logs svcPihole
 ```
 
-### **Permisos de volúmenes**
+**Permisos del volumen:**
 ```bash
 sudo chown -R 1000:1000 ${PATH_DATA}
 ```
-
----
-
-## 📚 Documentación adicional
-
-- Ver [README.md](../../README.md) para la arquitectura general
-- Ver [security/README.md](../../security/README.md) para configuración de seguridad
-- Ver [utility-command.md](../../utility-command.md) para comandos útiles

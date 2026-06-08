@@ -1,0 +1,22 @@
+services:
+  svccAdvisor:
+    image: ghcr.io/google/cadvisor:0.56.2
+    container_name: cadvisor
+    privileged: true
+    devices:
+      - /dev/kmsg
+    profiles:
+      - monitoring
+    volumes:
+      - "/:/rootfs:ro"
+      - "/var/run:/var/run:ro"
+      - "/sys:/sys:ro"
+      - "/var/lib/docker/:/var/lib/docker:ro"
+      - "/dev/disk/:/dev/disk:ro"
+    restart: unless-stopped
+    ports:
+      - 8085:8080
+    command:
+      - --housekeeping_interval=10s
+      - --max_housekeeping_interval=15s
+      - --global_housekeeping_interval=1m

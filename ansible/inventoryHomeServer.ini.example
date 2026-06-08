@@ -1,0 +1,2 @@
+[homeserver]
+YOUR_IP_HERE ansible_user=YOUR_USERNAME_HERE
