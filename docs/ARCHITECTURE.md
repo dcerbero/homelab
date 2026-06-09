@@ -14,7 +14,7 @@ graph TD
         ISP[🌐 Internet / ISP]
         
         subgraph OCI_VM [☁️ Oracle Cloud VM]
-            Ollama[🧠 Ollama Service]
+            Ollama[🧠 Ollama Service\nEmbeddings: nomic-embed-text]
         end
     end
 
@@ -48,7 +48,7 @@ graph TD
     OCI_VM -.-> Tailscale
     RemoteNode -.-> Tailscale
     
-    OpenClaw -.->|Inferencia| Tailscale
+    OpenClaw -.->|Embeddings| Tailscale
     Tailscale -.-> OCI_VM
     
     LocalDevices ==>|DNS| PiHole
@@ -72,8 +72,9 @@ graph TD
 - Pi-hole upstream: Cloudflare (1.1.1.1) y Google (8.8.8.8)
 
 ### IA (Azul)
-- OpenClaw en local se conecta vía Tailscale a Ollama en Oracle Cloud
-- Inferencia remota, interfaz local
+- **Embeddings:** OpenClaw se conecta vía Tailscale a Ollama (nomic-embed-text) en Oracle Cloud
+- **Chat:** DeepSeek vía API externa directa
+- Procesamiento local, modelos remotos
 
 ### VPN (Discontinuo)
 - Tailscale mesh VPN conecta: Raspberry Pi, Oracle Cloud VM, dispositivos remotos
