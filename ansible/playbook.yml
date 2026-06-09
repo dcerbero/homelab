@@ -10,6 +10,7 @@
     - tailscale
     - cadvisor
     - openclaw
+    - nginx
 
   post_tasks:
     - name: homeserver setup completed
