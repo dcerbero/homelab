@@ -6,8 +6,6 @@ services:
     profiles:
       - ia
     restart: always
-    ports:
-      - "18789:18789"
     environment:
       - OPENCLAW_SANDBOX=true
       - OPENCLAW_DISABLE_BONJOUR=1
