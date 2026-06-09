@@ -15,7 +15,7 @@ Infraestructura híbrida: servidor local (Raspberry Pi 4) + recursos en la nube 
 | Dashboard | Heimdall |
 | Streaming | Jellyfin |
 | Descargas | Sonarr + Prowlarr + Transmission |
-| IA Local | OpenClaw (+ Ollama en Oracle Cloud) |
+| IA Local | OpenClaw (chat: DeepSeek API / embeddings: Ollama en Oracle Cloud) |
 | Monitorización | cAdvisor |
 
 ## Documentación
