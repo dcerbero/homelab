@@ -1,0 +1,14 @@
+services:
+  headroom:
+    container_name: headroom
+    image: ghcr.io/chopratejas/headroom:0.27.0-code-slim
+    pull_policy: always
+    profiles:
+      - ia
+    restart: unless-stopped
+    ports:
+      - "8787:8787"
+    volumes:
+      - ${PATH_DATA}/ia/headroom:/data
+    environment:
+      - HEADROOM_PORT=8787
