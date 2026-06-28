@@ -10,6 +10,7 @@
     - tailscale
     - cadvisor
     - openclaw
+    - headroom
     - nginx
 
   post_tasks:
