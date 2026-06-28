@@ -12,7 +12,8 @@ services/docker/
 ├── dns/
 │   └── pihole.yaml           ← Perfil: dns
 ├── ia/
-│   └── openclaw.yaml         ← Perfil: ia
+│   ├── openclaw.yaml         ← Perfil: ia
+│   └── headroom.yaml         ← Perfil: ia
 ├── infra/
 │   └── nginx.yaml            ← Perfil: infra
 ├── media/
@@ -30,7 +31,7 @@ services/docker/
 |---|---|---|
 | `dns` | Pi-hole | DNS y bloqueo de anuncios |
 | `dashboard` | Heimdall | Panel de control |
-| `ia` | OpenClaw | Interfaz de IA local |
+| `ia` | OpenClaw, Headroom | Interfaz de IA local + compresión de contexto |
 | `infra` | nginx | Proxy reverso |
 | `media-streaming` | Jellyfin | Streaming multimedia |
 | `media-download` | Transmission, Prowlarr, Sonarr | Descarga y gestión |
