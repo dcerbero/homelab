@@ -97,7 +97,7 @@ Proxy reverso para los servicios web.
 
 Servidor de streaming multimedia.
 
-- **Red:** `host` (acceso directo a hardware)
+- **Puertos:** `8096:8096`
 - **Volúmenes:** `$PATH_DATA/jellyfin/library`, `$PATH_DATA/media/tvseries`, `$PATH_DATA/media/movies`
 - **Hardware:** `/dev/dri/renderD128` (transcodificación GPU)
 
@@ -126,9 +126,18 @@ Indexador de torrents. Se integra con Sonarr.
 
 Interfaz de IA local. Usa **DeepSeek API** para chat/inferencia y **Ollama (nomic-embed-text)** en Oracle Cloud vía Tailscale para embeddings y búsqueda semántica en memoria.
 
-- **Puerto:** `18789:18789`
+- **Puerto:** `18789:18789` (detrás de nginx proxy)
 - **Volúmenes:** `$PATH_DATA/ia/openclaw`
 - **Acceso a Docker socket** para ejecutar contenedores
+- **Tráfico de inferencia:** OpenClaw → Headroom (:8787) → DeepSeek API
+
+### Headroom (ia)
+
+Proxy de compresión de contexto para LLMs. Comprime tool outputs, logs y archivos antes de enviarlos al modelo, reduciendo 60-95% del costo de tokens.
+
+- **Puerto:** `8787:8787` (solo Docker network)
+- **Volúmenes:** `$PATH_DATA/ia/headroom`
+- **Upstream:** DeepSeek API vía `OPENAI_TARGET_API_URL`
 
 ### cAdvisor (monitoring)
 
@@ -142,8 +151,10 @@ Métricas de uso de recursos de todos los contenedores.
 
 ```
 $PATH_DATA/
+├── compose/homelab/config/nginx/conf.d
 ├── heimdall/config
 ├── ia/openclaw
+├── ia/headroom
 ├── jellyfin/library
 ├── media/
 │   ├── downloads

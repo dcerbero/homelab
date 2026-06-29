@@ -21,6 +21,7 @@ bash run.sh
 | `tailscale` | Instalación y autenticación de Tailscale VPN |
 | `cadvisor` | Despliegue del contenedor cAdvisor |
 | `openclaw` | Despliegue del contenedor OpenClaw (IA local) |
+| `headroom` | Creación del directorio de datos para Headroom |
 
 ## Playbook
 
