@@ -12,3 +12,4 @@ services:
       - ${PATH_DATA}/ia/headroom:/data
     environment:
       - HEADROOM_PORT=8787
+      - OPENAI_TARGET_API_URL=https://api.deepseek.com
