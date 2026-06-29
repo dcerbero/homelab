@@ -7,24 +7,27 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.
 ## [Sin publicar]
 
 ### Agregado
-- Automatización con Ansible con 4 roles (system-setup, docker, pihole, tailscale)
-- Rol de Tailscale VPN para acceso remoto seguro
-- Script de ejecución de Ansible para aprovisionamiento simplificado
-- Documentación del README de Ansible
-- Perfiles de Docker Compose para despliegues modulares (dns, dashboard, media-download, media-streaming, infra)
+- Automatización con Ansible con 7 roles (system-setup, docker, pihole, tailscale, cadvisor, openclaw, headroom)
+- Proxy reverso nginx para servicios web (Heimdall, OpenClaw)
+- Perfiles de Docker Compose: dns, dashboard, ia, infra, media-streaming, media-download, monitoring
+- Headroom: proxy de compresión de contexto para LLMs (0.27.0-code-slim, perfil ia)
 - Healthcheck de Pi-hole y persistencia del volumen dnsmasq
+- Rol Ansible para crear directorio de datos de Headroom
 - Configuración de DNS explícita para evitar bucles de bootstrap
+- Diagrama de arquitectura completo con mermaid
 
 ### Modificado
-- Actualización de la imagen de pihole a 2026.02.0 (LTS estable)
-- Refactorización de playbook.yaml → playbook.yml (convención de nombres)
-- Mejora del .gitignore (se eliminó redundancia, mejor cobertura)
-- Documentación simplificada en español latinoamericano
-- Diagrama de arquitectura actualizado para incluir Tailscale VPN
+- OpenClaw: detrás de nginx proxy (puerto 18789 ya no expuesto directamente)
+- OpenClaw: inferencia via Headroom proxy → DeepSeek API (compresión de contexto)
+- Jellyfin: de network host a port mapping 8096:8096
+- nginx config movido a $PATH_DATA/compose/homelab/config/nginx/conf.d/
+- Actualización de imagen pihole a 2026.02.0 (LTS estable)
+- Refactorización playbook.yaml → playbook.yml
+- Mejora del .gitignore
 
 ### Seguridad
-- Se agregaron `.env` y `*.ini` al .gitignore
-- Se agregó `.claude/` al .gitignore
-- Se eliminaron recursos binarios del repositorio (installDocker.png)
-- Se sanitizó la documentación (se eliminaron IPs y usuarios hardcodeados)
+- Eliminada exposición directa del puerto 18789 de OpenClaw
+- Jellyfin sin privileged + host network
+- Se agregaron `.env`, `*.ini`, `.claude/` al .gitignore
+- Se sanitizó documentación (IPs y usuarios hardcodeados eliminados)
 - Se habilitó Tailscale para acceso remoto seguro

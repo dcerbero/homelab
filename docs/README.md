@@ -15,7 +15,7 @@
 | Dashboard | Heimdall |
 | Streaming | Jellyfin |
 | Descargas | Sonarr + Prowlarr + Transmission |
-| IA Local | OpenClaw |
+| IA Local | OpenClaw + Headroom |
 | Monitorización | cAdvisor |
 
 ## Documentación
