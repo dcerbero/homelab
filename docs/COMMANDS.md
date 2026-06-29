@@ -6,6 +6,11 @@
 # Desplegar perfil específico
 docker compose --profile dns up -d
 docker compose --profile dashboard --profile infra up -d
+docker compose --profile ia up -d
+docker compose --profile monitoring up -d
+
+# Múltiples perfiles
+docker compose --profile dns --profile dashboard --profile ia up -d
 
 # Todos los servicios
 docker compose up -d
@@ -20,7 +25,7 @@ docker compose logs -f svcPihole
 docker compose exec svcPihole bash
 
 # Reiniciar servicio
-docker compose restart svcSonarr
+docker compose restart svcPihole
 
 # Detener todo
 docker compose down
@@ -59,6 +64,24 @@ docker system df
 
 # Limpiar Docker (contenedores, imágenes, volúmenes no usados)
 docker system prune -a --volumes
+```
+
+## Headroom
+
+Proxy de compresión de contexto en el puerto `8787`.
+
+```bash
+# Health check
+curl -s http://localhost:8787/health | jq .
+
+# Estadísticas
+curl -s http://localhost:8787/stats | jq .
+
+# Verificar tráfico procesado
+curl -s http://localhost:8787/stats | jq '.requests.total'
+
+# Métricas Prometheus
+curl http://localhost:8787/metrics
 ```
 
 ## Monitorización (cAdvisor)
