@@ -25,6 +25,7 @@ graph TD
         subgraph Pi [🍓 Raspberry Pi 4]
             subgraph Docker [🐋 Docker Engine]
                 OpenClaw[🤖 OpenClaw]
+                Headroom[🗜️ Headroom Proxy]
                 PiHole[🛡️ Pi-hole DNS]
                 cAdvisor[📊 cAdvisor]
                 Heimdall[📋 Heimdall]
@@ -58,7 +59,7 @@ graph TD
     class WAN,ISP,OCI_VM wan;
     class Router,Pi,LocalDevices,RemoteNode node;
     class Tailscale vpn;
-    class Docker,OpenClaw,PiHole,cAdvisor,Ollama,Heimdall,Jellyfin,Nginx,Transmission,Sonarr,Prowlarr highlight;
+    class Docker,OpenClaw,Headroom,PiHole,cAdvisor,Ollama,Heimdall,Jellyfin,Nginx,Transmission,Sonarr,Prowlarr highlight;
 
     linkStyle 6,7 stroke:#3b82f6,stroke-width:3px;
     linkStyle 8,9,10 stroke:#10b981,stroke-width:3px;
@@ -72,8 +73,8 @@ graph TD
 - Pi-hole upstream: Cloudflare (1.1.1.1) y Google (8.8.8.8)
 
 ### IA (Azul)
-- **Embeddings:** OpenClaw se conecta vía Tailscale a Ollama (nomic-embed-text) en Oracle Cloud
-- **Chat:** DeepSeek vía API externa directa
+- **Chat:** OpenClaw → Headroom (proxy :8787, comprime contexto) → DeepSeek API
+- **Embeddings:** OpenClaw vía Tailscale → Ollama (nomic-embed-text) en Oracle Cloud
 - Procesamiento local, modelos remotos
 
 ### VPN (Discontinuo)
@@ -87,10 +88,12 @@ graph TD
 | 53 (TCP/UDP) | Pi-hole DNS | Local |
 | 80 | nginx / Heimdall | Local |
 | 443 | nginx HTTPS | Local |
+| 8096 | Jellyfin | Local |
 | 8081 | Pi-hole Web UI | Local |
 | 8082 | Transmission | Local |
 | 8083 | Prowlarr | Local |
 | 8084 | Sonarr | Local |
 | 8085 | cAdvisor | Local |
+| 8787 | Headroom | Local (Docker only) |
 | 18789 | OpenClaw | Local |
 | 51413 (TCP/UDP) | Transmission Torrent | Local |
