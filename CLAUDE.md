@@ -44,14 +44,22 @@ Lazy, not negligent: validación, seguridad, errores nunca se recortan.
 ---
 
 ## Stack Actual
-- Raspberry Pi (Homeserver)
-- Pihole (DNS)
+- Raspberry Pi 4 (Homeserver)
+- Pi-hole (DNS)
 - Tailscale (VPN)
-- Docker Compose
+- Docker Compose + perfiles
 - Ansible provisioning
+- nginx (proxy reverso)
+- OpenClaw (IA, DeepSeek API)
+- Headroom (compresión de contexto)
+- Jellyfin (streaming) / Sonarr + Prowlarr + Transmission (descargas)
+- cAdvisor (monitorización)
 
 ## Estado
 - ✅ Ansible funcionando
-- ✅ Pihole corriendo
+- ✅ Pi-hole corriendo
 - ✅ Tailscale instalado
-- ⏳ DNS iPhone pendiente
+- ✅ nginx proxy activo
+- ✅ OpenClaw + Headroom integrados
+- ✅ Jellyfin, Sonarr, Prowlarr, Transmission desplegados
+- ✅ cAdvisor monitoreando
