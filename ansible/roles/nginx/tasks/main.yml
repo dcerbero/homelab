@@ -2,7 +2,9 @@
 - name: Start nginx service
   shell: |
     cd /home/{{ ansible_user }}/services/homelab/services/docker
-    PATH_DATA={{ path_data }} docker compose --profile infra up -d
+    docker compose --profile infra up -d
+  environment:
+    PATH_DATA: "{{ lookup('env', 'PATH_DATA') }}"
   register: docker_compose_result
 
 - name: Show Docker Compose status
