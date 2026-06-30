@@ -1,2 +1,3 @@
 ---
 tailscale_enabled: true
+path_data: /mnt/data
