@@ -1,17 +1,16 @@
 ---
-- name: Start nginx service
+- name: (re)start nginx
   shell: |
-    cd /home/{{ ansible_user }}/services/homelab/services/docker
-    PATH_DATA={{ PATH_DATA }} docker compose --profile infra up -d
-  register: docker_compose_result
+    docker exec nginx_proxy nginx -s reload 2>/dev/null && echo "reloaded" ||
+      (cd /home/{{ ansible_user }}/services/homelab/services/docker && PATH_DATA={{ PATH_DATA }} docker compose --profile infra up -d && echo "started")
+  register: result
+  changed_when: result.stdout in ["reloaded", "started"]
 
-- name: Show Docker Compose status
-  shell: |
-    cd /home/{{ ansible_user }}/services/homelab/services/docker
-    docker compose ps
-  register: docker_compose_status
+- name: Show nginx status
+  shell: docker ps --filter name=nginx_proxy
+  register: nginx_status
   changed_when: false
 
-- name: Display services
+- name: Display result
   debug:
-    msg: "{{ docker_compose_status.stdout_lines }}"
+    msg: "nginx: {{ result.stdout }}"
