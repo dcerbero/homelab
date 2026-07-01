@@ -4,14 +4,22 @@
   become: true
   
   roles:
-    - system-setup
-    - docker
-    - pihole
-    - tailscale
-    - cadvisor
-    - openclaw
-    - headroom
-    - nginx
+    - role: system-setup
+      tags: [system-setup, system]
+    - role: docker
+      tags: [docker, containers]
+    - role: pihole
+      tags: [pihole, dns]
+    - role: tailscale
+      tags: [tailscale, vpn]
+    - role: cadvisor
+      tags: [cadvisor, monitoring]
+    - role: openclaw
+      tags: [openclaw, ia]
+    - role: headroom
+      tags: [headroom, ia]
+    - role: nginx
+      tags: [nginx, proxy]
 
   post_tasks:
     - name: homeserver setup completed
