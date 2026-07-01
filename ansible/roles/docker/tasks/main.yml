@@ -15,17 +15,17 @@
 - name: Add Docker's official GPG key
   shell: |
     install -m 0755 -d /etc/apt/keyrings
-    curl -fsSL https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg -o /etc/apt/keyrings/docker.asc
+    curl -fsSL https://download.docker.com/linux/{{ ansible_facts["distribution"] | lower }}/gpg -o /etc/apt/keyrings/docker.asc
     chmod a+r /etc/apt/keyrings/docker.asc
 
 - name: Get system architecture
   set_fact:
-    docker_arch: "{{ docker_arch_mapping[ansible_architecture] }}"
+    docker_arch: "{{ docker_arch_mapping[ansible_facts['architecture']] }}"
 
 - name: Add Docker repository
   shell: |
     echo \
-      "deb [arch={{ docker_arch }} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/{{ ansible_distribution | lower }} \
+      "deb [arch={{ docker_arch }} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/{{ ansible_facts["distribution"] | lower }} \
       $(. /etc/os-release && echo "${VERSION_CODENAME}") stable" | \
       tee /etc/apt/sources.list.d/docker.list > /dev/null
 
