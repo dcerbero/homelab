@@ -6,8 +6,7 @@ services:
     profiles:
       - ia
     restart: unless-stopped
-    ports:
-      - "8787:8787"
+    # solo acceso interno via Docker networking
     volumes:
       - ${PATH_DATA}/ia/headroom:/data
     environment:
