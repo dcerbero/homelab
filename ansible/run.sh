@@ -8,4 +8,4 @@ ansible-playbook playbook.yml \
   -e "PATH_DATA=$PATH_DATA" \
   -e "TAILSCALE_AUTH_KEY=$TAILSCALE_AUTH_KEY" \
   -e "TAILSCALE_HOSTNAME=$TAILSCALE_HOSTNAME" \
-  -k -K -v
+  -k -K -v "$@"
