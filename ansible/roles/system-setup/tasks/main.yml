@@ -27,10 +27,3 @@
     path: "/home/{{ ansible_user }}/services"
     state: directory
     mode: "0755"
-
-- name: download homelab code
-  ansible.builtin.git:
-    repo: "https://github.com/dcerbero/homelab.git"
-    dest: "/home/{{ ansible_user }}/services/homelab"
-    version: main
-    force: yes
