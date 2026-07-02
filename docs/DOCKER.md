@@ -129,7 +129,6 @@ Interfaz de IA local. Usa **DeepSeek API** para chat/inferencia y **Ollama (nomi
 
 - **Puerto:** Solo interno (detrás de nginx proxy)
 - **Volúmenes:** `$PATH_DATA/ia/openclaw`
-- **Acceso a Docker socket** para ejecutar contenedores
 - **Tráfico de inferencia:** OpenClaw → Headroom (:8787) → DeepSeek API
 
 ### Headroom (ia)
