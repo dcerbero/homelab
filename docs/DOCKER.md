@@ -71,10 +71,11 @@ PATH_DATA=/mnt/data
 
 DNS server con bloqueo de anuncios. Crítico para la infraestructura.
 
-- **Puertos:** `53:53` (TCP/UDP), `8081:80`
+- **Puertos:** `53:53` (TCP/UDP) — DNS
 - **Volúmenes:** `$PATH_DATA/pihole/etc-pihole-v2`, `$PATH_DATA/pihole/etc-dnsmasq.d`
 - **Upstream DNS:** Cloudflare (1.1.1.1), Google (8.8.8.8)
 - **Healthcheck:** `dig google.com @127.0.0.1` cada 30s
+- **Web UI:** Acceso vía nginx proxy (puerto 80)
 - **Cache:** 20,000 entradas, TTL máximo 30 min
 - **Logs:** 7 días, máx 50MB
 
@@ -126,7 +127,7 @@ Indexador de torrents. Se integra con Sonarr.
 
 Interfaz de IA local. Usa **DeepSeek API** para chat/inferencia y **Ollama (nomic-embed-text)** en Oracle Cloud vía Tailscale para embeddings y búsqueda semántica en memoria.
 
-- **Puerto:** `18789:18789` (detrás de nginx proxy)
+- **Puerto:** Solo interno (detrás de nginx proxy)
 - **Volúmenes:** `$PATH_DATA/ia/openclaw`
 - **Acceso a Docker socket** para ejecutar contenedores
 - **Tráfico de inferencia:** OpenClaw → Headroom (:8787) → DeepSeek API
@@ -135,7 +136,7 @@ Interfaz de IA local. Usa **DeepSeek API** para chat/inferencia y **Ollama (nomi
 
 Proxy de compresión de contexto para LLMs. Comprime tool outputs, logs y archivos antes de enviarlos al modelo, reduciendo 60-95% del costo de tokens.
 
-- **Puerto:** `8787:8787` (solo Docker network)
+- **Puerto:** `8787` (solo Docker network, sin exposición al host)
 - **Volúmenes:** `$PATH_DATA/ia/headroom`
 - **Upstream:** DeepSeek API vía `OPENAI_TARGET_API_URL`
 
@@ -143,9 +144,9 @@ Proxy de compresión de contexto para LLMs. Comprime tool outputs, logs y archiv
 
 Métricas de uso de recursos de todos los contenedores.
 
-- **Puerto:** `8085:8080`
+- **Puerto:** Solo acceso interno Docker (sin exposición al host)
 - **Volúmenes:** monta `/`, `/var/run`, `/sys`, `/var/lib/docker`, `/dev/disk` (solo lectura)
-- **Intervalos:** housekeeping 10s, global 1m
+- **Intervalos:** housekeeping 10s, max housekeeping 15s, global 1m
 
 ## Almacenamiento Persistente
 

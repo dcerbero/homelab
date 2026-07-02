@@ -86,14 +86,10 @@ graph TD
 | Puerto | Servicio | Acceso |
 |---|---|---|
 | 53 (TCP/UDP) | Pi-hole DNS | Local |
-| 80 | nginx / Heimdall | Local |
+| 80 | nginx (Heimdall, OpenClaw) | Local |
 | 443 | nginx HTTPS | Local |
 | 8096 | Jellyfin | Local |
-| 8081 | Pi-hole Web UI | Local |
-| 8082 | Transmission | Local |
+| 8082 | Transmission Web UI | Local |
 | 8083 | Prowlarr | Local |
 | 8084 | Sonarr | Local |
-| 8085 | cAdvisor | Local |
-| 8787 | Headroom | Local (Docker only) |
-| 18789 | OpenClaw | Local |
 | 51413 (TCP/UDP) | Transmission Torrent | Local |

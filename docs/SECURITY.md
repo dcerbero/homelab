@@ -70,8 +70,10 @@ sudo ufw enable
 | 22 | SSH | Solo LAN o Tailscale |
 | 53 | DNS | Solo LAN |
 | 80, 443 | HTTP/HTTPS | Solo LAN |
-| 8081-8085 | Servicios web | Solo LAN |
-| 18789 | OpenClaw | Solo LAN |
+| 8096 | Jellyfin | Solo LAN |
+| 8082 | Transmission Web UI | Solo LAN |
+| 8083 | Prowlarr | Solo LAN |
+| 8084 | Sonarr | Solo LAN |
 | 51413 | Torrent | Requerido para descargas |
 
 > Recomendación: no exponer puertos directamente a Internet. Usar Tailscale para acceso remoto.
