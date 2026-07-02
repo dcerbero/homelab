@@ -4,15 +4,17 @@ Desplegar servicios del homeserver usando perfiles de Docker Compose.
 
 ## Perfiles
 
-**5 perfiles de despliegue independientes:**
+**7 perfiles de despliegue independientes:**
 
 | Perfil | Servicios | Descripción |
 |--------|-----------|-------------|
 | `dns` | Pi-hole | Servidor DNS/bloqueador de anuncios |
 | `dashboard` | Heimdall | Panel de control del homeserver |
+| `ia` | OpenClaw, Headroom | Interfaz de IA local + compresión de contexto |
+| `infra` | nginx | Proxy reverso |
+| `monitoring` | cAdvisor | Métricas de contenedores |
 | `media-streaming` | Jellyfin | Servidor de streaming multimedia |
 | `media-download` | Transmission, Prowlarr, Sonarr | Descarga y gestión de contenido |
-| `infra` | nginx, cAdvisor | Infraestructura (proxy reverso, monitorización) |
 
 ## Configuración
 
@@ -51,15 +53,15 @@ docker compose --profile dns down  # perfil específico
 | Perfil | Servicio | Puerto | Descripción |
 |--------|----------|--------|-------------|
 | dns | Pi-hole | 53 | DNS (TCP/UDP) |
-| dns | Pi-hole | 8081 | Web UI |
-| dashboard | Heimdall | 80 | Dashboard (vía nginx) |
-| media-streaming | Jellyfin | host | Host network |
-| media-download | Transmission | 8082 | Interfaz |
-| media-download | Transmission | 51413 | Torrent (TCP/UDP) |
-| media-download | Prowlarr | 8083 | API del indexador |
-| media-download | Sonarr | 8084 | Gestión de series |
+| dashboard | Heimdall | — | Tras nginx proxy |
+| ia | OpenClaw | — | Tras nginx proxy |
+| ia | Headroom | 8787 | Solo red Docker |
 | infra | nginx | 80, 443 | Proxy reverso |
-| infra | cAdvisor | 8085 | Métricas de contenedores |
+| monitoring | cAdvisor | — | Solo red Docker |
+| media-streaming | Jellyfin | 8096 | Streaming multimedia |
+| media-download | Transmission | 8082, 51413 | Interfaz web + Torrent |
+| media-download | Prowlarr | 8083 | Indexador |
+| media-download | Sonarr | 8084 | Gestión de series |
 
 ## Administración
 
@@ -89,16 +91,21 @@ docker compose restart svcSonarr
 services/docker/
 ├─ compose.yaml           (principal con includes)
 ├─ core/
-│  ├─ heimdall.yaml      (perfil dashboard)
+│  └─ heimdall.yaml      (perfil dashboard)
+├─ dns/
 │  └─ pihole.yaml        (perfil dns)
+├─ ia/
+│  ├─ openclaw.yaml      (perfil ia)
+│  └─ headroom.yaml      (perfil ia)
+├─ infra/
+│  └─ nginx.yaml         (perfil infra)
 ├─ media/
 │  ├─ transmission.yaml  (perfil media-download)
 │  ├─ prowlarr.yaml      (perfil media-download)
 │  ├─ sonarr.yaml        (perfil media-download)
 │  └─ jellyfin.yaml      (perfil media-streaming)
-├─ infra/
-│  ├─ cadvisor.yaml      (perfil infra)
-│  └─ nginx.yaml         (perfil infra)
+├─ monitoring/
+│  └─ cadvisor.yaml      (perfil monitoring)
 └─ README.md             (este archivo)
 ```
 
@@ -108,18 +115,22 @@ Todas las rutas de datos usan la variable `${PATH_DATA}` (establecida en `.env`)
 
 ```
 ${PATH_DATA}/
+├─ compose/homelab/config/nginx/conf.d
 ├─ heimdall/config
-├─ pihole/etc-pihole-v2
-├─ pihole/etc-dnsmasq.d
-├─ transmission/config
-├─ sonarr/data
-├─ prowlarr/
+├─ ia/openclaw
+├─ ia/headroom
 ├─ jellyfin/library
-└─ media/
-   ├─ downloads
-   ├─ tvseries
-   ├─ movies
-   └─ watch
+├─ media/
+│  ├─ downloads
+│  ├─ movies
+│  ├─ tvseries
+│  └─ watch
+├─ pihole/
+│  ├─ etc-pihole-v2
+│  └─ etc-dnsmasq.d
+├─ prowlarr/
+├─ sonarr/data
+└─ transmission/config
 ```
 
 ## Solución de problemas

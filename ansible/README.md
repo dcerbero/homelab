@@ -12,18 +12,35 @@ bash run.sh
 
 ## Roles
 
-| Rol | Descripción |
-|-----|-------------|
-| `system-setup` | Paquetes del SO, red, montaje de disco |
-| `docker` | Instalación de Docker y Docker Compose |
-| `pihole` | Configuración del contenedor Pi-hole DNS |
-| `tailscale` | Configuración de Tailscale VPN |
+| Rol | Tags | Descripción |
+|---|---|---|
+| `system-setup` | `system-setup`, `system` | Paquetes del SO, DNS stub, clonar repositorio |
+| `docker` | `docker`, `containers` | Instalación de Docker Engine + Compose |
+| `pihole` | `pihole`, `dns` | Contenedor Pi-hole DNS |
+| `tailscale` | `tailscale`, `vpn` | Instalación y autenticación Tailscale VPN |
+| `cadvisor` | `cadvisor`, `monitoring` | Contenedor cAdvisor |
+| `openclaw` | `openclaw`, `ia` | Contenedor OpenClaw (IA local) |
+| `headroom` | `headroom`, `ia` | Directorio de datos Headroom |
+| `nginx` | `nginx`, `proxy` | Contenedor nginx proxy reverso |
 
 ## Playbook
 
 **Archivo:** `playbook.yml`
 
 Ejecuta todos los roles en secuencia en el inventario `homeserver` con `become: true` (sudo).
+
+Cada rol tiene un tag individual y otro de grupo para ejecución selectiva:
+
+```bash
+# Solo nginx
+bash run.sh --tags nginx
+
+# Stack IA completo
+bash run.sh --tags ia
+
+# Todo excepto system-setup
+bash run.sh --skip-tags system
+```
 
 ## Inventario
 
@@ -57,4 +74,4 @@ TAILSCALE_HOSTNAME=homeserver  # Nombre del dispositivo en Tailscale
 bash run.sh
 ```
 
-Solicita contraseña SSH (`-k`) y contraseña de sudo (`-K`). Corre en modo verbose (`-v`).
+Solicita contraseña SSH (`-k`) y contraseña de sudo (`-K`). Corre en modo verbose (`-v`). Los argumentos extra (como `--tags`) se pasan directamente a `ansible-playbook`.

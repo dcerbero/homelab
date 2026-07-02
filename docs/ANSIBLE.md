@@ -13,15 +13,16 @@ bash run.sh
 
 ## Roles
 
-| Rol | Descripción |
-|---|---|
-| `system-setup` | Paquetes del SO, deshabilitar DNS stub, clonar repositorio |
-| `docker` | Instalación de Docker Engine, Docker Compose, grupo docker |
-| `pihole` | Despliegue del contenedor Pi-hole con Docker Compose |
-| `tailscale` | Instalación y autenticación de Tailscale VPN |
-| `cadvisor` | Despliegue del contenedor cAdvisor |
-| `openclaw` | Despliegue del contenedor OpenClaw (IA local) |
-| `headroom` | Creación del directorio de datos para Headroom |
+| Rol | Tags | Descripción |
+|---|---|---|
+| `system-setup` | `system-setup`, `system` | Paquetes del SO, deshabilitar DNS stub, clonar repositorio |
+| `docker` | `docker`, `containers` | Instalación de Docker Engine, Docker Compose, grupo docker |
+| `pihole` | `pihole`, `dns` | Despliegue del contenedor Pi-hole con Docker Compose |
+| `tailscale` | `tailscale`, `vpn` | Instalación y autenticación de Tailscale VPN |
+| `cadvisor` | `cadvisor`, `monitoring` | Despliegue del contenedor cAdvisor |
+| `openclaw` | `openclaw`, `ia` | Despliegue del contenedor OpenClaw (IA local) |
+| `headroom` | `headroom`, `ia` | Creación del directorio de datos para Headroom |
+| `nginx` | `nginx`, `proxy` | Despliegue del proxy reverso nginx |
 
 ## Playbook
 
@@ -31,13 +32,40 @@ Ejecuta todos los roles en secuencia en el inventario `homeserver` con `become: 
 
 ```yaml
 roles:
-  - system-setup
-  - docker
-  - pihole
-  - tailscale
-  - cadvisor
-  - openclaw
+  - role: system-setup
+    tags: [system-setup, system]
+  - role: docker
+    tags: [docker, containers]
+  - role: pihole
+    tags: [pihole, dns]
+  - role: tailscale
+    tags: [tailscale, vpn]
+  - role: cadvisor
+    tags: [cadvisor, monitoring]
+  - role: openclaw
+    tags: [openclaw, ia]
+  - role: headroom
+    tags: [headroom, ia]
+  - role: nginx
+    tags: [nginx, proxy]
 ```
+
+### Tags
+
+Cada rol tiene un tag individual y uno de grupo para ejecución selectiva:
+
+```bash
+# Solo nginx (ej: cambio de config)
+bash run.sh --tags nginx
+
+# Stack IA completo (openclaw + headroom)
+bash run.sh --tags ia
+
+# Todo excepto system-setup (salta el apt upgrade)
+bash run.sh --skip-tags system
+```
+
+Los argumentos extra se pasan directamente a `ansible-playbook` gracias a `$@` en `run.sh`.
 
 ## Inventario
 

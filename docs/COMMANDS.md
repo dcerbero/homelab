@@ -68,35 +68,29 @@ docker system prune -a --volumes
 
 ## Headroom
 
-Proxy de compresión de contexto en el puerto `8787`.
+Proxy de compresión de contexto. Solo accesible desde Docker network (no expuesto al host).
 
 ```bash
-# Health check
-curl -s http://localhost:8787/health | jq .
+# Health check (dentro del contenedor o red Docker)
+docker compose exec headroom curl -s http://localhost:8787/health
 
 # Estadísticas
-curl -s http://localhost:8787/stats | jq .
+docker compose exec headroom curl -s http://localhost:8787/stats
 
-# Verificar tráfico procesado
-curl -s http://localhost:8787/stats | jq '.requests.total'
-
-# Métricas Prometheus
-curl http://localhost:8787/metrics
+# Ver logs
+docker compose logs headroom
 ```
 
 ## Monitorización (cAdvisor)
 
-cAdvisor corre en el puerto `8085`.
+cAdvisor corre con acceso solo a red Docker (sin puerto expuesto al host).
 
 ```bash
-# Ver métricas en el navegador
-open http://homeserver:8085
-
 # Ver logs de cAdvisor
 docker compose logs svccAdvisor
 
-# Health check manual
-curl -s http://localhost:8085/healthz
+# Health check manual (dentro de la red Docker)
+docker compose exec svccAdvisor wget -qO- http://localhost:8080/healthz
 ```
 
 ## Health Checks por Servicio
