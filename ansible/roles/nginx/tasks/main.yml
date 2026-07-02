@@ -5,12 +5,3 @@
       (cd /home/{{ ansible_user }}/services/homelab/services/docker && PATH_DATA={{ PATH_DATA }} docker compose --profile infra up -d && echo "started")
   register: result
   changed_when: result.stdout in ["reloaded", "started"]
-
-- name: Show nginx status
-  shell: docker ps --filter name=nginx_proxy
-  register: nginx_status
-  changed_when: false
-
-- name: Display result
-  debug:
-    msg: "nginx: {{ result.stdout }}"
