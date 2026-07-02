@@ -23,6 +23,7 @@ bash run.sh
 | `openclaw` | `openclaw`, `ia` | Despliegue del contenedor OpenClaw (IA local) |
 | `headroom` | `headroom`, `ia` | Creación del directorio de datos para Headroom |
 | `nginx` | `nginx`, `proxy` | Despliegue del proxy reverso nginx |
+| `heimdall` | `heimdall`, `dashboard` | Despliegue del panel de control Heimdall |
 
 ## Playbook
 
@@ -48,6 +49,8 @@ roles:
     tags: [headroom, ia]
   - role: nginx
     tags: [nginx, proxy]
+  - role: heimdall
+    tags: [heimdall, dashboard]
 ```
 
 ### Tags
