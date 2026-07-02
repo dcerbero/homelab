@@ -20,9 +20,3 @@
       tags: [headroom, ia]
     - role: nginx
       tags: [nginx, proxy]
-
-  post_tasks:
-    - name: homeserver setup completed
-      debug:
-        msg: |
-          ✅ homeserver setup completed successfully!
