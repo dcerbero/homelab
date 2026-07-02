@@ -22,6 +22,7 @@ bash run.sh
 | `openclaw` | `openclaw`, `ia` | Contenedor OpenClaw (IA local) |
 | `headroom` | `headroom`, `ia` | Directorio de datos Headroom |
 | `nginx` | `nginx`, `proxy` | Contenedor nginx proxy reverso |
+| `heimdall` | `heimdall`, `dashboard` | Contenedor Heimdall panel de control |
 
 ## Playbook
 

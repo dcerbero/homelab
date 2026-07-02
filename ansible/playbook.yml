@@ -18,5 +18,7 @@
       tags: [openclaw, ia]
     - role: headroom
       tags: [headroom, ia]
+    - role: heimdall
+      tags: [heimdall, dashboard]
     - role: nginx
       tags: [nginx, proxy]
