@@ -10,5 +10,5 @@ services:
       - OPENCLAW_SANDBOX=true
       - OPENCLAW_DISABLE_BONJOUR=1
     volumes:
-      - ${PATH_DATA}/ia/openclaw:/home/node/.openclaw
+      - "${PATH_DATA}/ia/openclaw:/home/node/.openclaw"
       - /var/run/docker.sock:/var/run/docker.sock

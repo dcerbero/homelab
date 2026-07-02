@@ -9,9 +9,9 @@ services:
       - 51413:51413
       - 51413:51413/udp
     volumes:
-      - ${PATH_DATA}/transmission/config:/config
-      - ${PATH_DATA}/media/downloads:/downloads
-      - ${PATH_DATA}/media/watch:/watch
+      - "${PATH_DATA}/transmission/config:/config"
+      - "${PATH_DATA}/media/downloads:/downloads"
+      - "${PATH_DATA}/media/watch:/watch"
     environment:
       - PUID=1000
       - PGID=1000
