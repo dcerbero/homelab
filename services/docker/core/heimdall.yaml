@@ -7,7 +7,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ="America/Bogota" 
+      - TZ=America/Bogota
     volumes:
       - "${PATH_DATA}/heimdall/config:/config"
     restart: unless-stopped
