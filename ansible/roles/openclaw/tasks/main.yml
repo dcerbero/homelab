@@ -12,14 +12,3 @@
   shell: |
     cd /home/{{ ansible_user }}/services/homelab/services/docker
     PATH_DATA={{ PATH_DATA }} docker compose --profile ia up -d
-  register: docker_compose_result
-- name: Show Docker Compose status
-  shell: |
-    cd /home/{{ ansible_user }}/services/homelab/services/docker
-    docker compose ps
-  register: docker_compose_status
-  changed_when: false
-
-- name: Display services
-  debug:
-    msg: "{{ docker_compose_status.stdout_lines }}"
