@@ -2,7 +2,16 @@
 - name: Setup homeserver
   hosts: homeserver
   become: true
-  
+
+  pre_tasks:
+    - name: Update homelab repository
+      ansible.builtin.git:
+        repo: "https://github.com/dcerbero/homelab.git"
+        dest: "/home/{{ ansible_user }}/services/homelab"
+        version: main
+        force: yes
+      tags: always
+
   roles:
     - role: system-setup
       tags: [system-setup, system]
