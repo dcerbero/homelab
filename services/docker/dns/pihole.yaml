@@ -2,7 +2,7 @@ services:
   svcPihole:
     # Identificación básica
     container_name: pihole
-    image: pihole/pihole:2026.02.0
+    image: pihole/pihole:2026.06.0
     profiles:
       - dns
     restart: always  # Infraestructura crítica (router + VPN DNS)

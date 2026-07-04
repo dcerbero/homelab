@@ -1,7 +1,7 @@
 services:
   openclaw:
     container_name: openclaw
-    image: ghcr.io/openclaw/openclaw:latest
+    image: ghcr.io/openclaw/openclaw:2026.3.1
     pull_policy: always
     profiles:
       - ia
