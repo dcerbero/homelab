@@ -1,6 +1,6 @@
 services:
   svcNginx:
-    image: nginx:1.27.5-bookworm
+    image: nginx:1.30.3-bookworm
     container_name: nginx_proxy
     profiles:
       - infra
