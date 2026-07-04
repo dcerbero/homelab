@@ -1,6 +1,6 @@
 services:
   svccAdvisor:
-    image: ghcr.io/google/cadvisor:0.56.2
+    image: ghcr.io/google/cadvisor:v0.60.3
     container_name: cadvisor
     privileged: true
     devices:
