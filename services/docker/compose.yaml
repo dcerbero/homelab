@@ -8,4 +8,3 @@ include:
   - monitoring/cadvisor.yaml
   - infra/nginx.yaml
   - ia/openclaw.yaml
-  - ia/headroom.yaml

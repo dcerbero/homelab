@@ -28,7 +28,6 @@ homelab/
 │       ├── tailscale/              # Install + authenticate VPN
 │       ├── cadvisor/               # docker compose --profile monitoring up
 │       ├── openclaw/               # Create data dir + docker compose --profile ia up
-│       ├── headroom/               # Create data dir only
 │       └── nginx/                  # docker compose --profile infra up
 ├── services/docker/
 │   ├── compose.yaml                # Aggregator via `include:`
@@ -36,7 +35,6 @@ homelab/
 │   ├── infra/nginx.yaml            # Profile: infra
 │   ├── monitoring/cadvisor.yaml    # Profile: monitoring
 │   ├── ia/openclaw.yaml            # Profile: ia
-│   ├── ia/headroom.yaml            # Profile: ia
 │   ├── core/heimdall.yaml          # Profile: dashboard
 │   ├── media/jellyfin.yaml         # Profile: media-streaming
 │   ├── media/transmission.yaml     # Profile: media-download
@@ -50,10 +48,11 @@ homelab/
 
 ### Key Architecture Details
 
-- **Ansible runs roles in strict order** (system → docker → pihole → tailscale → cadvisor → openclaw → headroom → nginx)
-- **Docker Compose uses profiles** — root `compose.yaml` aggregates 11 independent files via `include:`. Each file declares its profile(s).
+- **Ansible runs roles in strict order** (system → docker → pihole → tailscale → cadvisor → openclaw → nginx)
+- **Docker Compose uses profiles** — root `compose.yaml` aggregates 10 independent files via `include:`. Each file declares its profile(s).
 - **nginx is the single entry point** for web UIs — reverse-proxies to Heimdall, OpenClaw, etc. Web services expose real ports only to LAN.
-- **OpenClaw inference path**: OpenClaw → Headroom (port 8787, Docker-internal) → DeepSeek API. Embeddings via Tailscale → Ollama on Oracle Cloud.
+- **OpenClaw inference path**: OpenClaw → DeepSeek API directa. Embeddings via Tailscale → Ollama on Oracle Cloud.
+- **OpenClaw heartbeat**: No tiene heartbeat configurado. Sin polling periódico externo.
 - **Persistent data at `$PATH_DATA`** on external disk. Compose files reference it via `${PATH_DATA}`.
 - **Secrets** (`TAILSCALE_AUTH_KEY`, `PIHOLE_PASS`) in `ansible/.env` and `services/docker/.env` — both `.gitignore`d.
 
@@ -129,7 +128,6 @@ docker compose pull svcPihole && docker compose up -d svcPihole
 ```bash
 dig google.com @127.0.0.1     # Pi-hole DNS
 curl -s localhost:8085/healthz # cAdvisor
-curl -s localhost:8787/health  # Headroom proxy
 curl -s -o /dev/null -w "%{http_code}" http://localhost  # nginx
 ```
 
