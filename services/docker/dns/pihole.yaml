@@ -33,7 +33,6 @@ services:
       # Configuración básica
       TZ: "America/Bogota"
       WEBTHEME: "default-dark"
-      FTLCONF_webserver_api_password: ${PIHOLE_PASS}
 
       # Configuración DNS básica
       FTLCONF_dns_listeningMode: 'all'
