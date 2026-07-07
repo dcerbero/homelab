@@ -7,3 +7,9 @@
       docker compose --profile dns up -d --force-recreate --remove-orphans 2>&1
   register: pihole_result
   changed_when: pihole_result.stdout is search("Recreated|Started")
+
+- name: Force password into persistent volume
+  ansible.builtin.shell: |
+    docker exec pihole pihole-FTL --config webserver.api.password '{{ PIHOLE_PASS }}' 2>&1
+  register: pwd_result
+  changed_when: pwd_result.rc == 0
