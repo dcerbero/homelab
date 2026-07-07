@@ -1,15 +1,9 @@
 ---
-- name: (re)start pihole with forced password sync
+- name: (re)start pihole and set password
   ansible.builtin.shell: |
     cd /home/{{ ansible_user }}/services/homelab/services/docker
-    PIHOLE_PASS='{{ PIHOLE_PASS }}' \
-      PATH_DATA={{ PATH_DATA }} \
-      docker compose --profile dns up -d --force-recreate --remove-orphans 2>&1
+    PATH_DATA={{ PATH_DATA }} \
+      docker compose --profile dns up -d --remove-orphans 2>&1
+    docker exec pihole pihole setpassword '{{ PIHOLE_PASS }}' 2>&1
   register: pihole_result
-  changed_when: pihole_result.stdout is search("Recreated|Started")
-
-- name: Force password into persistent volume
-  ansible.builtin.shell: |
-    docker exec pihole pihole-FTL --config webserver.api.password '{{ PIHOLE_PASS }}' 2>&1
-  register: pwd_result
-  changed_when: pwd_result.rc == 0
+  changed_when: pihole_result.stdout is search("Recreated|Started|Password changed")
