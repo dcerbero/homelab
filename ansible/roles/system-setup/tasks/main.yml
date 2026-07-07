@@ -27,3 +27,15 @@
     path: "/home/{{ ansible_user }}/services"
     state: directory
     mode: "0755"
+
+- name: Saneamiento y limpieza de residuos de paquetes (APT)
+  ansible.builtin.apt:
+    autoremove: true
+    purge: true
+    autoclean: true
+  register: apt_cleanup_result
+
+- name: Registrar resultado de la purga de paquetes huerfanos
+  ansible.builtin.debug:
+    msg: "Resultado de la limpieza:\n{{ apt_cleanup_result.stdout }}"
+  when: apt_cleanup_result.changed
