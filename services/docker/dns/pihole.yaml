@@ -11,7 +11,7 @@ services:
     ports:
       - "53:53/tcp"
       - "53:53/udp"
-      - "8082:80"     # Web admin v6
+      - "8085:80"     # Web admin v6 (8082 en uso por Transmission)
     dns:
       - 1.1.1.1
       - 8.8.8.8
