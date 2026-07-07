@@ -6,6 +6,10 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.
 
 ## [Sin publicar]
 
+### Eliminado
+- Headroom: removido del perfil `ia`. Eliminado rol Ansible, compose file, y referencia en include. El proxy de compresión no aportaba beneficio real (0.86% compresión vs 97.8% cache nativo de DeepSeek).
+- Heartbeat: eliminado del perfil `ia` de OpenClaw. Removido `heartbeat: { every: "6h" }` del gateway config. HEARTBEAT.md y secciones de AGENTS.md eliminados del workspace.
+
 ### Agregado
 - Automatización con Ansible con 7 roles (system-setup, docker, pihole, tailscale, cadvisor, openclaw, headroom)
 - Proxy reverso nginx para servicios web (Heimdall, OpenClaw)
