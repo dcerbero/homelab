@@ -28,12 +28,15 @@
     state: directory
     mode: "0755"
 
-- name: Saneamiento y limpieza de residuos de paquetes (APT)
+- name: Remove orphaned dependencies with purge
   ansible.builtin.apt:
     autoremove: true
     purge: true
-    autoclean: true
   register: apt_cleanup_result
+
+- name: Clean stale package cache
+  ansible.builtin.apt:
+    autoclean: true
 
 - name: Registrar resultado de la purga de paquetes huerfanos
   ansible.builtin.debug:
