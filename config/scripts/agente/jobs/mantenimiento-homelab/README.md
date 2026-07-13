@@ -19,7 +19,7 @@ Auditoría semanal de versiones de imágenes Docker del repositorio Homelab.
 |---|---|
 | Mode | announce |
 | Channel | telegram |
-| To | 5373909675 |
+| To | {{TELEGRAM_CHAT_ID}} |
 
 ## Payload
 

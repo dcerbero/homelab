@@ -19,7 +19,7 @@ Auditoría de costo-beneficio de modelos de IA. Compara el modelo actual contra 
 |---|---|
 | Mode | announce |
 | Channel | telegram |
-| To | 5373909675 |
+| To | {{TELEGRAM_CHAT_ID}} |
 
 ## Payload
 

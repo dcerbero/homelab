@@ -19,7 +19,7 @@ Escaneo semanal de nuevas herramientas y recursos AI/Dev/Infra.
 |---|---|
 | Mode | announce |
 | Channel | telegram |
-| To | 5373909675 |
+| To | {{TELEGRAM_CHAT_ID}} |
 
 ## Payload
 

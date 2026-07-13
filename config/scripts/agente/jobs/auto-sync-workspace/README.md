@@ -18,7 +18,7 @@ Exportación y respaldo del workspace hacia GitHub. Cada 30 minutos.
 |---|---|
 | Mode | none |
 | Channel | telegram |
-| To | telegram:5373909675 |
+| To | {{TELEGRAM_CHAT_ID}} |
 
 ## Payload
 
