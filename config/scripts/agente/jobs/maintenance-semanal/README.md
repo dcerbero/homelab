@@ -19,7 +19,7 @@ Mantenimiento semanal de infraestructura: limpieza de /tmp y sincronización del
 |---|---|
 | Mode | announce, bestEffort |
 | Channel | telegram |
-| To | telegram:{{TELEGRAM_CHAT_ID}} |
+| To | {{TELEGRAM_CHAT_ID}} |
 
 ## Payload
 
