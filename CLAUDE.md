@@ -17,12 +17,13 @@ Two subsystems, each with its own lifecycle:
 ```
 homelab/
 ├── ansible/                        # Provisioning layer
-│   ├── playbook.yml                # Entry point (runs all roles in order)
+│   ├── playbook.yml                # Entry point (two plays: homeserver + oracle)
 │   ├── run.sh                      # Loads .env, invokes ansible-playbook
-│   ├── inventoryHomeServer.ini     # .gitignore'd — target IP/user
+│   ├── inventoryHomeServer.ini     # .gitignore'd — target IPs/users
 │   ├── group_vars/all/main.yml     # Global Ansible variables
+│   ├── group_vars/oracle/main.yml      # Oracle-specific vars (no upgrade, /opt/pihole)
 │   └── roles/
-│       ├── system-setup/           # apt upgrade, disable DNS stub, git clone repo
+│       ├── system-setup/           # apt upgrade (skip en Oracle), disable DNS stub, git clone
 │       ├── docker/                 # Install Docker Engine + compose plugin
 │       ├── pihole/                 # docker compose --profile dns up
 │       ├── tailscale/              # Install + authenticate VPN
@@ -99,8 +100,14 @@ Lazy, not negligent: validación, seguridad, errores nunca se recortan.
 
 ```bash
 cd ansible/
-cp .env.example .env     # Edit with server IP, secrets, data path
-bash run.sh               # Loads .env and runs ansible-playbook
+cp .env.example .env     # Edit with server IPs, secrets, data paths
+bash run.sh               # Loads .env and runs ansible-playbook (homeserver + oracle)
+
+# Solo Oracle (Pi-hole failover)
+bash run.sh --limit oracle
+
+# Solo homeserver (sin Oracle)
+bash run.sh --limit homeserver
 ```
 
 ### Manage Docker Services
@@ -147,5 +154,6 @@ tar -czf backup-homelab-$(date +%Y%m%d).tar.gz -C $(dirname $PATH_DATA) $(basena
 - **No ports exposed to WAN** — LAN-only or via Tailscale VPN
 - **Hardware transcoding** on Pi 4 uses `/dev/dri/renderD128` (Jellyfin only)
 - **Pi-hole needs port 53 free** — `system-setup` role disables systemd-resolved DNS stub
+- **Pi-hole failover**: Pi-hole secundario en Oracle Cloud VM. Mismas adlists, gravity independiente. Sin sync. Tailscale DNS con ambos nameservers.
 - **UID/GID 1000** for all linuxserver.io containers
 - **Pull request prefix**: `feat/`, `fix/`, `refactor/`, `docs/`
