@@ -3,15 +3,6 @@
   hosts: homeserver
   become: true
 
-  pre_tasks:
-    - name: Update homelab repository
-      ansible.builtin.git:
-        repo: "https://github.com/dcerbero/homelab.git"
-        dest: "/home/{{ ansible_user }}/services/homelab"
-        version: main
-        force: yes
-      tags: always
-
   roles:
     - role: system-setup
       tags: [system-setup, system]
@@ -30,3 +21,17 @@
       tags: [heimdall, dashboard]
     - role: nginx
       tags: [nginx, proxy]
+
+- name: Setup Oracle Cloud VM (Pi-hole failover)
+  hosts: oracle
+  become: true
+
+  roles:
+    - role: system-setup
+      tags: [system-setup, system, oracle]
+    - role: docker
+      tags: [docker, containers, oracle]
+    - role: pihole
+      tags: [pihole, dns, oracle]
+      vars:
+        pihole_path_data: /opt/pihole

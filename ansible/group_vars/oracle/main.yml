@@ -1,0 +1,11 @@
+---
+# Oracle Cloud VM — Pi-hole secundario (failover DNS)
+
+# Desactivar upgrade masivo de paquetes en Oracle
+system_upgrade: false
+
+# Ruta de datos persistente para Pi-hole
+PATH_DATA: /opt/pihole
+
+# Hostname en Tailscale
+TAILSCALE_HOSTNAME: "{{ oracle_hostname }}"
