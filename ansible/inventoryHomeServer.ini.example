@@ -1,2 +1,5 @@
 [homeserver]
 YOUR_IP_HERE ansible_user=YOUR_USERNAME_HERE
+
+[oracle]
+ORACLE_IP_HERE ansible_user=ORACLE_USERNAME_HERE

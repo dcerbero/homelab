@@ -2,7 +2,7 @@
 - name: (re)start pihole and set password
   ansible.builtin.shell: |
     cd /home/{{ ansible_user }}/services/homelab/services/docker
-    PATH_DATA={{ PATH_DATA }} \
+    PATH_DATA={{ pihole_path_data | default(PATH_DATA) }} \
       docker compose --profile dns up -d --remove-orphans 2>&1
     docker exec pihole pihole setpassword '{{ PIHOLE_PASS }}' 2>&1
   register: pihole_result
