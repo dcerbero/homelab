@@ -29,6 +29,7 @@ homelab/
 │       ├── tailscale/              # Install + authenticate VPN
 │       ├── cadvisor/               # docker compose --profile monitoring up
 │       ├── openclaw/               # Create data dir + docker compose --profile ia up
+│       ├── heimdall/               # docker compose --profile dashboard up
 │       └── nginx/                  # docker compose --profile infra up
 ├── services/docker/
 │   ├── compose.yaml                # Aggregator via `include:`
@@ -49,12 +50,12 @@ homelab/
 
 ### Key Architecture Details
 
-- **Ansible runs roles in strict order** (system → docker → pihole → tailscale → cadvisor → openclaw → nginx)
+- **Ansible runs roles in strict order** (system → docker → pihole → tailscale → cadvisor → openclaw → heimdall → nginx)
 - **Docker Compose uses profiles** — root `compose.yaml` aggregates 10 independent files via `include:`. Each file declares its profile(s).
 - **nginx is the single entry point** for web UIs — reverse-proxies to Heimdall, OpenClaw, etc. Web services expose real ports only to LAN.
 - **OpenClaw inference path**: OpenClaw → DeepSeek API directa. Embeddings via Tailscale → Ollama on Oracle Cloud.
-- **OpenClaw heartbeat**: No tiene heartbeat configurado. Sin polling periódico externo.
-- **Persistent data at `$PATH_DATA`** on external disk. Compose files reference it via `${PATH_DATA}`.
+- **Pi-hole role**: usa `pihole_path_data | default(PATH_DATA)`. Homeserver resuelve de `-e PATH_DATA=$PATH_DATA`, Oracle recibe `pihole_path_data: /opt/pihole` hardcodeado en el play.
+- **Persistent data at `$PATH_DATA`** on external disk. Compose files reference it via `${PATH_DATA}`. Oracle: `/opt/pihole`.
 - **Secrets** (`TAILSCALE_AUTH_KEY`, `PIHOLE_PASS`) in `ansible/.env` and `services/docker/.env` — both `.gitignore`d.
 
 ---

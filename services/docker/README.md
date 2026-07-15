@@ -10,7 +10,7 @@ Desplegar servicios del homeserver usando perfiles de Docker Compose.
 |--------|-----------|-------------|
 | `dns` | Pi-hole | Servidor DNS/bloqueador de anuncios |
 | `dashboard` | Heimdall | Panel de control del homeserver |
-| `ia` | OpenClaw, Headroom | Interfaz de IA local + compresión de contexto |
+| `ia` | OpenClaw | Interfaz de IA local (DeepSeek API) |
 | `infra` | nginx | Proxy reverso |
 | `monitoring` | cAdvisor | Métricas de contenedores |
 | `media-streaming` | Jellyfin | Servidor de streaming multimedia |
@@ -55,7 +55,6 @@ docker compose --profile dns down  # perfil específico
 | dns | Pi-hole | 53 | DNS (TCP/UDP) |
 | dashboard | Heimdall | — | Tras nginx proxy |
 | ia | OpenClaw | — | Tras nginx proxy |
-| ia | Headroom | 8787 | Solo red Docker |
 | infra | nginx | 80, 443 | Proxy reverso |
 | monitoring | cAdvisor | — | Solo red Docker |
 | media-streaming | Jellyfin | 8096 | Streaming multimedia |
@@ -96,7 +95,6 @@ services/docker/
 │  └─ pihole.yaml        (perfil dns)
 ├─ ia/
 │  ├─ openclaw.yaml      (perfil ia)
-│  └─ headroom.yaml      (perfil ia)
 ├─ infra/
 │  └─ nginx.yaml         (perfil infra)
 ├─ media/
@@ -118,7 +116,6 @@ ${PATH_DATA}/
 ├─ compose/homelab/config/nginx/conf.d
 ├─ heimdall/config
 ├─ ia/openclaw
-├─ ia/headroom
 ├─ jellyfin/library
 ├─ media/
 │  ├─ downloads

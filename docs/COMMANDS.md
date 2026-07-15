@@ -66,21 +66,6 @@ docker system df
 docker system prune -a --volumes
 ```
 
-## Headroom
-
-Proxy de compresión de contexto. Solo accesible desde Docker network (no expuesto al host).
-
-```bash
-# Health check (dentro del contenedor o red Docker)
-docker compose exec headroom curl -s http://localhost:8787/health
-
-# Estadísticas
-docker compose exec headroom curl -s http://localhost:8787/stats
-
-# Ver logs
-docker compose logs headroom
-```
-
 ## Monitorización (cAdvisor)
 
 cAdvisor corre con acceso solo a red Docker (sin puerto expuesto al host).
