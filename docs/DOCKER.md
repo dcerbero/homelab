@@ -12,8 +12,7 @@ services/docker/
 ├── dns/
 │   └── pihole.yaml           ← Perfil: dns
 ├── ia/
-│   ├── openclaw.yaml         ← Perfil: ia
-│   └── headroom.yaml         ← Perfil: ia
+│   └── openclaw.yaml         ← Perfil: ia
 ├── infra/
 │   └── nginx.yaml            ← Perfil: infra
 ├── media/
@@ -31,7 +30,7 @@ services/docker/
 |---|---|---|
 | `dns` | Pi-hole | DNS y bloqueo de anuncios |
 | `dashboard` | Heimdall | Panel de control |
-| `ia` | OpenClaw, Headroom | Interfaz de IA local + compresión de contexto |
+| `ia` | OpenClaw | Interfaz de IA local (DeepSeek API) |
 | `infra` | nginx | Proxy reverso |
 | `media-streaming` | Jellyfin | Streaming multimedia |
 | `media-download` | Transmission, Prowlarr, Sonarr | Descarga y gestión |
@@ -129,15 +128,6 @@ Interfaz de IA local. Usa **DeepSeek API** para chat/inferencia y **Ollama (nomi
 
 - **Puerto:** Solo interno (detrás de nginx proxy)
 - **Volúmenes:** `$PATH_DATA/ia/openclaw`
-- **Tráfico de inferencia:** OpenClaw → Headroom (:8787) → DeepSeek API
-
-### Headroom (ia)
-
-Proxy de compresión de contexto para LLMs. Comprime tool outputs, logs y archivos antes de enviarlos al modelo, reduciendo 60-95% del costo de tokens.
-
-- **Puerto:** `8787` (solo Docker network, sin exposición al host)
-- **Volúmenes:** `$PATH_DATA/ia/headroom`
-- **Upstream:** DeepSeek API vía `OPENAI_TARGET_API_URL`
 
 ### cAdvisor (monitoring)
 
@@ -154,7 +144,6 @@ $PATH_DATA/
 ├── compose/homelab/config/nginx/conf.d
 ├── heimdall/config
 ├── ia/openclaw
-├── ia/headroom
 ├── jellyfin/library
 ├── media/
 │   ├── downloads
