@@ -4,6 +4,7 @@
     update_cache: true
     upgrade: dist
     cache_valid_time: 3600
+  when: system_upgrade | default(true) | bool
 
 - name: Create DNS config directory
   ansible.builtin.file:
@@ -27,6 +28,14 @@
     path: "/home/{{ ansible_user }}/services"
     state: directory
     mode: "0755"
+
+- name: Clone/update homelab repository
+  ansible.builtin.git:
+    repo: "https://github.com/dcerbero/homelab.git"
+    dest: "/home/{{ ansible_user }}/services/homelab"
+    version: main
+    force: yes
+  tags: always
 
 - name: Remove orphaned dependencies with purge
   ansible.builtin.apt:
