@@ -1,5 +1,6 @@
 ---
 - name: (re)start pihole and set password
+  become: true
   ansible.builtin.shell: |
     cd /home/{{ ansible_user }}/services/homelab/services/docker
     PATH_DATA={{ pihole_path_data | default(PATH_DATA) }} \
