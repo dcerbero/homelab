@@ -33,5 +33,3 @@
       tags: [docker, containers, oracle]
     - role: pihole
       tags: [pihole, dns, oracle]
-      vars:
-        pihole_path_data: /opt/pihole

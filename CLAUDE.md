@@ -19,9 +19,14 @@ homelab/
 ├── ansible/                        # Provisioning layer
 │   ├── playbook.yml                # Entry point (two plays: homeserver + oracle)
 │   ├── run.sh                      # Loads .env, invokes ansible-playbook
-│   ├── inventoryHomeServer.ini     # .gitignore'd — target IPs/users
-│   ├── group_vars/all/main.yml     # Global Ansible variables
-│   ├── group_vars/oracle/main.yml      # Oracle-specific vars (no upgrade, /opt/pihole)
+│   ├── inventory/                  # Inventory directory (host_vars per machine)
+│   │   ├── homeserver.yml          # Host definition for Raspberry Pi
+│   │   ├── oracle.yml              # Host definition for Oracle Cloud VM
+│   │   ├── host_vars/
+│   │   │   ├── homeserver.yml      # PATH_DATA, TAILSCALE_HOSTNAME
+│   │   │   └── oracle.yml          # PATH_DATA, TAILSCALE_HOSTNAME
+│   │   └── group_vars/
+│   │       └── all.yml             # Global Ansible variables
 │   └── roles/
 │       ├── system-setup/           # apt upgrade (skip en Oracle), disable DNS stub, git clone
 │       ├── docker/                 # Install Docker Engine + compose plugin
@@ -56,9 +61,9 @@ homelab/
 - **Docker Compose uses profiles** — root `compose.yaml` aggregates 9 independent files via `include:`. Each file declares its profile(s).
 - **nginx is the single entry point** for web UIs — reverse-proxies to Heimdall, OpenClaw, etc. Web services expose real ports only to LAN.
 - **OpenClaw inference path**: OpenClaw → OpenRouter API.
-- **Pi-hole role**: usa `pihole_path_data | default(PATH_DATA)`. Homeserver resuelve de `-e PATH_DATA=$PATH_DATA`, Oracle recibe `pihole_path_data: /opt/pihole` hardcodeado en el play.
-- **Persistent data at `$PATH_DATA`** on external disk. Compose files reference it via `${PATH_DATA}`. Oracle: `/opt/pihole`.
-- **Secrets** (`TAILSCALE_AUTH_KEY`, `PIHOLE_PASS`) in `ansible/.env` and `services/docker/.env` — both `.gitignore`d.
+- **Pi-hole role**: usa `{{ PATH_DATA }}` directo, resuelto de `host_vars/<host>.yml` para cada máquina.
+- **Persistent data at `$PATH_DATA`** — definido por máquina en `host_vars/`. Homeserver en disco externo, Oracle en `/opt/pihole`.
+- **Secrets** (`TAILSCALE_AUTH_KEY`, `PIHOLE_PASS`) in `ansible/.env` — `.gitignore`d.
 
 ---
 
@@ -103,14 +108,17 @@ Lazy, not negligent: validación, seguridad, errores nunca se recortan.
 
 ```bash
 cd ansible/
-cp .env.example .env     # Edit with server IPs, secrets, data paths
-bash run.sh               # Loads .env and runs ansible-playbook (homeserver + oracle)
+cp .env.example .env     # Edit with secrets
+bash run.sh               # All machines
 
 # Solo Oracle (Pi-hole failover)
-bash run.sh --limit oracle
+bash run.sh oracle
 
 # Solo homeserver (sin Oracle)
-bash run.sh --limit homeserver
+bash run.sh homeserver
+
+# Por rol específico
+bash run.sh homeserver --tags pihole,dns
 ```
 
 ### Manage Docker Services

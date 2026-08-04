@@ -1,0 +1,6 @@
+all:
+  children:
+    oracle:
+      hosts:
+        oracle:
+          ansible_host: oracle
