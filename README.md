@@ -1,21 +1,22 @@
 # ⚡ Homelab
 
-Infraestructura híbrida: servidor local (Raspberry Pi 4) + recursos en la nube (Oracle Cloud).
+Infraestructura híbrida: servidor local (Raspberry Pi 4) + Oracle Cloud VM,
+aprovisionada con Ansible y servicios Docker organizados por perfiles.
 
 ## Stack
 
 | Componente | Tecnología |
 |---|---|
-| Servidor | Raspberry Pi 4 — Ubuntu 24.04 |
-| Orquestación | Ansible |
-| Contenedores | Docker + Docker Compose |
-| DNS | Pi-hole |
+| Servidores | Raspberry Pi 4 (Ubuntu 24.04) + Oracle Cloud VM |
+| Orquestación | Ansible (8 roles, 2 plays) |
+| Contenedores | Docker + Docker Compose (7 perfiles) |
+| DNS | Pi-hole (activo + failover) |
 | VPN | Tailscale |
 | Proxy | nginx |
 | Dashboard | Heimdall |
 | Streaming | Jellyfin |
 | Descargas | Sonarr + Prowlarr + Transmission |
-| IA Local | OpenClaw + Headroom (chat: DeepSeek API, compresión de contexto / embeddings: Ollama en Oracle Cloud) |
+| IA | OpenClaw → OpenRouter API |
 | Monitorización | cAdvisor |
 
 ## Documentación
@@ -42,9 +43,30 @@ Toda la documentación está en [`docs/`](docs/README.md):
 cd ansible/
 cp .env.example .env
 # Editar .env con credenciales y rutas
+
+# Todas las máquinas:
 bash run.sh
+
+# Solo homeserver:
+bash run.sh homeserver
+
+# Solo Oracle (failover Pi-hole):
+bash run.sh oracle
 
 # 3. Desplegar servicios Docker
 cd services/docker/
-docker compose --profile dns --profile dashboard --profile infra up -d
+
+# Por perfil:
+docker compose --profile dns up -d              # Pi-hole
+docker compose --profile dashboard up -d        # Heimdall
+docker compose --profile infra up -d            # nginx
+docker compose --profile ia up -d               # OpenClaw
+docker compose --profile monitoring up -d       # cAdvisor
+docker compose --profile media-streaming up -d  # Jellyfin
+docker compose --profile media-download up -d   # Sonarr / Prowlarr / Transmission
 ```
+
+## Recursos adicionales
+
+- [`CHANGELOG.md`](CHANGELOG.md) — Historial de cambios del proyecto
+- [`CLAUDE.md`](CLAUDE.md) — Guía de desarrollo para asistentes IA
