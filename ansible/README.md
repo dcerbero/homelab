@@ -1,12 +1,12 @@
 # Configuración de Ansible
 
-Automatiza el aprovisionamiento del servidor Ubuntu para la infraestructura del homeserver.
+Automatiza el aprovisionamiento de la infraestructura del homeserver: Raspberry Pi 4 (local) + Oracle Cloud VM (Pi-hole failover).
 
 ## Inicio rápido
 
 ```bash
 cp .env.example .env
-# Editar .env con tus credenciales y rutas
+# Editar .env con tus credenciales
 bash run.sh
 ```
 
@@ -19,7 +19,7 @@ bash run.sh
 | `pihole` | `pihole`, `dns` | Contenedor Pi-hole DNS |
 | `tailscale` | `tailscale`, `vpn` | Instalación y autenticación Tailscale VPN |
 | `cadvisor` | `cadvisor`, `monitoring` | Contenedor cAdvisor |
-| `openclaw` | `openclaw`, `ia` | Contenedor OpenClaw (IA local) |
+| `openclaw` | `openclaw`, `ia` | Contenedor OpenClaw (IA) |
 | `heimdall` | `heimdall`, `dashboard` | Contenedor Heimdall panel de control |
 | `nginx` | `nginx`, `proxy` | Contenedor nginx proxy reverso |
 
@@ -27,64 +27,78 @@ bash run.sh
 
 **Archivo:** `playbook.yml`
 
-Dos plays independientes en un mismo archivo:
+Dos plays independientes:
 
-1. **`homeserver`** — RPi4 local: todos los roles (sistema, Docker, Pi-hole, Tailscale, monitoreo, IA, proxy)
+1. **`homeserver`** — RPi4 local: todos los roles (system-setup, docker, pihole, tailscale, cadvisor, openclaw, heimdall, nginx)
 2. **`oracle`** — Oracle Cloud VM: solo Pi-hole secundario como failover DNS (system-setup, docker, pihole)
-
-Cada rol tiene un tag individual y otro de grupo para ejecución selectiva:
-
-```bash
-# Solo nginx en homeserver
-bash run.sh --tags nginx
-
-# Stack IA completo en homeserver
-bash run.sh --tags ia
-
-# Solo Pi-hole en Oracle
-bash run.sh --limit oracle --tags pihole
-
-# Todo Oracle (aprovecha las tags oracle)
-bash run.sh --limit oracle --tags oracle
-```
 
 ## Inventario
 
-**Archivo:** `inventoryHomeServer.ini` (en .gitignore por seguridad)
+**Directorio:** `inventory/`
 
-```ini
-[homeserver]
-<IP_SERVIDOR> ansible_user=<USUARIO>
-
-[oracle]
-<IP_ORACLE> ansible_user=<USUARIO_ORACLE>
+```text
+inventory/
+├── homeserver.yml              # Definición del host RPi
+├── oracle.yml                  # Definición del host Oracle Cloud
+├── host_vars/
+│   ├── homeserver.yml          # PATH_DATA, TAILSCALE_HOSTNAME
+│   └── oracle.yml              # PATH_DATA, TAILSCALE_HOSTNAME
+└── group_vars/
+    └── all.yml                 # Variables globales (tailscale_enabled)
 ```
 
-**Ejemplo:**
-```ini
-[homeserver]
-192.168.1.100 ansible_user=pi
+Cada host tiene su propio `PATH_DATA` resuelto desde `host_vars/<host>.yml`:
+- Homeserver: ruta al disco externo
+- Oracle: `/opt/pihole`
 
-[oracle]
-100.100.x.x ansible_user=ubuntu
+### SSH
+
+La conexión se resuelve via `~/.ssh/config` local (fuera del repo). Ansible solo usa el nombre del host:
+
+```text
+Host homeserver
+    HostName 192.168.1.100
+    User pi
+
+Host oracle
+    HostName <ip_oracle>
+    User ubuntu
+    IdentityFile ~/.ssh/oracle_key
 ```
 
 ## Variables
 
-**Archivo:** `.env` (cargado localmente por `run.sh`)
+**Archivo:** `.env` (solo secretos, en `.gitignore`)
 
 ```env
 PIHOLE_PASS=tu_contraseña_pihole
-PATH_DATA=/mnt/data  # Punto de montaje del almacenamiento persistente
 TAILSCALE_AUTH_KEY=tskey-auth-xxxxx  # Clave de autenticación desde la consola de Tailscale
-TAILSCALE_HOSTNAME=homeserver  # Nombre del dispositivo en Tailscale
-ORACLE_HOSTNAME=oracle-box    # Hostname del Oracle VM en Tailscale
 ```
 
 ## Ejecución
 
 ```bash
+# Todas las máquinas
 bash run.sh
+
+# Solo homeserver (RPi)
+bash run.sh homeserver
+
+# Solo Oracle (Pi-hole failover)
+bash run.sh oracle
+
+# Solo un rol específico en una máquina
+bash run.sh homeserver --tags pihole,dns
+bash run.sh oracle --tags docker
+
+# Stack IA completo en homeserver
+bash run.sh homeserver --tags ia
+
+# Todo Oracle (aprovecha las tags oracle)
+bash run.sh oracle --tags oracle
+
+# Todo excepto system-setup (salta el apt upgrade)
+bash run.sh --skip-tags system
 ```
 
-Solicita contraseña SSH (`-k`) y contraseña de sudo (`-K`). Corre en modo verbose (`-v`). Los argumentos extra (como `--tags` o `--limit`) se pasan directamente a `ansible-playbook`.
+El primer argumento de `run.sh` es el `--limit` (máquina). Los argumentos extra (como `--tags`) se pasan directamente a `ansible-playbook`.

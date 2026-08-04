@@ -1,13 +1,13 @@
 # 🤖 Ansible — Aprovisionamiento
 
-Automatiza la configuración del servidor Ubuntu para el homeserver + Oracle Cloud VM.
+Automatiza la configuración de la infraestructura: Raspberry Pi 4 (homeserver) + Oracle Cloud VM (Pi-hole failover DNS).
 
 ## Inicio Rápido
 
 ```bash
 cd ansible/
 cp .env.example .env
-# Editar .env con tus credenciales y rutas
+# Editar .env con tus credenciales (secretos)
 bash run.sh
 ```
 
@@ -22,7 +22,7 @@ bash run.sh
 | `pihole` | `pihole`, `dns` | Despliegue del contenedor Pi-hole con Docker Compose |
 | `tailscale` | `tailscale`, `vpn` | Instalación y autenticación de Tailscale VPN |
 | `cadvisor` | `cadvisor`, `monitoring` | Despliegue del contenedor cAdvisor |
-| `openclaw` | `openclaw`, `ia` | Despliegue del contenedor OpenClaw (IA local) |
+| `openclaw` | `openclaw`, `ia` | Despliegue del contenedor OpenClaw (IA) |
 | `heimdall` | `heimdall`, `dashboard` | Despliegue del panel de control Heimdall |
 | `nginx` | `nginx`, `proxy` | Despliegue del proxy reverso nginx |
 
@@ -30,9 +30,9 @@ bash run.sh
 
 | Rol | Tags | Descripción |
 |---|---|---|
-| `system-setup` | `system-setup`, `system`, `oracle` | Paquetes (sin upgrade), DNS stub, clonar repo |
+| `system-setup` | `system-setup`, `system`, `oracle` | Paquetes del SO, DNS stub, clonar repo |
 | `docker` | `docker`, `containers`, `oracle` | Instalación de Docker Engine + Compose |
-| `pihole` | `pihole`, `dns`, `oracle` | Pi-hole secundario (failover, `pihole_path_data: /opt/pihole`) |
+| `pihole` | `pihole`, `dns`, `oracle` | Pi-hole secundario (failover DNS) |
 
 ## Playbook
 
@@ -71,46 +71,42 @@ roles:
     tags: [docker, containers, oracle]
   - role: pihole
     tags: [pihole, dns, oracle]
-    vars:
-      pihole_path_data: /opt/pihole  # Hardcodeado para Oracle
 ```
-
-### Tags
-
-Cada rol tiene un tag individual y uno de grupo para ejecución selectiva:
-
-```bash
-# Solo nginx (ej: cambio de config)
-bash run.sh --tags nginx
-
-# Stack IA (openclaw)
-bash run.sh --tags ia
-
-# Todo Oracle
-bash run.sh --limit oracle --tags oracle
-
-# Solo Pi-hole en Oracle
-bash run.sh --limit oracle --tags pihole
-
-# Todo excepto system-setup (salta el apt upgrade)
-bash run.sh --skip-tags system
-```
-
-Los argumentos extra se pasan directamente a `ansible-playbook` gracias a `$@` en `run.sh`.
 
 ## Inventario
 
-**Archivo:** `ansible/inventoryHomeServer.ini` (en `.gitignore` por seguridad)
+**Directorio:** [`ansible/inventory/`](../ansible/inventory/)
 
-```ini
-[homeserver]
-192.168.1.100 ansible_user=pi
+Inventario en formato directorio con variables por host. Cada máquina define su propio `PATH_DATA`.
 
-[oracle]
-100.100.x.x ansible_user=ubuntu
+```text
+inventory/
+├── homeserver.yml              # Definición del host RPi
+├── oracle.yml                  # Definición del host Oracle Cloud
+├── host_vars/
+│   ├── homeserver.yml          # PATH_DATA, TAILSCALE_HOSTNAME
+│   └── oracle.yml              # PATH_DATA, TAILSCALE_HOSTNAME
+└── group_vars/
+    └── all.yml                 # Variables globales (tailscale_enabled)
 ```
 
-> Reemplazar IPs con las reales. La de Oracle puede ser la IP de Tailscale.
+### SSH
+
+La conexión se resuelve via `~/.ssh/config` local (fuera del repo). Ansible solo usa el nombre del host del inventario.
+
+```text
+# ~/.ssh/config
+Host homeserver
+    HostName 192.168.1.100
+    User pi
+
+Host oracle
+    HostName <ip_oracle>
+    User ubuntu
+    IdentityFile ~/.ssh/oracle_key
+```
+
+Cada máquina puede tener su propio método de autenticación (password o llave SSH). No se necesitan `-k -K` ni credenciales en el repo.
 
 ## Variables de Entorno
 
@@ -118,37 +114,44 @@ Los argumentos extra se pasan directamente a `ansible-playbook` gracias a `$@` e
 
 ```env
 PIHOLE_PASS=your_password_here
-PATH_DATA=/mnt/data
 TAILSCALE_AUTH_KEY=tskey-auth-xxxxx
-TAILSCALE_HOSTNAME=homeserver
-ORACLE_HOSTNAME=oracle-box
 ```
 
 | Variable | Descripción |
 |---|---|
 | `PIHOLE_PASS` | Contraseña de la interfaz web de Pi-hole |
-| `PATH_DATA` | Ruta al disco de datos persistentes (homeserver) |
 | `TAILSCALE_AUTH_KEY` | Clave de autenticación desde [Tailscale Admin](https://login.tailscale.com/admin/settings/keys) |
-| `TAILSCALE_HOSTNAME` | Nombre del dispositivo en la red Tailscale (homeserver) |
-| `ORACLE_HOSTNAME` | Hostname de Oracle VM en Tailscale |
+
+Solo secretos viven en `.env` (gitignorado). Las variables de máquina (`PATH_DATA`, `TAILSCALE_HOSTNAME`, `system_upgrade`) viven en `inventory/host_vars/<host>.yml`.
 
 ## Ejecución
 
-El script [`run.sh`](../ansible/run.sh) carga las variables del `.env` y ejecuta ambos plays:
+El script [`run.sh`](../ansible/run.sh) carga los secretos del `.env`, usa `inventory/` como inventario y acepta la máquina como primer argumento.
 
 ```bash
-ansible-playbook playbook.yml \
-  -i inventoryHomeServer.ini \
-  -e "PIHOLE_PASS=$PIHOLE_PASS" \
-  -e "PATH_DATA=$PATH_DATA" \
-  -e "TAILSCALE_AUTH_KEY=$TAILSCALE_AUTH_KEY" \
-  -e "TAILSCALE_HOSTNAME=$TAILSCALE_HOSTNAME" \
-  -e "oracle_hostname=$ORACLE_HOSTNAME" \
-  -k -K -v
+# Todas las máquinas
+bash run.sh
+
+# Solo homeserver (RPi)
+bash run.sh homeserver
+
+# Solo Oracle (Pi-hole failover)
+bash run.sh oracle
+
+# Solo un rol específico en una máquina
+bash run.sh homeserver --tags pihole,dns
+bash run.sh oracle --tags docker
+
+# Stack IA completo en homeserver
+bash run.sh homeserver --tags ia
+
+# Todo Oracle (aprovecha las tags oracle)
+bash run.sh oracle --tags oracle
+
+# Todo excepto system-setup (salta el apt upgrade)
+bash run.sh --skip-tags system
 ```
 
-- `-k`: solicita contraseña SSH
-- `-K`: solicita contraseña de sudo (become)
-- `-v`: modo verbose
-- `--limit oracle`: solo ejecuta el play de Oracle
-- `--limit homeserver`: solo ejecuta el play de la Pi
+- `bash run.sh <maquina>` → equivale a `--limit <maquina>`
+- Los argumentos extra se pasan directamente a `ansible-playbook`
+- No se usan `-k -K` (la conexión SSH se resuelve via `~/.ssh/config`)

@@ -160,7 +160,7 @@ tar -czf backup-homelab-$(date +%Y%m%d).tar.gz -C $(dirname $PATH_DATA) $(basena
 ## Important Conventions
 
 - **Ansible**: all roles run with `become: true`
-- **Inventories** (`*.ini`) are gitignored — `inventoryHomeServer.ini.example` is the template
+- **Inventories** (`inventory/`) — `inventory/homeserver.yml` and `inventory/oracle.yml` define hosts
 - **Compose service names** prefixed `svc` (e.g. `svcPihole`) excepto openclaw (compatibilidad con nginx proxy_pass)
 - **No ports exposed to WAN** — LAN-only or via Tailscale VPN
 - **Hardware transcoding** on Pi 4 uses `/dev/dri/renderD128` (Jellyfin only)

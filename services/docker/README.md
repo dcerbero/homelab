@@ -1,6 +1,6 @@
 # Servicios Docker Compose
 
-Desplegar servicios del homeserver usando perfiles de Docker Compose.
+Despliegue de servicios del homeserver, provisionados via Ansible. No se ejecuta `docker compose` manualmente.
 
 ## Perfiles
 
@@ -10,43 +10,11 @@ Desplegar servicios del homeserver usando perfiles de Docker Compose.
 |--------|-----------|-------------|
 | `dns` | Pi-hole | Servidor DNS/bloqueador de anuncios |
 | `dashboard` | Heimdall | Panel de control del homeserver |
-| `ia` | OpenClaw | Interfaz de IA local (DeepSeek API) |
+| `ia` | OpenClaw | Interfaz de IA local (OpenRouter API) |
 | `infra` | nginx | Proxy reverso |
 | `monitoring` | cAdvisor | Métricas de contenedores |
 | `media-streaming` | Jellyfin | Servidor de streaming multimedia |
 | `media-download` | Transmission, Prowlarr, Sonarr | Descarga y gestión de contenido |
-
-## Configuración
-
-Crear `.env` en `services/docker/`:
-
-```env
-PIHOLE_PASS=tu_contraseña
-PATH_DATA=/ruta/a/datos/persistentes
-```
-
-## Despliegue
-
-**Un único perfil:**
-```bash
-docker compose --profile dns up -d
-```
-
-**Múltiples perfiles:**
-```bash
-docker compose --profile dns --profile dashboard --profile infra up -d
-```
-
-**Todos los servicios:**
-```bash
-docker compose up -d
-```
-
-**Detener:**
-```bash
-docker compose down
-docker compose --profile dns down  # perfil específico
-```
 
 ## Puertos por perfil
 
@@ -61,28 +29,6 @@ docker compose --profile dns down  # perfil específico
 | media-download | Transmission | 8082, 51413 | Interfaz web + Torrent |
 | media-download | Prowlarr | 8083 | Indexador |
 | media-download | Sonarr | 8084 | Gestión de series |
-
-## Administración
-
-**Registros:**
-```bash
-docker compose logs -f svcPihole
-```
-
-**Shell del contenedor:**
-```bash
-docker compose exec svcPihole bash
-```
-
-**Estado:**
-```bash
-docker compose ps
-```
-
-**Reiniciar servicio:**
-```bash
-docker compose restart svcSonarr
-```
 
 ## Estructura de directorios
 
@@ -109,7 +55,7 @@ services/docker/
 
 ## Almacenamiento persistente
 
-Todas las rutas de datos usan la variable `${PATH_DATA}` (establecida en `.env`):
+Todas las rutas de datos usan la variable `${PATH_DATA}`, resuelta desde `inventory/host_vars/<host>.yml` en Ansible:
 
 ```
 ${PATH_DATA}/
@@ -128,6 +74,28 @@ ${PATH_DATA}/
 ├─ prowlarr/
 ├─ sonarr/data
 └─ transmission/config
+```
+
+## Administración
+
+**Registros:**
+```bash
+docker compose logs -f svcPihole
+```
+
+**Shell del contenedor:**
+```bash
+docker compose exec svcPihole bash
+```
+
+**Estado:**
+```bash
+docker compose ps
+```
+
+**Reiniciar servicio:**
+```bash
+docker compose restart svcSonarr
 ```
 
 ## Solución de problemas

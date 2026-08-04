@@ -56,7 +56,7 @@ sudo chown -R 1000:1000 ${PATH_DATA}
 ssh ubuntu@<IP_SERVIDOR>
 
 # Verificar inventario
-cat ansible/inventoryHomeServer.ini
+cat ansible/inventory/homeserver.yml
 
 # Verificar que la IP y usuario sean correctos
 ```
