@@ -97,7 +97,7 @@ La conexión se resuelve via `~/.ssh/config` local (fuera del repo). Ansible sol
 ```text
 # ~/.ssh/config
 Host homeserver
-    HostName 192.168.1.100
+    HostName <ip_homeserver>
     User pi
 
 Host oracle
