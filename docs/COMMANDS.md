@@ -38,7 +38,7 @@ docker compose --profile dns down
 
 ```bash
 # Escanear hosts activos en la red local
-nmap 192.168.1.0/24
+nmap <tu_subred>
 
 # Qué proceso usa un puerto
 sudo lsof -i :53

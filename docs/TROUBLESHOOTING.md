@@ -53,7 +53,7 @@ sudo chown -R 1000:1000 ${PATH_DATA}
 **Solución:**
 ```bash
 # Verificar conectividad
-ssh ubuntu@<IP_SERVIDOR>
+ssh <username>@<ip_homeserver>
 
 # Verificar inventario
 cat ansible/inventory/homeserver.yml

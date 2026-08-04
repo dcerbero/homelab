@@ -38,30 +38,23 @@ services/docker/
 
 ## Despliegue
 
+Todos los servicios se despliegan via **Ansible** (`bash run.sh homeserver`). No se ejecuta `docker compose` manualmente para el aprovisionamiento.
+
+Para administración manual (logs, reinicios, estado):
+
 ```bash
 cd services/docker/
-
-# Perfil único
-docker compose --profile dns up -d
-
-# Múltiples perfiles
-docker compose --profile dns --profile dashboard --profile infra up -d
-
-# Todos los servicios
-docker compose up -d
-
-# Detener
-docker compose down
-docker compose --profile dns down
+docker compose ps
+docker compose logs -f svcPihole
+docker compose restart svcSonarr
 ```
 
 ## Variables de Entorno
 
-Crear `services/docker/.env`:
+`PATH_DATA` se resuelve desde `inventory/host_vars/<host>.yml` en Ansible. Para administración manual, crear `services/docker/.env`:
 
 ```env
-PIHOLE_PASS=your_password_here
-PATH_DATA=/mnt/data
+PATH_DATA=<ruta_datos_persistentes>
 ```
 
 ## Servicios

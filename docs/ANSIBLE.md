@@ -98,11 +98,11 @@ La conexión se resuelve via `~/.ssh/config` local (fuera del repo). Ansible sol
 # ~/.ssh/config
 Host homeserver
     HostName <ip_homeserver>
-    User pi
+    User <username>
 
 Host oracle
     HostName <ip_oracle>
-    User ubuntu
+    User <username>
     IdentityFile ~/.ssh/oracle_key
 ```
 

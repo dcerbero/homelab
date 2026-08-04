@@ -47,7 +47,7 @@ En [Tailscale Admin → ACLs](https://login.tailscale.com/admin/acls):
 Si se necesita acceder a dispositivos de la red local desde fuera:
 
 ```bash
-sudo tailscale up --advertise-routes=192.168.1.0/24
+sudo tailscale up --advertise-routes=<tu_subred>
 ```
 
 Luego habilitar la ruta en [Tailscale Admin → Subnets](https://login.tailscale.com/admin/machines).
