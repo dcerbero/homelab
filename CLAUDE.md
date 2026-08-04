@@ -43,17 +43,19 @@ homelab/
 │   ├── media/prowlarr.yaml         # Profile: media-download
 │   └── media/sonarr.yaml           # Profile: media-download
 ├── config/
-│   └── nginx/conf.d/default.conf   # Reverse proxy config (mounted into nginx)
-├── docs/                           # ARCHITECTURE, SETUP, DOCKER, TROUBLESHOOTING, SECURITY
+│   ├── nginx/conf.d/default.conf   # Reverse proxy config (mounted into nginx)
+│   ├── noTranscoding/noTranscoding.json  # Custom format para Sonarr (x264 sin Remux)
+│   └── scripts/agente/costos.sh    # Auditoría costo-beneficio de modelos LLM
+├── docs/                           # ARCHITECTURE, SETUP, DOCKER, TROUBLESHOOTING, SECURITY, ANSIBLE, COMMANDS, README
 └── CLAUDE.md                       # This file
 ```
 
 ### Key Architecture Details
 
-- **Ansible runs roles in strict order** (system → docker → pihole → tailscale → cadvisor → openclaw → heimdall → nginx)
-- **Docker Compose uses profiles** — root `compose.yaml` aggregates 10 independent files via `include:`. Each file declares its profile(s).
+- **Ansible runs roles in strict order** (system → docker → pihole → tailscale → cadvisor → openclaw → heimdall → nginx). El orden completo aplica solo al play homeserver; oracle ejecuta system-setup → docker → pihole.
+- **Docker Compose uses profiles** — root `compose.yaml` aggregates 9 independent files via `include:`. Each file declares its profile(s).
 - **nginx is the single entry point** for web UIs — reverse-proxies to Heimdall, OpenClaw, etc. Web services expose real ports only to LAN.
-- **OpenClaw inference path**: OpenClaw → DeepSeek API directa. Embeddings via Tailscale → Ollama on Oracle Cloud.
+- **OpenClaw inference path**: OpenClaw → OpenRouter API.
 - **Pi-hole role**: usa `pihole_path_data | default(PATH_DATA)`. Homeserver resuelve de `-e PATH_DATA=$PATH_DATA`, Oracle recibe `pihole_path_data: /opt/pihole` hardcodeado en el play.
 - **Persistent data at `$PATH_DATA`** on external disk. Compose files reference it via `${PATH_DATA}`. Oracle: `/opt/pihole`.
 - **Secrets** (`TAILSCALE_AUTH_KEY`, `PIHOLE_PASS`) in `ansible/.env` and `services/docker/.env` — both `.gitignore`d.
@@ -151,7 +153,7 @@ tar -czf backup-homelab-$(date +%Y%m%d).tar.gz -C $(dirname $PATH_DATA) $(basena
 
 - **Ansible**: all roles run with `become: true`
 - **Inventories** (`*.ini`) are gitignored — `inventoryHomeServer.ini.example` is the template
-- **Compose service names** prefixed `svc` (e.g. `svcPihole`) to avoid collisions
+- **Compose service names** prefixed `svc` (e.g. `svcPihole`) excepto openclaw (compatibilidad con nginx proxy_pass)
 - **No ports exposed to WAN** — LAN-only or via Tailscale VPN
 - **Hardware transcoding** on Pi 4 uses `/dev/dri/renderD128` (Jellyfin only)
 - **Pi-hole needs port 53 free** — `system-setup` role disables systemd-resolved DNS stub

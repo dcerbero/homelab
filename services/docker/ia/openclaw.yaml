@@ -1,5 +1,5 @@
 services:
-  openclaw:
+  svcOpenclaw:
     container_name: openclaw
     image: ghcr.io/openclaw/openclaw:2026.6.11
     pull_policy: always
