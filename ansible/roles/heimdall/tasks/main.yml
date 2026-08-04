@@ -9,5 +9,5 @@
 
 - name: Start heimdall service
   shell: |
-    cd /home/{{ ansible_user }}/services/homelab/services/docker
+    cd {{ ansible_env.HOME }}/services/homelab/services/docker
     PATH_DATA={{ PATH_DATA }} docker compose --profile dashboard up -d

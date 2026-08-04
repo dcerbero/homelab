@@ -25,14 +25,14 @@
 
 - name: create folder for services
   ansible.builtin.file:
-    path: "/home/{{ ansible_user }}/services"
+    path: "{{ ansible_env.HOME }}/services"
     state: directory
     mode: "0755"
 
 - name: Clone/update homelab repository
   ansible.builtin.git:
     repo: "https://github.com/dcerbero/homelab.git"
-    dest: "/home/{{ ansible_user }}/services/homelab"
+    dest: "{{ ansible_env.HOME }}/services/homelab"
     version: main
     force: yes
   tags: always
