@@ -153,4 +153,5 @@ bash run.sh --skip-tags system
 
 - `bash run.sh <maquina>` → equivale a `--limit <maquina>`
 - Los argumentos extra se pasan directamente a `ansible-playbook`
-- No se usan `-k -K` (la conexión SSH se resuelve via `~/.ssh/config`)
+- `run.sh` usa `--ask-become-pass`: pide la contraseña de sudo una vez al inicio de cada pasada
+- No se usa `-k` (la conexión SSH se resuelve via `~/.ssh/config`); solo se pide el become password

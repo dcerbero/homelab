@@ -7,6 +7,7 @@ LIMIT="${1:-all}"
 ansible-playbook playbook.yml \
   -i inventory/ \
   --limit "$LIMIT" \
+  --ask-become-pass \
   "${@:2}" \
   -e "PIHOLE_PASS=$PIHOLE_PASS" \
   -e "TAILSCALE_AUTH_KEY=$TAILSCALE_AUTH_KEY"

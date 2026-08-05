@@ -17,6 +17,7 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.
 ### Documentación
 - `SETUP.md`: sección "Montar Disco Duro" reemplazada por "Datos Persistentes (`PATH_DATA`)"
 - `DOCKER.md`: convención de ownership de directorios de datos documentada
+- `run.sh` ahora usa `--ask-become-pass` (pide la contraseña de sudo una vez por pasada)
 
 ## [2026.08.0] - 2026-08-05
 
