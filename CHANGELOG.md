@@ -21,13 +21,17 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.
 - Diagrama de arquitectura completo con mermaid
 
 ### Modificado
+- Refactor de rutas: servicios organizados por carpeta (`services/docker/<svc>/compose.yaml`), configs versionadas en el repo (carpeta `config/`, montajes `:ro`), datos en `$PATH_DATA` con tiers `persistence/` (estado durable) + `media/` (biblioteca compartida)
+- nginx: config montada desde el repo (`./config/conf.d`) en vez de `$PATH_DATA/homelab/config/nginx/conf.d`
 - OpenClaw: detrás de nginx proxy (puerto 18789 ya no expuesto directamente)
 - OpenClaw: inferencia via Headroom proxy → DeepSeek API (compresión de contexto)
 - Jellyfin: de network host a port mapping 8096:8096
-- nginx config movido a $PATH_DATA/compose/homelab/config/nginx/conf.d/
 - Actualización de imagen pihole a 2026.02.0 (LTS estable)
 - Refactorización playbook.yaml → playbook.yml
 - Mejora del .gitignore
+
+### Pendiente
+- **Migración de datos en hosts** antes del próximo provisioning: mover estado a `$PATH_DATA/persistence/<svc>/`. Oracle: `PATH_DATA` ya renombrado, migrar data de pihole a `$PATH_DATA/persistence/pihole`. Homeserver: definir `PATH_DATA` real (hoy placeholder).
 
 ### Seguridad
 - Eliminada exposición directa del puerto 18789 de OpenClaw

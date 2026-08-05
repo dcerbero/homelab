@@ -9,7 +9,7 @@ services:
       - PGID=1000
       - TZ=America/Bogota
     volumes:
-      - "${PATH_DATA}/sonarr/data:/config"
+      - "${PATH_DATA}/persistence/sonarr/data:/config"
       - "${PATH_DATA}/media/tvseries:/tv"
       - "${PATH_DATA}/media/downloads:/downloads"
     ports:

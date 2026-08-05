@@ -9,5 +9,5 @@ services:
       - PGID=1000
       - TZ=America/Bogota
     volumes:
-      - "${PATH_DATA}/heimdall/config:/config"
+      - "${PATH_DATA}/persistence/heimdall/config:/config"
     restart: unless-stopped

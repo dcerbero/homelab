@@ -1,7 +1,7 @@
 ---
 - name: Add permissions for openclaw data directory
   ansible.builtin.file:
-    path: "{{ PATH_DATA }}/ia/openclaw"
+    path: "{{ PATH_DATA }}/persistence/openclaw"
     state: directory
     owner: "1000"
     group: "1000"

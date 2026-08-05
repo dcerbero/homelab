@@ -47,9 +47,7 @@ inventory/
     └── all.yml                 # Variables globales (tailscale_enabled)
 ```
 
-Cada host tiene su propio `PATH_DATA` resuelto desde `host_vars/<host>.yml`:
-- Homeserver: ruta al disco externo
-- Oracle: `/opt/pihole`
+Cada host tiene su propio `PATH_DATA` (ruta de almacenamiento) resuelto desde `host_vars/<host>.yml`.
 
 ### SSH
 

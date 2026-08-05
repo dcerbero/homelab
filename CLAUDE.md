@@ -38,18 +38,18 @@ homelab/
 │       └── nginx/                  # docker compose --profile infra up
 ├── services/docker/
 │   ├── compose.yaml                # Aggregator via `include:`
-│   ├── dns/pihole.yaml             # Profile: dns
-│   ├── infra/nginx.yaml            # Profile: infra
-│   ├── monitoring/cadvisor.yaml    # Profile: monitoring
-│   ├── ia/openclaw.yaml            # Profile: ia
-│   ├── core/heimdall.yaml          # Profile: dashboard
-│   ├── media/jellyfin.yaml         # Profile: media-streaming
-│   ├── media/transmission.yaml     # Profile: media-download
-│   ├── media/prowlarr.yaml         # Profile: media-download
-│   └── media/sonarr.yaml           # Profile: media-download
+│   ├── pihole/compose.yaml         # Profile: dns
+│   ├── nginx/compose.yaml          # Profile: infra
+│   ├── nginx/config/conf.d/default.conf  # Reverse proxy config (mounted :ro from repo)
+│   ├── cadvisor/compose.yaml       # Profile: monitoring
+│   ├── openclaw/compose.yaml       # Profile: ia
+│   ├── heimdall/compose.yaml       # Profile: dashboard
+│   ├── jellyfin/compose.yaml       # Profile: media-streaming
+│   ├── transmission/compose.yaml   # Profile: media-download
+│   ├── prowlarr/compose.yaml       # Profile: media-download
+│   ├── sonarr/compose.yaml         # Profile: media-download
+│   └── sonarr/config/noTranscoding.json  # Custom format para Sonarr (x264 sin Remux)
 ├── config/
-│   ├── nginx/conf.d/default.conf   # Reverse proxy config (mounted into nginx)
-│   ├── noTranscoding/noTranscoding.json  # Custom format para Sonarr (x264 sin Remux)
 │   └── scripts/agente/costos.sh    # Auditoría costo-beneficio de modelos LLM
 ├── docs/                           # ARCHITECTURE, SETUP, DOCKER, TROUBLESHOOTING, SECURITY, ANSIBLE, COMMANDS, README
 └── CLAUDE.md                       # This file
@@ -62,7 +62,8 @@ homelab/
 - **nginx is the single entry point** for web UIs — reverse-proxies to Heimdall, OpenClaw, etc. Web services expose real ports only to LAN.
 - **OpenClaw inference path**: OpenClaw → OpenRouter API.
 - **Pi-hole role**: usa `{{ PATH_DATA }}` directo, resuelto de `host_vars/<host>.yml` para cada máquina.
-- **Persistent data at `$PATH_DATA`** — definido por máquina en `host_vars/`. Homeserver en disco externo, Oracle en `/opt/pihole`.
+- **Config en el repo, datos en `$PATH_DATA`** — las configs versionadas viven en el repo (un `git pull` las restablece; montajes `:ro`); el estado runtime vive en `$PATH_DATA` con dos tiers: `persistence/<svc>/` (estado durable de cada servicio) y `media/` (biblioteca compartida entre servicios).
+- **Persistent data at `$PATH_DATA`** — ruta de almacenamiento definida por máquina en `host_vars/`.
 - **Secrets** (`TAILSCALE_AUTH_KEY`, `PIHOLE_PASS`) in `ansible/.env` — `.gitignore`d.
 
 ---

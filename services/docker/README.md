@@ -34,46 +34,44 @@ Despliegue de servicios del homeserver, provisionados via Ansible. No se ejecuta
 
 ```
 services/docker/
-├─ compose.yaml           (principal con includes)
-├─ core/
-│  └─ heimdall.yaml      (perfil dashboard)
-├─ dns/
-│  └─ pihole.yaml        (perfil dns)
-├─ ia/
-│  ├─ openclaw.yaml      (perfil ia)
-├─ infra/
-│  └─ nginx.yaml         (perfil infra)
-├─ media/
-│  ├─ transmission.yaml  (perfil media-download)
-│  ├─ prowlarr.yaml      (perfil media-download)
-│  ├─ sonarr.yaml        (perfil media-download)
-│  └─ jellyfin.yaml      (perfil media-streaming)
-├─ monitoring/
-│  └─ cadvisor.yaml      (perfil monitoring)
-└─ README.md             (este archivo)
+├─ compose.yaml                (principal con includes)
+├─ heimdall/compose.yaml       (perfil dashboard)
+├─ pihole/compose.yaml         (perfil dns)
+├─ openclaw/compose.yaml       (perfil ia)
+├─ nginx/compose.yaml          (perfil infra)
+├─ nginx/config/conf.d/default.conf
+├─ transmission/compose.yaml   (perfil media-download)
+├─ prowlarr/compose.yaml       (perfil media-download)
+├─ sonarr/compose.yaml         (perfil media-download)
+├─ sonarr/config/noTranscoding.json
+├─ jellyfin/compose.yaml       (perfil media-streaming)
+├─ cadvisor/compose.yaml       (perfil monitoring)
+└─ README.md                   (este archivo)
 ```
+
+> Cada servicio vive en su propia carpeta con su `compose.yaml`. Las configs versionadas viven en el repo (carpeta `config/`, montajes `:ro`); los datos runtime viven en `$PATH_DATA`.
 
 ## Almacenamiento persistente
 
-Todas las rutas de datos usan la variable `${PATH_DATA}`, resuelta desde `inventory/host_vars/<host>.yml` en Ansible:
+Las rutas de datos usan la variable `${PATH_DATA}`, resuelta desde `inventory/host_vars/<host>.yml` en Ansible. Dos tiers:
 
 ```
-${PATH_DATA}/
-├─ compose/homelab/config/nginx/conf.d
-├─ heimdall/config
-├─ ia/openclaw
-├─ jellyfin/library
-├─ media/
-│  ├─ downloads
-│  ├─ movies
-│  ├─ tvseries
-│  └─ watch
-├─ pihole/
-│  ├─ etc-pihole-v2
-│  └─ etc-dnsmasq.d
-├─ prowlarr/
-├─ sonarr/data
-└─ transmission/config
+$PATH_DATA/
+├─ persistence/                (estado durable de cada servicio)
+│  ├─ pihole/
+│  │  ├─ etc-pihole-v2
+│  │  └─ etc-dnsmasq.d
+│  ├─ heimdall/config
+│  ├─ openclaw
+│  ├─ transmission/config
+│  ├─ sonarr/data
+│  ├─ prowlarr/
+│  └─ jellyfin/library
+└─ media/                      (biblioteca compartida entre servicios)
+   ├─ downloads
+   ├─ movies
+   ├─ tvseries
+   └─ watch
 ```
 
 ## Administración

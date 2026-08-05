@@ -10,4 +10,4 @@ services:
       - OPENCLAW_DISABLE_BONJOUR=1
       - OPENCLAW_PLUGINS_ALLOWLIST=openrouter
     volumes:
-      - "${PATH_DATA}/ia/openclaw:/home/node/.openclaw"
+      - "${PATH_DATA}/persistence/openclaw:/home/node/.openclaw"

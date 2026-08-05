@@ -18,8 +18,8 @@ services:
 
     # Volúmenes de persistencia
     volumes:
-      - ${PATH_DATA}/pihole/etc-pihole-v2:/etc/pihole
-      - ${PATH_DATA}/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
+      - ${PATH_DATA}/persistence/pihole/etc-pihole-v2:/etc/pihole
+      - ${PATH_DATA}/persistence/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
 
     # Healthcheck mejorado
     healthcheck:

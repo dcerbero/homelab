@@ -1,2 +1,2 @@
-PATH_DATA: /opt/pihole
+PATH_DATA: /server
 TAILSCALE_HOSTNAME: maquina-oracle

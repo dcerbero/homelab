@@ -7,21 +7,16 @@ Todos los servicios del homeserver se despliegan con Docker Compose usando perfi
 ```
 services/docker/
 ├── compose.yaml              ← Archivo principal con includes
-├── core/
-│   └── heimdall.yaml         ← Perfil: dashboard
-├── dns/
-│   └── pihole.yaml           ← Perfil: dns
-├── ia/
-│   └── openclaw.yaml         ← Perfil: ia
-├── infra/
-│   └── nginx.yaml            ← Perfil: infra
-├── media/
-│   ├── jellyfin.yaml         ← Perfil: media-streaming
-│   ├── prowlarr.yaml         ← Perfil: media-download
-│   ├── sonarr.yaml           ← Perfil: media-download
-│   └── transmission.yaml     ← Perfil: media-download
-└── monitoring/
-    └── cadvisor.yaml         ← Perfil: monitoring
+├── heimdall/compose.yaml     ← Perfil: dashboard
+├── pihole/compose.yaml       ← Perfil: dns
+├── openclaw/compose.yaml     ← Perfil: ia
+├── nginx/compose.yaml        ← Perfil: infra
+├── nginx/config/conf.d/default.conf  ← Config del proxy
+├── jellyfin/compose.yaml     ← Perfil: media-streaming
+├── prowlarr/compose.yaml     ← Perfil: media-download
+├── sonarr/compose.yaml       ← Perfil: media-download
+├── transmission/compose.yaml ← Perfil: media-download
+└── cadvisor/compose.yaml     ← Perfil: monitoring
 ```
 
 ## Perfiles
@@ -64,7 +59,7 @@ PATH_DATA=<ruta_datos_persistentes>
 DNS server con bloqueo de anuncios. Crítico para la infraestructura.
 
 - **Puertos:** `53:53` (TCP/UDP) — DNS
-- **Volúmenes:** `$PATH_DATA/pihole/etc-pihole-v2`, `$PATH_DATA/pihole/etc-dnsmasq.d`
+- **Volúmenes:** `$PATH_DATA/persistence/pihole/etc-pihole-v2`, `$PATH_DATA/persistence/pihole/etc-dnsmasq.d`
 - **Upstream DNS:** Cloudflare (1.1.1.1), Google (8.8.8.8)
 - **Healthcheck:** `dig google.com @127.0.0.1` cada 30s
 - **Web UI:** Acceso vía nginx proxy (puerto 80)
@@ -75,7 +70,7 @@ DNS server con bloqueo de anuncios. Crítico para la infraestructura.
 
 Panel de control con acceso rápido a todos los servicios.
 
-- **Volúmenes:** `$PATH_DATA/heimdall/config`
+- **Volúmenes:** `$PATH_DATA/persistence/heimdall/config`
 - **Detrás de nginx** como proxy reverso
 
 ### nginx (infra)
@@ -83,7 +78,7 @@ Panel de control con acceso rápido a todos los servicios.
 Proxy reverso para los servicios web.
 
 - **Puertos:** `80:80`, `443:443`
-- **Config:** `$PATH_DATA/compose/homelab/config/nginx/conf.d/`
+- **Config:** `services/docker/nginx/config/conf.d/` (montada `:ro` desde el repo)
 - Por defecto redirige todo a Heimdall
 
 ### Jellyfin (media-streaming)
@@ -91,7 +86,7 @@ Proxy reverso para los servicios web.
 Servidor de streaming multimedia.
 
 - **Puertos:** `8096:8096`
-- **Volúmenes:** `$PATH_DATA/jellyfin/library`, `$PATH_DATA/media/tvseries`, `$PATH_DATA/media/movies`
+- **Volúmenes:** `$PATH_DATA/persistence/jellyfin/library`, `$PATH_DATA/media/tvseries`, `$PATH_DATA/media/movies`
 - **Hardware:** `/dev/dri/renderD128` (transcodificación GPU)
 
 ### Transmission (media-download)
@@ -99,28 +94,28 @@ Servidor de streaming multimedia.
 Cliente Torrent.
 
 - **Puertos:** `8082:9091` (Web UI), `51413` (Torrent TCP/UDP)
-- **Volúmenes:** `$PATH_DATA/transmission/config`, `$PATH_DATA/media/downloads`, `$PATH_DATA/media/watch`
+- **Volúmenes:** `$PATH_DATA/persistence/transmission/config`, `$PATH_DATA/media/downloads`, `$PATH_DATA/media/watch`
 
 ### Sonarr (media-download)
 
 Gestión de series. Se integra con Transmission para descargas.
 
 - **Puerto:** `8084:8989`
-- **Volúmenes:** `$PATH_DATA/sonarr/data`, `$PATH_DATA/media/tvseries`, `$PATH_DATA/media/downloads`
+- **Volúmenes:** `$PATH_DATA/persistence/sonarr/data`, `$PATH_DATA/media/tvseries`, `$PATH_DATA/media/downloads`
 
 ### Prowlarr (media-download)
 
 Indexador de torrents. Se integra con Sonarr.
 
 - **Puerto:** `8083:9696`
-- **Volúmenes:** `$PATH_DATA/prowlarr`
+- **Volúmenes:** `$PATH_DATA/persistence/prowlarr`
 
 ### OpenClaw (ia)
 
 Interfaz de IA local. Usa **DeepSeek API** para chat/inferencia y **Ollama (nomic-embed-text)** en Oracle Cloud vía Tailscale para embeddings y búsqueda semántica en memoria.
 
 - **Puerto:** Solo interno (detrás de nginx proxy)
-- **Volúmenes:** `$PATH_DATA/ia/openclaw`
+- **Volúmenes:** `$PATH_DATA/persistence/openclaw`
 
 ### cAdvisor (monitoring)
 
@@ -134,21 +129,21 @@ Métricas de uso de recursos de todos los contenedores.
 
 ```
 $PATH_DATA/
-├── compose/homelab/config/nginx/conf.d
-├── heimdall/config
-├── ia/openclaw
-├── jellyfin/library
-├── media/
-│   ├── downloads
-│   ├── movies
-│   ├── tvseries
-│   └── watch
-├── pihole/
-│   ├── etc-pihole-v2
-│   └── etc-dnsmasq.d
-├── prowlarr/
-├── sonarr/data
-└── transmission/config
+├── persistence/            (estado durable de cada servicio)
+│   ├── heimdall/config
+│   ├── openclaw
+│   ├── jellyfin/library
+│   ├── pihole/
+│   │   ├── etc-pihole-v2
+│   │   └── etc-dnsmasq.d
+│   ├── prowlarr/
+│   ├── sonarr/data
+│   └── transmission/config
+└── media/                  (biblioteca compartida entre servicios)
+    ├── downloads
+    ├── movies
+    ├── tvseries
+    └── watch
 ```
 
 ## Backup

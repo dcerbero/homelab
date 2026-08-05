@@ -9,7 +9,7 @@ services:
       - PGID=1000
       - TZ=America/Bogota
     volumes:
-      - "${PATH_DATA}/jellyfin/library:/config"
+      - "${PATH_DATA}/persistence/jellyfin/library:/config"
       - "${PATH_DATA}/media/tvseries:/data/tvshows"
       - "${PATH_DATA}/media/movies:/data/movies"
     devices:
