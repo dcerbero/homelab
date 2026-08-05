@@ -3,3 +3,5 @@
   shell: |
     cd {{ ansible_facts['env']['HOME'] }}/services/homelab/services/docker
     docker compose --profile monitoring up -d
+  register: cadvisor_result
+  changed_when: cadvisor_result.stdout is search("Created|Started|Recreated")
