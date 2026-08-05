@@ -122,7 +122,7 @@ TAILSCALE_AUTH_KEY=tskey-auth-xxxxx
 | `PIHOLE_PASS` | Contraseña de la interfaz web de Pi-hole |
 | `TAILSCALE_AUTH_KEY` | Clave de autenticación desde [Tailscale Admin](https://login.tailscale.com/admin/settings/keys) |
 
-Solo secretos viven en `.env` (gitignorado). Las variables de máquina (`PATH_DATA`, `TAILSCALE_HOSTNAME`, `system_upgrade`) viven en `inventory/host_vars/<host>.yml`.
+Solo secretos viven en `.env` (gitignorado). Las variables de máquina (`PATH_DATA`, `TAILSCALE_HOSTNAME`) viven en `inventory/host_vars/<host>.yml`.
 
 ## Ejecución
 

@@ -14,7 +14,7 @@ graph TD
         ISP[🌐 Internet / ISP]
         
         subgraph OCI_VM [☁️ Oracle Cloud VM]
-            Ollama[🧠 Ollama Service\nEmbeddings: nomic-embed-text]
+            OciPiHole[🛡️ Pi-hole failover]
         end
     end
 
@@ -25,7 +25,6 @@ graph TD
         subgraph Pi [🍓 Raspberry Pi 4]
             subgraph Docker [🐋 Docker Engine]
                 OpenClaw[🤖 OpenClaw]
-                Headroom[🗜️ Headroom Proxy]
                 PiHole[🛡️ Pi-hole DNS]
                 cAdvisor[📊 cAdvisor]
                 Heimdall[📋 Heimdall]
@@ -49,9 +48,6 @@ graph TD
     OCI_VM -.-> Tailscale
     RemoteNode -.-> Tailscale
     
-    OpenClaw -.->|Embeddings| Tailscale
-    Tailscale -.-> OCI_VM
-    
     LocalDevices ==>|DNS| PiHole
     RemoteNode -.->|DNS| Tailscale
     Tailscale -.->|DNS| PiHole
@@ -59,10 +55,9 @@ graph TD
     class WAN,ISP,OCI_VM wan;
     class Router,Pi,LocalDevices,RemoteNode node;
     class Tailscale vpn;
-    class Docker,OpenClaw,Headroom,PiHole,cAdvisor,Ollama,Heimdall,Jellyfin,Nginx,Transmission,Sonarr,Prowlarr highlight;
+    class Docker,OpenClaw,PiHole,cAdvisor,OciPiHole,Heimdall,Jellyfin,Nginx,Transmission,Sonarr,Prowlarr highlight;
 
-    linkStyle 6,7 stroke:#3b82f6,stroke-width:3px;
-    linkStyle 8,9,10 stroke:#10b981,stroke-width:3px;
+    linkStyle 6,7 stroke:#10b981,stroke-width:3px;
 ```
 
 ## Flujos de Red
@@ -70,11 +65,10 @@ graph TD
 ### DNS (Verde)
 - Todos los dispositivos locales resuelven DNS contra Pi-hole
 - Dispositivos remotos via Tailscale → Pi-hole
-- Pi-hole upstream: Cloudflare (1.1.1.1) y Google (8.8.8.8)
+- Pi-hole upstream: Quad9 (9.9.9.9) y Cloudflare Family (1.1.1.2)
 
-### IA (Azul)
-- **Chat:** OpenClaw → Headroom (proxy :8787, comprime contexto) → DeepSeek API
-- **Embeddings:** OpenClaw vía Tailscale → Ollama (nomic-embed-text) en Oracle Cloud
+### IA
+- **Inferencia:** OpenClaw → OpenRouter API (salida directa)
 - Procesamiento local, modelos remotos
 
 ### VPN (Discontinuo)
@@ -88,6 +82,7 @@ graph TD
 | 53 (TCP/UDP) | Pi-hole DNS | Local |
 | 80 | nginx (Heimdall, OpenClaw) | Local |
 | 443 | nginx HTTPS | Local |
+| 8085 | Pi-hole Web admin | Local |
 | 8096 | Jellyfin | Local |
 | 8082 | Transmission Web UI | Local |
 | 8083 | Prowlarr | Local |

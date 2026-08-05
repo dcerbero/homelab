@@ -1,20 +1,10 @@
 # ⌨️ Comandos de Uso Diario
 
+> El despliegue de servicios se hace vía **Ansible** (`bash run.sh homeserver`). Estos comandos son solo para administración manual (estado, logs, reinicios).
+
 ## Docker Compose
 
 ```bash
-# Desplegar perfil específico
-docker compose --profile dns up -d
-docker compose --profile dashboard --profile infra up -d
-docker compose --profile ia up -d
-docker compose --profile monitoring up -d
-
-# Múltiples perfiles
-docker compose --profile dns --profile dashboard --profile ia up -d
-
-# Todos los servicios
-docker compose up -d
-
 # Estado
 docker compose ps
 
@@ -27,11 +17,13 @@ docker compose exec svcPihole bash
 # Reiniciar servicio
 docker compose restart svcPihole
 
-# Detener todo
-docker compose down
+# Actualizar todos los servicios
+docker compose pull
+docker compose up -d
 
-# Detener perfil específico
-docker compose --profile dns down
+# Actualizar un servicio específico
+docker compose pull svcPihole
+docker compose up -d svcPihole
 ```
 
 ## Red

@@ -7,16 +7,14 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.
 ## [Sin publicar]
 
 ### Eliminado
-- Headroom: removido del perfil `ia`. Eliminado rol Ansible, compose file, y referencia en include. El proxy de compresión no aportaba beneficio real (0.86% compresión vs 97.8% cache nativo de DeepSeek).
+- Headroom: removido del perfil `ia`. Eliminado rol Ansible, compose file, y referencia en include. El proxy de compresión no aportaba beneficio real.
 - Heartbeat: eliminado del perfil `ia` de OpenClaw. Removido `heartbeat: { every: "6h" }` del gateway config. HEARTBEAT.md y secciones de AGENTS.md eliminados del workspace.
 
 ### Agregado
-- Automatización con Ansible con 7 roles (system-setup, docker, pihole, tailscale, cadvisor, openclaw, headroom)
+- Automatización con Ansible con 8 roles (system-setup, docker, pihole, tailscale, cadvisor, openclaw, heimdall, nginx)
 - Proxy reverso nginx para servicios web (Heimdall, OpenClaw)
 - Perfiles de Docker Compose: dns, dashboard, ia, infra, media-streaming, media-download, monitoring
-- Headroom: proxy de compresión de contexto para LLMs (0.27.0-code-slim, perfil ia)
 - Healthcheck de Pi-hole y persistencia del volumen dnsmasq
-- Rol Ansible para crear directorio de datos de Headroom
 - Configuración de DNS explícita para evitar bucles de bootstrap
 - Diagrama de arquitectura completo con mermaid
 
@@ -24,7 +22,7 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.
 - Refactor de rutas: servicios organizados por carpeta (`services/docker/<svc>/compose.yaml`), configs versionadas en el repo (carpeta `config/`, montajes `:ro`), datos en `$PATH_DATA` con tiers `persistence/` (estado durable) + `media/` (biblioteca compartida)
 - nginx: config montada desde el repo (`./config/conf.d`) en vez de `$PATH_DATA/homelab/config/nginx/conf.d`
 - OpenClaw: detrás de nginx proxy (puerto 18789 ya no expuesto directamente)
-- OpenClaw: inferencia via Headroom proxy → DeepSeek API (compresión de contexto)
+- OpenClaw: inferencia via OpenRouter API
 - Jellyfin: de network host a port mapping 8096:8096
 - Actualización de imagen pihole a 2026.02.0 (LTS estable)
 - Refactorización playbook.yaml → playbook.yml

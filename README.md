@@ -52,18 +52,6 @@ bash run.sh homeserver
 
 # Solo Oracle (failover Pi-hole):
 bash run.sh oracle
-
-# 3. Desplegar servicios Docker
-cd services/docker/
-
-# Por perfil:
-docker compose --profile dns up -d              # Pi-hole
-docker compose --profile dashboard up -d        # Heimdall
-docker compose --profile infra up -d            # nginx
-docker compose --profile ia up -d               # OpenClaw
-docker compose --profile monitoring up -d       # cAdvisor
-docker compose --profile media-streaming up -d  # Jellyfin
-docker compose --profile media-download up -d   # Sonarr / Prowlarr / Transmission
 ```
 
 ## Recursos adicionales

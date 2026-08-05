@@ -28,7 +28,7 @@ homelab/
 │   │   └── group_vars/
 │   │       └── all.yml             # Global Ansible variables
 │   └── roles/
-│       ├── system-setup/           # apt upgrade (skip en Oracle), disable DNS stub, git clone
+│       ├── system-setup/           # apt upgrade, disable DNS stub, git clone
 │       ├── docker/                 # Install Docker Engine + compose plugin
 │       ├── pihole/                 # docker compose --profile dns up
 │       ├── tailscale/              # Install + authenticate VPN
@@ -124,15 +124,10 @@ bash run.sh homeserver --tags pihole,dns
 
 ### Manage Docker Services
 
+> Services are deployed via Ansible; the commands below are for manual administration only (status, logs, updates).
+
 ```bash
 cd services/docker/
-
-# Start profiles:
-docker compose --profile dns --profile infra up -d
-docker compose --profile ia up -d
-
-# All services:
-docker compose up -d
 
 # Status / logs:
 docker compose ps
@@ -146,7 +141,7 @@ docker compose pull svcPihole && docker compose up -d svcPihole
 
 ```bash
 dig google.com @127.0.0.1     # Pi-hole DNS
-curl -s localhost:8085/healthz # cAdvisor
+docker compose exec svccAdvisor wget -qO- http://localhost:8080/healthz  # cAdvisor
 curl -s -o /dev/null -w "%{http_code}" http://localhost  # nginx
 ```
 

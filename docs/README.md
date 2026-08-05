@@ -7,6 +7,7 @@
 | Componente | Tecnología |
 |---|---|
 | Servidor | Raspberry Pi 4 — Ubuntu 24.04 |
+| Nube | Oracle Cloud VM (failover DNS) |
 | Orquestación | Ansible |
 | Contenedores | Docker + Docker Compose |
 | DNS | Pi-hole |
@@ -15,7 +16,7 @@
 | Dashboard | Heimdall |
 | Streaming | Jellyfin |
 | Descargas | Sonarr + Prowlarr + Transmission |
-| IA Local | OpenClaw + Headroom |
+| IA | OpenClaw → OpenRouter API |
 | Monitorización | cAdvisor |
 
 ## Documentación

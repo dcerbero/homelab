@@ -25,7 +25,7 @@ services/docker/
 |---|---|---|
 | `dns` | Pi-hole | DNS y bloqueo de anuncios |
 | `dashboard` | Heimdall | Panel de control |
-| `ia` | OpenClaw | Interfaz de IA local (DeepSeek API) |
+| `ia` | OpenClaw | Interfaz de IA local (OpenRouter API) |
 | `infra` | nginx | Proxy reverso |
 | `media-streaming` | Jellyfin | Streaming multimedia |
 | `media-download` | Transmission, Prowlarr, Sonarr | Descarga y gestión |
@@ -58,9 +58,9 @@ PATH_DATA=<ruta_datos_persistentes>
 
 DNS server con bloqueo de anuncios. Crítico para la infraestructura.
 
-- **Puertos:** `53:53` (TCP/UDP) — DNS
+- **Puertos:** `53:53` (TCP/UDP) — DNS, `8085:80` — Web admin
 - **Volúmenes:** `$PATH_DATA/persistence/pihole/etc-pihole-v2`, `$PATH_DATA/persistence/pihole/etc-dnsmasq.d`
-- **Upstream DNS:** Cloudflare (1.1.1.1), Google (8.8.8.8)
+- **Upstream DNS:** Quad9 (9.9.9.9) y Cloudflare Family (1.1.1.2)
 - **Healthcheck:** `dig google.com @127.0.0.1` cada 30s
 - **Web UI:** Acceso vía nginx proxy (puerto 80)
 - **Cache:** 20,000 entradas, TTL máximo 30 min
@@ -112,7 +112,7 @@ Indexador de torrents. Se integra con Sonarr.
 
 ### OpenClaw (ia)
 
-Interfaz de IA local. Usa **DeepSeek API** para chat/inferencia y **Ollama (nomic-embed-text)** en Oracle Cloud vía Tailscale para embeddings y búsqueda semántica en memoria.
+Interfaz de IA local. Usa la **API de OpenRouter** para inferencia.
 
 - **Puerto:** Solo interno (detrás de nginx proxy)
 - **Volúmenes:** `$PATH_DATA/persistence/openclaw`

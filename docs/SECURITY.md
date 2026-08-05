@@ -70,6 +70,7 @@ sudo ufw enable
 | 22 | SSH | Solo LAN o Tailscale |
 | 53 | DNS | Solo LAN |
 | 80, 443 | HTTP/HTTPS | Solo LAN |
+| 8085 | Pi-hole Web admin | Solo LAN |
 | 8096 | Jellyfin | Solo LAN |
 | 8082 | Transmission Web UI | Solo LAN |
 | 8083 | Prowlarr | Solo LAN |
