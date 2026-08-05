@@ -54,14 +54,15 @@ Cada host tiene su propio `PATH_DATA` (ruta de almacenamiento) resuelto desde `h
 La conexión se resuelve via `~/.ssh/config` local (fuera del repo). Ansible solo usa el nombre del host:
 
 ```text
-Host homeserver
+Host pi
     HostName <ip_homeserver>
     User <username>
+    IdentityFile ~/.ssh/<clave_privada>
 
 Host oracle
     HostName <ip_oracle>
     User <username>
-    IdentityFile ~/.ssh/oracle_key
+    IdentityFile ~/.ssh/<clave_privada>
 ```
 
 ## Variables

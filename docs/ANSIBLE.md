@@ -96,14 +96,15 @@ La conexión se resuelve via `~/.ssh/config` local (fuera del repo). Ansible sol
 
 ```text
 # ~/.ssh/config
-Host homeserver
+Host pi
     HostName <ip_homeserver>
     User <username>
+    IdentityFile ~/.ssh/<clave_privada>
 
 Host oracle
     HostName <ip_oracle>
     User <username>
-    IdentityFile ~/.ssh/oracle_key
+    IdentityFile ~/.ssh/<clave_privada>
 ```
 
 Cada máquina puede tener su propio método de autenticación (password o llave SSH). No se necesitan `-k -K` ni credenciales en el repo.

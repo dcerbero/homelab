@@ -3,4 +3,4 @@ all:
     homeserver:
       hosts:
         homeserver:
-          ansible_host: homeserver
+          ansible_host: pi
