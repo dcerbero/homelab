@@ -1,166 +1,62 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guía de trabajo para asistentes IA en este repositorio. El detalle completo vive en `docs/` (`docs/README.md` es el índice).
 
-## Project Overview
+## Resumen
 
-Hybrid homelab infrastructure: Raspberry Pi 4 (local) + Oracle Cloud VM, provisioned with Ansible and running Docker services.
+Infraestructura híbrida: Raspberry Pi 4 (local) + Oracle Cloud VM (Pi-hole failover), aprovisionada con Ansible y servicios Docker organizados por perfiles.
 
-Two subsystems, each with its own lifecycle:
-1. **Ansible provisioning** (`ansible/`) — bare-metal setup of Ubuntu, Docker, Tailscale, and initial service deployment
-2. **Docker Compose profiles** (`services/docker/`) — day-to-day service management
+Dos subsistemas, cada uno con su ciclo de vida:
 
----
+1. **Provisión Ansible** (`ansible/`) — setup bare-metal de Ubuntu, Docker, Tailscale y despliegue inicial de servicios
+2. **Perfiles Docker Compose** (`services/docker/`) — gestión del día a día
 
-## Architecture
+## Arquitectura
 
 ```
 homelab/
-├── ansible/                        # Provisioning layer
-│   ├── playbook.yml                # Entry point (two plays: homeserver + oracle)
-│   ├── run.sh                      # Loads .env, invokes ansible-playbook
-│   ├── inventory/                  # Inventory directory (host_vars per machine)
-│   │   ├── homeserver.yml          # Host definition for Raspberry Pi
-│   │   ├── oracle.yml              # Host definition for Oracle Cloud VM
-│   │   ├── host_vars/
-│   │   │   ├── homeserver.yml      # PATH_DATA, TAILSCALE_HOSTNAME
-│   │   │   └── oracle.yml          # PATH_DATA, TAILSCALE_HOSTNAME
-│   │   └── group_vars/
-│   │       └── all.yml             # Global Ansible variables
-│   └── roles/
-│       ├── system-setup/           # apt upgrade, disable DNS stub, git clone
-│       ├── docker/                 # Install Docker Engine + compose plugin
-│       ├── pihole/                 # docker compose --profile dns up
-│       ├── tailscale/              # Install + authenticate VPN
-│       ├── cadvisor/               # docker compose --profile monitoring up
-│       ├── openclaw/               # Create data dir + docker compose --profile ia up
-│       ├── heimdall/               # docker compose --profile dashboard up
-│       └── nginx/                  # docker compose --profile infra up
-├── services/docker/
-│   ├── compose.yaml                # Aggregator via `include:`
-│   ├── pihole/compose.yaml         # Profile: dns
-│   ├── nginx/compose.yaml          # Profile: infra
-│   ├── nginx/config/conf.d/default.conf  # Reverse proxy config (mounted :ro from repo)
-│   ├── cadvisor/compose.yaml       # Profile: monitoring
-│   ├── openclaw/compose.yaml       # Profile: ia
-│   ├── heimdall/compose.yaml       # Profile: dashboard
-│   ├── jellyfin/compose.yaml       # Profile: media-streaming
-│   ├── transmission/compose.yaml   # Profile: media-download
-│   ├── prowlarr/compose.yaml       # Profile: media-download
-│   ├── sonarr/compose.yaml         # Profile: media-download
-│   └── sonarr/config/noTranscoding.json  # Custom format para Sonarr (x264 sin Remux)
-├── config/
-│   └── scripts/agente/costos.sh    # Auditoría costo-beneficio de modelos LLM
-├── docs/                           # ARCHITECTURE, SETUP, DOCKER, TROUBLESHOOTING, SECURITY, ANSIBLE, COMMANDS, README
-└── CLAUDE.md                       # This file
+├── ansible/          # playbook.yml (2 plays), run.sh, inventory/ (host_vars + group_vars), 8 roles
+├── services/docker/  # compose.yaml + compose.yaml por servicio (perfiles: dns, dashboard, infra, ia, monitoring, media-streaming, media-download)
+├── config/           # scripts auxiliares
+└── docs/             # documentación detallada (índice en docs/README.md)
 ```
 
-### Key Architecture Details
+### Detalles clave
 
-- **Ansible runs roles in strict order** (system → docker → pihole → tailscale → cadvisor → openclaw → heimdall → nginx). El orden completo aplica solo al play homeserver; oracle ejecuta system-setup → docker → pihole.
-- **Docker Compose uses profiles** — root `compose.yaml` aggregates 9 independent files via `include:`. Each file declares its profile(s).
-- **nginx is the single entry point** for web UIs — reverse-proxies to Heimdall, OpenClaw, etc. Web services expose real ports only to LAN.
-- **OpenClaw inference path**: OpenClaw → OpenRouter API.
-- **Pi-hole role**: usa `{{ PATH_DATA }}` directo, resuelto de `host_vars/<host>.yml` para cada máquina.
-- **Config en el repo, datos en `$PATH_DATA`** — las configs versionadas viven en el repo (un `git pull` las restablece; montajes `:ro`); el estado runtime vive en `$PATH_DATA` con dos tiers: `persistence/<svc>/` (estado durable de cada servicio) y `media/` (biblioteca compartida entre servicios).
-- **Persistent data at `$PATH_DATA`** — ruta de almacenamiento definida por máquina en `host_vars/`.
-- **Secrets** (`TAILSCALE_AUTH_KEY`, `PIHOLE_PASS`) in `ansible/.env` — `.gitignore`d.
+- **nginx es la única entrada web** — reverse-proxy a Heimdall, OpenClaw, Pi-hole y cAdvisor. Sin puertos expuestos a WAN; solo LAN o Tailscale.
+- **OpenClaw → OpenRouter API** (inferencia). Solo puerto interno, detrás de nginx.
+- **Config en el repo, datos en `$PATH_DATA`** — las configs versionadas viven en el repo (un `git pull` las restablece; montajes `:ro`); el estado runtime vive en `$PATH_DATA` con dos tiers: `persistence/<svc>/` (estado durable) y `media/` (biblioteca compartida). La ruta se define por máquina en `host_vars/<host>.yml`.
+- **Pi-hole failover** — Pi-hole secundario en Oracle Cloud. Mismas adlists, gravity independiente, sin sync. Tailscale DNS con ambos nameservers.
+- **Puerto 53** — `system-setup` desactiva el stub de systemd-resolved para liberarlo para Pi-hole.
 
----
+## Principios de Ingeniería
 
-## Engineering Principles
+- **NUNCA SEAS COMPLACIENTE** — cuestiona requisitos malos, no hagas código inseguro ni uses prácticas obsoletas, y no evites decir "esto está mal".
+- **ENSEÑA, NO SOLO RECOMIENDES** — explica fundamentos y alternativas, hazme pensar, y si me equivoco dame una lección en una línea.
+- **ESCALERA DE EFICIENCIA (Ponytail Principle)** — antes de escribir código, en orden: YAGNI → ya existe en el codebase → stdlib → feature nativa de la plataforma → dependencia ya instalada → una línea → el mínimo que funcione. Perezoso, no negligente: validación, seguridad y errores nunca se recortan.
+- **STANDARDS** — seguridad primero, best practices obligatorias, sin atajos, documenta lo hecho.
 
-### NUNCA SEAS COMPLACIENTE
-- No aceptes requisitos malos sin cuestionar
-- No hagas código inseguro
-- No uses prácticas obsoletas
-- No evites decir "esto está mal"
-
-### ENSEÑA, NO SOLO RECOMIENDES
-- Conceptos fundamentales
-- Alternativas
-- Hazme pensar
-- Si me equivoco, lección en una línea
-
-### ESCALERA DE EFICIENCIA (Ponytail Principle)
-Antes de escribir código, subir esta escalera en orden:
-
-1. **YAGNI** — ¿Realmente necesita existir? Si se resuelve con config, env vars, comando existente, o es one-shot, no se escribe.
-2. **Ya existe en el codebase** — Reusar, extender, no duplicar.
-3. **Stdlib lo hace** — Builtins del SO, módulos core, comandos base.
-4. **Feature nativa de la plataforma** — Docker primitives, cloud APIs, Ansible modules.
-5. **Dependencia ya instalada** — No instalar nueva si ya hay algo que cubre el caso.
-6. **Una línea** — Si se puede en una línea, una línea.
-7. **Solo entonces** — El mínimo que funcione. Sin sobrearquitectura.
-
-Lazy, not negligent: validación, seguridad, errores nunca se recortan.
-
-### STANDARDS
-- Security First
-- Best practices obligatorio
-- No shortcuts
-- Documenta lo hecho
-
----
-
-## Common Operations
-
-### Provision/Re-provision (Ansible)
+## Operaciones Comunes
 
 ```bash
+# Provisionar / reprovisionar
 cd ansible/
-cp .env.example .env     # Edit with secrets
-bash run.sh               # All machines
-
-# Solo Oracle (Pi-hole failover)
-bash run.sh oracle
-
-# Solo homeserver (sin Oracle)
-bash run.sh homeserver
-
-# Por rol específico
-bash run.sh homeserver --tags pihole,dns
+cp .env.example .env     # editar con secretos
+bash run.sh              # todas las máquinas
+bash run.sh homeserver   # solo RPi
+bash run.sh oracle       # solo Oracle (failover Pi-hole)
+bash run.sh homeserver --tags pihole,dns   # por rol
 ```
 
-### Manage Docker Services
+- Los servicios se despliegan vía **Ansible**, no con `docker compose` manual. La gestión manual (estado, logs, actualización) y los health checks están en `docs/DOCKER.md` y `docs/COMMANDS.md`.
+- **Backup**: `tar -czf backup-homelab-$(date +%Y%m%d).tar.gz -C $(dirname $PATH_DATA) $(basename $PATH_DATA)`
 
-> Services are deployed via Ansible; the commands below are for manual administration only (status, logs, updates).
+## Convenciones
 
-```bash
-cd services/docker/
-
-# Status / logs:
-docker compose ps
-docker compose logs -f svcPihole
-
-# Update a service:
-docker compose pull svcPihole && docker compose up -d svcPihole
-```
-
-### Health Checks
-
-```bash
-dig google.com @127.0.0.1     # Pi-hole DNS
-docker compose exec svccAdvisor wget -qO- http://localhost:8080/healthz  # cAdvisor
-curl -s -o /dev/null -w "%{http_code}" http://localhost  # nginx
-```
-
-### Backup
-
-```bash
-tar -czf backup-homelab-$(date +%Y%m%d).tar.gz -C $(dirname $PATH_DATA) $(basename $PATH_DATA)
-```
-
----
-
-## Important Conventions
-
-- **Ansible**: all roles run with `become: true`
-- **Inventories** (`inventory/`) — `inventory/homeserver.yml` and `inventory/oracle.yml` define hosts
-- **Compose service names** prefixed `svc` (e.g. `svcPihole`) excepto openclaw (compatibilidad con nginx proxy_pass)
-- **No ports exposed to WAN** — LAN-only or via Tailscale VPN
-- **Hardware transcoding** on Pi 4 uses `/dev/dri/renderD128` (Jellyfin only)
-- **Pi-hole needs port 53 free** — `system-setup` role disables systemd-resolved DNS stub
-- **Pi-hole failover**: Pi-hole secundario en Oracle Cloud VM. Mismas adlists, gravity independiente. Sin sync. Tailscale DNS con ambos nameservers.
-- **UID/GID 1000** for all linuxserver.io containers
-- **Pull request prefix**: `feat/`, `fix/`, `refactor/`, `docs/`
+- **Ansible**: todos los roles corren con `become: true`. Orden estricto en homeserver: `system-setup → docker → pihole → tailscale → cadvisor → openclaw → heimdall → nginx`. El play oracle solo ejecuta `system-setup → docker → pihole`.
+- **Inventario**: `ansible/inventory/{homeserver,oracle}.yml` definen los hosts; `host_vars/` las variables por máquina (`PATH_DATA`, `TAILSCALE_HOSTNAME`). Conexión vía `~/.ssh/config`, sin credenciales en el repo.
+- **Nombres de servicios Compose**: prefijo `svc` (p. ej. `svcPihole`), excepto `openclaw` (compatibilidad con `proxy_pass` de nginx).
+- **UID/GID 1000** para contenedores linuxserver.io.
+- **Transcodificación HW** en Pi 4: `/dev/dri/renderD128` (solo Jellyfin).
+- **Secretos** (`TAILSCALE_AUTH_KEY`, `PIHOLE_PASS`) en `ansible/.env` — gitignored.
+- **Prefijos de PR**: `feat/`, `fix/`, `refactor/`, `docs/`.
