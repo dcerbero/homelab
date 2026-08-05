@@ -6,24 +6,24 @@
 
 ```bash
 # Estado
-docker compose ps
+docker compose --all-profiles ps
 
 # Logs de un servicio
-docker compose logs -f svcPihole
+docker compose --all-profiles logs -f svcPihole
 
 # Shell dentro de un contenedor
-docker compose exec svcPihole bash
+docker compose --all-profiles exec svcPihole bash
 
 # Reiniciar servicio
-docker compose restart svcPihole
+docker compose --all-profiles restart svcPihole
 
 # Actualizar todos los servicios
-docker compose pull
-docker compose up -d
+docker compose --all-profiles pull
+docker compose --all-profiles up -d
 
 # Actualizar un servicio específico
-docker compose pull svcPihole
-docker compose up -d svcPihole
+docker compose --all-profiles pull svcPihole
+docker compose --all-profiles up -d svcPihole
 ```
 
 ## Red
@@ -64,10 +64,10 @@ cAdvisor corre con acceso solo a red Docker (sin puerto expuesto al host).
 
 ```bash
 # Ver logs de cAdvisor
-docker compose logs svccAdvisor
+docker compose --all-profiles logs svccAdvisor
 
 # Health check manual (dentro de la red Docker)
-docker compose exec svccAdvisor wget -qO- http://localhost:8080/healthz
+docker compose --all-profiles exec svccAdvisor wget -qO- http://localhost:8080/healthz
 ```
 
 ## Health Checks por Servicio

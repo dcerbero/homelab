@@ -39,9 +39,9 @@ Para administración manual (logs, reinicios, estado):
 
 ```bash
 cd services/docker/
-docker compose ps
-docker compose logs -f svcPihole
-docker compose restart svcSonarr
+docker compose --all-profiles ps
+docker compose --all-profiles logs -f svcPihole
+docker compose --all-profiles restart svcSonarr
 ```
 
 ## Variables de Entorno

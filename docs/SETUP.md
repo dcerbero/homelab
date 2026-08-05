@@ -4,7 +4,7 @@
 
 - Raspberry Pi 4 con Ubuntu 24.04 LTS instalado
 - Acceso SSH o físico a la terminal
-- Disco duro externo para datos persistentes
+- SSD USB como disco de arranque (datos persistentes en `$PATH_DATA`)
 
 ## 1. Configurar IP Estática
 
@@ -60,9 +60,9 @@ sudo lsof -i :53
 
 ## 3. Datos Persistentes (`PATH_DATA`)
 
-Los datos de servicios viven en `$PATH_DATA` (variable por máquina en `ansible/inventory/host_vars/<host>.yml`). Se definen por host: homeserver y Oracle usan `/server`.
+Los datos de servicios viven en `$PATH_DATA`, variable definida por máquina en `ansible/inventory/host_vars/<host>.yml`.
 
-> En la Pi no hay un disco de datos separado: el SSD USB es el disco de arranque (root + boot), así que `PATH_DATA=/server` es una carpeta dentro del root del sistema. Con suficiente espacio libre en el root, no hace falta particionar ni montar nada.
+> En la Pi no hay un disco de datos separado: el SSD USB es el disco de arranque (root + boot), así que `$PATH_DATA` es una carpeta dentro del root del sistema. Con suficiente espacio libre en el root, no hace falta particionar ni montar nada.
 
 El esqueleto (`$PATH_DATA/persistence` y `$PATH_DATA/media/{downloads,movies,tvseries,watch}`) lo crea Ansible automáticamente (rol `system-setup`) con ownership `1000:1000`.
 
