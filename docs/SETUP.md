@@ -58,30 +58,18 @@ Verificar que el puerto 53 esté libre:
 sudo lsof -i :53
 ```
 
-## 3. Montar Disco Duro
+## 3. Datos Persistentes (`PATH_DATA`)
 
-Listar discos y obtener UUID:
+Los datos de servicios viven en `$PATH_DATA` (variable por máquina en `ansible/inventory/host_vars/<host>.yml`). Se definen por host: homeserver y Oracle usan `/server`.
 
-```bash
-lsblk -f
-```
+> En la Pi no hay un disco de datos separado: el SSD USB es el disco de arranque (root + boot), así que `PATH_DATA=/server` es una carpeta dentro del root del sistema. Con suficiente espacio libre en el root, no hace falta particionar ni montar nada.
 
-Crear punto de montaje:
+El esqueleto (`$PATH_DATA/persistence` y `$PATH_DATA/media/{downloads,movies,tvseries,watch}`) lo crea Ansible automáticamente (rol `system-setup`) con ownership `1000:1000`.
 
-```bash
-sudo mkdir -p /mnt/data
-```
-
-Agregar a `/etc/fstab`:
+Si más adelante quieres mover los datos a un disco dedicado: formatea, monta el disco en `/mnt/data`, agrega la línea al `/etc/fstab` y cambia `PATH_DATA` en `host_vars`:
 
 ```
 UUID=tu-uuid-aqui  /mnt/data  ext4  defaults,nofail  0  2
-```
-
-Montar:
-
-```bash
-sudo mount -a
 ```
 
 > `nofail` evita que el sistema no arranque si el disco no está presente.

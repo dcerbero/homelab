@@ -146,6 +146,16 @@ $PATH_DATA/
     └── watch
 ```
 
+### Ownership de los directorios de datos
+
+Ansible garantiza la creación y propiedad de los directorios de datos (no se depende del auto-create de Docker, que los crearía como `root` y rompería los permisos):
+
+- `system-setup` crea el esqueleto `$PATH_DATA/persistence` y el árbol `$PATH_DATA/media/*`
+- Cada rol de servicio asegura su propio directorio de persistencia (`heimdall`, `openclaw`, `pihole`)
+- Todos con owner/group `1000:1000` (uid del primer usuario del sistema), que es el uid que usan las imágenes linuxserver.io vía `PUID`/`PGID`
+
+> `pihole` corre como root en su imagen oficial, así que no le importa el owner; se fija `1000:1000` solo por uniformidad.
+
 ## Backup
 
 Los datos persistentes están en `$PATH_DATA`. Para respaldar:

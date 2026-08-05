@@ -4,6 +4,20 @@ Todos los cambios relevantes de este proyecto se documentan en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2026.08.1] - 2026-08-05
+
+### Cambiado
+- `PATH_DATA` del homeserver definido: `pendiente/rutanueva` → `/server`. El SSD USB es el disco de arranque de la Pi (no hay disco de datos separado), así que los datos viven en el root del sistema
+- Ansible garantiza la creación y ownership de los directorios de datos: `system-setup` crea el esqueleto `$PATH_DATA/persistence` + `$PATH_DATA/media/{downloads,movies,tvseries,watch}`, y el rol `pihole` asegura sus propios dirs
+- Ownership determinista `1000:1000` (uid de usuario mapeado por las imágenes linuxserver.io vía `PUID`/`PGID`), sin depender del auto-create de Docker
+
+### Verificado
+- Oracle ya migrado: Pi-hole usa `/server/persistence/pihole` (sin acciones pendientes)
+
+### Documentación
+- `SETUP.md`: sección "Montar Disco Duro" reemplazada por "Datos Persistentes (`PATH_DATA`)"
+- `DOCKER.md`: convención de ownership de directorios de datos documentada
+
 ## [2026.08.0] - 2026-08-05
 
 ### Agregado
@@ -36,10 +50,6 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.
 - Corregido `changed_when` del rol `pihole` para detectar contenedores recién creados
 - Quitado el `-v` hardcodeado de `run.sh` (verbose opcional por CLI: `bash run.sh homeserver -v`)
 - Borradas 5 ramas locales ya fusionadas (add/scripts, dcerbero-patch-1, fix/heimdall-pathdata, fix/heimdall-root-location, fix/plugin)
-
-### Pendiente
-- **TODO: definir `PATH_DATA` real del homeserver** — hoy vale `pendiente/rutanueva` en `ansible/inventory/host_vars/homeserver.yml`. Definir la ruta real antes del próximo provisioning; los volúmenes `${PATH_DATA}` de todos los servicios dependen de ello.
-- **Migración de datos en hosts** antes del próximo provisioning: mover estado a `$PATH_DATA/persistence/<svc>/`. Oracle: `PATH_DATA` ya renombrado, migrar data de pihole a `$PATH_DATA/persistence/pihole`.
 
 ### Seguridad
 - Eliminada exposición directa del puerto 18789 de OpenClaw
