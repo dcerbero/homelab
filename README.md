@@ -54,7 +54,7 @@ bash run.sh homeserver
 bash run.sh oracle
 ```
 
-## Recursos adicionales.
+## Recursos adicionales
 
 - [`CHANGELOG.md`](CHANGELOG.md) — Historial de cambios del proyecto
 - [`CLAUDE.md`](CLAUDE.md) — Guía de desarrollo para asistentes IA

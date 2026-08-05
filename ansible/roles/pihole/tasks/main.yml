@@ -6,4 +6,4 @@
       docker compose --profile dns up -d --remove-orphans 2>&1
     docker exec pihole pihole setpassword '{{ PIHOLE_PASS }}' 2>&1
   register: pihole_result
-  changed_when: pihole_result.stdout is search("Recreated|Started|Password changed")
+  changed_when: pihole_result.stdout is search("Created|Recreated|Started|Password changed")

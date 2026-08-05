@@ -169,9 +169,9 @@ tar -czf backup-config-$(date +%Y%m%d).tar.gz \
 ```bash
 cd services/docker/
 
-# Actualizar todos los servicios
-docker compose pull
-docker compose up -d
+# Actualizar todos los servicios (todos los perfiles)
+docker compose --all-profiles pull
+docker compose --all-profiles up -d
 
 # Actualizar un servicio específico
 docker compose pull svcPihole

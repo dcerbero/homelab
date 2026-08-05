@@ -9,5 +9,4 @@ ansible-playbook playbook.yml \
   --limit "$LIMIT" \
   "${@:2}" \
   -e "PIHOLE_PASS=$PIHOLE_PASS" \
-  -e "TAILSCALE_AUTH_KEY=$TAILSCALE_AUTH_KEY" \
-  -v
+  -e "TAILSCALE_AUTH_KEY=$TAILSCALE_AUTH_KEY"

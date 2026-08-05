@@ -4,11 +4,7 @@ Todos los cambios relevantes de este proyecto se documentan en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Sin publicar]
-
-### Eliminado
-- Headroom: removido del perfil `ia`. Eliminado rol Ansible, compose file, y referencia en include. El proxy de compresión no aportaba beneficio real.
-- Heartbeat: eliminado del perfil `ia` de OpenClaw. Removido `heartbeat: { every: "6h" }` del gateway config. HEARTBEAT.md y secciones de AGENTS.md eliminados del workspace.
+## [2026.08.0] - 2026-08-05
 
 ### Agregado
 - Automatización con Ansible con 8 roles (system-setup, docker, pihole, tailscale, cadvisor, openclaw, heimdall, nginx)
@@ -28,8 +24,22 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.
 - Refactorización playbook.yaml → playbook.yml
 - Mejora del .gitignore
 
+### Eliminado
+- Headroom: removido del perfil `ia`. Eliminado rol Ansible, compose file, y referencia en include. El proxy de compresión no aportaba beneficio real.
+- Heartbeat: eliminado del perfil `ia` de OpenClaw. Removido `heartbeat: { every: "6h" }` del gateway config. HEARTBEAT.md y secciones de AGENTS.md eliminados del workspace.
+
+### Limpieza
+- Consolidada la documentación: `docs/ANSIBLE.md` y `docs/DOCKER.md` como única fuente de verdad; `ansible/README.md` y `services/docker/README.md` quedan como índices cortos
+- Corregido el flujo de actualización de servicios (ahora usa `docker compose --all-profiles`) — con todos los servicios tras profiles, el `up -d` sin flags no arrancaba nada
+- Eliminado `sonarr/config/noTranscoding.json` (no estaba montado en ningún compose)
+- Alineado el rol `cadvisor` con el resto de roles: pasa `PATH_DATA` y `--remove-orphans`
+- Corregido `changed_when` del rol `pihole` para detectar contenedores recién creados
+- Quitado el `-v` hardcodeado de `run.sh` (verbose opcional por CLI: `bash run.sh homeserver -v`)
+- Borradas 5 ramas locales ya fusionadas (add/scripts, dcerbero-patch-1, fix/heimdall-pathdata, fix/heimdall-root-location, fix/plugin)
+
 ### Pendiente
-- **Migración de datos en hosts** antes del próximo provisioning: mover estado a `$PATH_DATA/persistence/<svc>/`. Oracle: `PATH_DATA` ya renombrado, migrar data de pihole a `$PATH_DATA/persistence/pihole`. Homeserver: definir `PATH_DATA` real (hoy placeholder).
+- **TODO: definir `PATH_DATA` real del homeserver** — hoy vale `pendiente/rutanueva` en `ansible/inventory/host_vars/homeserver.yml`. Definir la ruta real antes del próximo provisioning; los volúmenes `${PATH_DATA}` de todos los servicios dependen de ello.
+- **Migración de datos en hosts** antes del próximo provisioning: mover estado a `$PATH_DATA/persistence/<svc>/`. Oracle: `PATH_DATA` ya renombrado, migrar data de pihole a `$PATH_DATA/persistence/pihole`.
 
 ### Seguridad
 - Eliminada exposición directa del puerto 18789 de OpenClaw
