@@ -35,6 +35,7 @@
     dest: "{{ ansible_env.HOME }}/services/homelab"
     version: main
     force: yes
+  become_user: "{{ ansible_env.USER }}"
   tags: always
 
 - name: Remove orphaned dependencies with purge
