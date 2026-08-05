@@ -4,6 +4,12 @@ Todos los cambios relevantes de este proyecto se documentan en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2026.08.2] - 2026-08-05
+
+### Corregido
+- Imagen de nginx `1.30.3-bookworm` no existía en Docker Hub → `1.29.1-bookworm` (el `compose up` fallaba al hacer pull y el contenedor quedaba stale)
+- Rol `nginx`: `set -e` para que un fallo de `compose up` falle la task en vez de reportar `ok` silenciosamente (antes el `docker exec ... || true` enmascaraba el error)
+
 ## [2026.08.1] - 2026-08-05
 
 ### Cambiado

@@ -1,6 +1,7 @@
 ---
 - name: (re)start nginx
   shell: |
+    set -e
     cd {{ ansible_facts['env']['HOME'] }}/services/homelab/services/docker
     PATH_DATA={{ PATH_DATA }} docker compose --profile infra up -d --remove-orphans 2>&1
     docker exec nginx_proxy nginx -s reload 2>/dev/null || true
