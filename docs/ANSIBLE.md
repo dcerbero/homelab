@@ -86,8 +86,6 @@ inventory/
 ├── host_vars/
 │   ├── homeserver.yml          # PATH_DATA, TAILSCALE_HOSTNAME
 │   └── oracle.yml              # PATH_DATA, TAILSCALE_HOSTNAME
-└── group_vars/
-    └── all.yml                 # Variables globales (tailscale_enabled)
 ```
 
 ### SSH

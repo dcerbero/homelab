@@ -15,7 +15,7 @@ Dos subsistemas, cada uno con su ciclo de vida:
 
 ```
 homelab/
-├── ansible/          # playbook.yml (2 plays), run.sh, inventory/ (host_vars + group_vars), 8 roles
+├── ansible/          # playbook.yml (2 plays), run.sh, inventory/ (host_vars), 8 roles
 ├── services/docker/  # compose.yaml + compose.yaml por servicio (perfiles: dns, dashboard, infra, ia, monitoring, media-streaming, media-download)
 ├── config/           # scripts auxiliares
 └── docs/             # documentación detallada (índice en docs/README.md)

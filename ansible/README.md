@@ -43,8 +43,6 @@ inventory/
 ├── host_vars/
 │   ├── homeserver.yml          # PATH_DATA, TAILSCALE_HOSTNAME
 │   └── oracle.yml              # PATH_DATA, TAILSCALE_HOSTNAME
-└── group_vars/
-    └── all.yml                 # Variables globales (tailscale_enabled)
 ```
 
 Cada host tiene su propio `PATH_DATA` (ruta de almacenamiento) resuelto desde `host_vars/<host>.yml`.
