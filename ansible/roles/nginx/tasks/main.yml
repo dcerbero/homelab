@@ -1,7 +1,8 @@
 ---
 - name: (re)start nginx
   shell: |
-    docker exec nginx_proxy nginx -s reload 2>/dev/null && echo "reloaded" ||
-      (cd {{ ansible_facts['env']['HOME'] }}/services/homelab/services/docker && PATH_DATA={{ PATH_DATA }} docker compose --profile infra up -d && echo "started")
-  register: result
-  changed_when: result.stdout in ["reloaded", "started"]
+    cd {{ ansible_facts['env']['HOME'] }}/services/homelab/services/docker
+    PATH_DATA={{ PATH_DATA }} docker compose --profile infra up -d --remove-orphans 2>&1
+    docker exec nginx_proxy nginx -s reload 2>/dev/null || true
+  register: nginx_result
+  changed_when: nginx_result.stdout is search("Created|Started|Recreated")

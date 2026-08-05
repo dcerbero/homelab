@@ -80,6 +80,7 @@ Proxy reverso para los servicios web.
 - **Puertos:** `80:80`, `443:443`
 - **Config:** `services/docker/nginx/config/conf.d/` (montada `:ro` desde el repo)
 - Por defecto redirige todo a Heimdall
+- El rol Ansible hace `compose up` (recrea el contenedor cuando cambia imagen o mounts) y luego un `nginx -s reload` (aplica cambios de contenido en `conf.d/` sin recrear)
 
 ### Jellyfin (media-streaming)
 

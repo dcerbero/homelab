@@ -24,7 +24,7 @@ bash run.sh
 | `cadvisor` | `cadvisor`, `monitoring` | Despliegue del contenedor cAdvisor |
 | `openclaw` | `openclaw`, `ia` | Despliegue del contenedor OpenClaw (IA) |
 | `heimdall` | `heimdall`, `dashboard` | Despliegue del panel de control Heimdall |
-| `nginx` | `nginx`, `proxy` | Despliegue del proxy reverso nginx |
+| `nginx` | `nginx`, `proxy` | Despliegue del proxy reverso nginx (recrea en drift de imagen/mount, recarga para cambios de `conf.d`) |
 
 ### Oracle Cloud VM
 
