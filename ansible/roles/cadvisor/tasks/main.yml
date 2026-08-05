@@ -1,5 +1,5 @@
 ---
 - name: Start cadvisor service
   shell: |
-    cd {{ ansible_env.HOME }}/services/homelab/services/docker
+    cd {{ ansible_facts['env']['HOME'] }}/services/homelab/services/docker
     docker compose --profile monitoring up -d
