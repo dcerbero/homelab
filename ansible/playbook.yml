@@ -2,6 +2,13 @@
 - name: Setup homeserver
   hosts: homeserver
   become: true
+  gather_facts: no
+
+  pre_tasks:
+    - name: Gather facts as connection user
+      ansible.builtin.setup:
+      become: false
+      tags: always
 
   roles:
     - role: system-setup
@@ -25,6 +32,13 @@
 - name: Setup Oracle Cloud VM (Pi-hole failover)
   hosts: oracle
   become: true
+  gather_facts: no
+
+  pre_tasks:
+    - name: Gather facts as connection user
+      ansible.builtin.setup:
+      become: false
+      tags: always
 
   roles:
     - role: system-setup

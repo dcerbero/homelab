@@ -28,6 +28,7 @@
     path: "{{ ansible_env.HOME }}/services"
     state: directory
     mode: "0755"
+  become: false
 
 - name: Clone/update homelab repository
   ansible.builtin.git:
@@ -35,7 +36,7 @@
     dest: "{{ ansible_env.HOME }}/services/homelab"
     version: main
     force: yes
-  become_user: "{{ ansible_env.USER }}"
+  become: false
   tags: always
 
 - name: Remove orphaned dependencies with purge
