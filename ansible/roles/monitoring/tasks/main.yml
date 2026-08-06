@@ -26,6 +26,7 @@
     group: "0"
     mode: "0644"
     force: false
+    remote_src: true
 
 - name: Start monitoring services (prometheus, grafana, node-exporter, cadvisor)
   shell: |
