@@ -16,7 +16,12 @@ services/docker/
 ├── prowlarr/compose.yaml     ← Perfil: media-download
 ├── sonarr/compose.yaml       ← Perfil: media-download
 ├── transmission/compose.yaml ← Perfil: media-download
-└── cadvisor/compose.yaml     ← Perfil: monitoring
+├── cadvisor/compose.yaml     ← Perfil: monitoring
+├── node-exporter/compose.yaml← Perfil: monitoring
+├── prometheus/compose.yaml   ← Perfil: metrics
+├── prometheus/config/prometheus.yml  ← Config de scrape
+├── grafana/compose.yaml      ← Perfil: metrics
+└── grafana/config/           ← Provisioning (datasource + dashboards)
 ```
 
 ## Perfiles
@@ -29,7 +34,8 @@ services/docker/
 | `infra` | nginx | Proxy reverso |
 | `media-streaming` | Jellyfin | Streaming multimedia |
 | `media-download` | Transmission, Prowlarr, Sonarr | Descarga y gestión |
-| `monitoring` | cAdvisor | Métricas de contenedores |
+| `monitoring` | cAdvisor, node-exporter | Exporters de métricas (ambas máquinas) |
+| `metrics` | Prometheus, Grafana | Backend y dashboards (solo Oracle) |
 
 ## Despliegue
 
@@ -59,6 +65,9 @@ Todos los servicios exponen estado `healthy`/`unhealthy` en `docker ps` y en cAd
 | Sonarr | compose | `curl -fsS http://localhost:8989/ping` |
 | Jellyfin | compose | `curl -fsS http://localhost:8096/health` |
 | cAdvisor | embebido en la imagen | `wget .../healthz` |
+| node-exporter | compose | `wget http://localhost:9100/metrics` |
+| Prometheus | compose | `wget http://localhost:9090/-/healthy` |
+| Grafana | compose | `curl -fsS http://localhost:3000/api/health` |
 
 > Pi-hole, OpenClaw y cAdvisor traen su `HEALTHCHECK` definido en la imagen: no se define en el compose, porque definir uno lo sobreescribiría. El healthcheck no reinicia contenedores `unhealthy` (el `restart` solo actúa si el proceso muere); su valor es reporte de estado.
 
@@ -140,9 +149,37 @@ Interfaz de IA local. Usa la **API de OpenRouter** para inferencia.
 
 Métricas de uso de recursos de todos los contenedores.
 
-- **Puerto:** Solo acceso interno Docker (sin exposición al host)
+- **Puerto:** `9101:8080` en el Pi (acceso de scraping vía Tailscale); en Oracle sin bind al host (scrape interno por nombre de servicio)
 - **Volúmenes:** monta `/`, `/var/run`, `/sys`, `/var/lib/docker`, `/dev/disk` (solo lectura)
 - **Intervalos:** housekeeping 10s, max housekeeping 15s, global 1m
+
+### node-exporter (monitoring)
+
+Métricas del host (CPU, RAM, disco, red, temperatura) para Prometheus.
+
+- **Puerto:** `9100:9100`
+- **Volúmenes:** monta `/proc`, `/sys`, `/` (solo lectura)
+- **Colectores:** por defecto (incluye `node_hwmon` para temperatura del RPi)
+
+### Prometheus (metrics — solo Oracle)
+
+Backend de métricas. Scrapea a los exporters de ambas máquinas.
+
+- **Puerto:** sin bind al host (interno)
+- **Config:** `services/docker/prometheus/config/prometheus.yml` (montada `:ro`)
+- **Volúmenes:** `$PATH_DATA/persistence/prometheus` (TSDB)
+- **Retención:** 15 días
+- **Targets (Paso 1):** self, node-exporter local, cAdvisor local
+
+### Grafana (metrics — solo Oracle)
+
+Dashboards y visualización. Acceso por Tailscale (`http://<ip-oracle>:3000`).
+
+- **Puerto:** `3000:3000`
+- **Admin:** usuario `admin`, password en `GRAFANA_ADMIN_PASSWORD` (secreto de `ansible/.env`)
+- **Provisioning:** datasource + provider en `services/docker/grafana/config/provisioning/` (montado `:ro`)
+- **Dashboards:** editables desde la UI, viven en `$PATH_DATA/persistence/grafana/dashboards/` (seed inicial `homelab.json` copiado solo si no existe, con `force: no`)
+- **Volúmenes:** `$PATH_DATA/persistence/grafana`
 
 ## Almacenamiento Persistente
 
@@ -157,7 +194,11 @@ $PATH_DATA/
 │   │   └── etc-dnsmasq.d
 │   ├── prowlarr/
 │   ├── sonarr/data
-│   └── transmission/config
+│   ├── transmission/config
+│   ├── prometheus/            (TSDB)
+│   └── grafana/
+│       ├── (estado de Grafana)
+│       └── dashboards/        (editables desde la UI)
 └── media/                  (biblioteca compartida entre servicios)
     ├── downloads
     ├── movies
@@ -174,6 +215,8 @@ Ansible garantiza la creación y propiedad de los directorios de datos (no se de
 - Todos con owner/group `1000:1000` (uid del primer usuario del sistema), que es el uid que usan las imágenes linuxserver.io vía `PUID`/`PGID`
 
 > `pihole` corre como root en su imagen oficial, así que no le importa el owner; se fija `1000:1000` solo por uniformidad.
+>
+> Excepción: Grafana corre con uid `472` (su imagen oficial), por eso sus directorios y el seed de dashboards se crean con `472:0`.
 
 ## Backup
 

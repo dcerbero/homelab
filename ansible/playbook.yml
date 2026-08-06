@@ -47,3 +47,5 @@
       tags: [docker, containers, oracle]
     - role: pihole
       tags: [pihole, dns, oracle]
+    - role: monitoring
+      tags: [monitoring, metrics, oracle]

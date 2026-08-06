@@ -1,0 +1,25 @@
+services:
+  svcGrafana:
+    image: grafana/grafana:13.1.2
+    container_name: grafana
+    profiles:
+      - metrics
+    ports:
+      - "3000:3000"
+    user: "472:0"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_ANALYTICS_REPORTING_ENABLED=false
+    volumes:
+      - "./config/provisioning:/etc/grafana/provisioning:ro"
+      - "${PATH_DATA}/persistence/grafana:/var/lib/grafana"
+      - "${PATH_DATA}/persistence/grafana/dashboards:/var/lib/grafana/dashboards"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s

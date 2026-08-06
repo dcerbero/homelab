@@ -1,0 +1,21 @@
+services:
+  svcPrometheus:
+    image: prom/prometheus:v3.13.2
+    container_name: prometheus
+    profiles:
+      - metrics
+    user: "1000:1000"
+    volumes:
+      - "./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
+      - "${PATH_DATA}/persistence/prometheus:/prometheus"
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=15d
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

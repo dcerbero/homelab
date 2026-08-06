@@ -10,4 +10,5 @@ ansible-playbook playbook.yml \
   --ask-become-pass \
   "${@:2}" \
   -e "PIHOLE_PASS=$PIHOLE_PASS" \
-  -e "TAILSCALE_AUTH_KEY=$TAILSCALE_AUTH_KEY"
+  -e "TAILSCALE_AUTH_KEY=$TAILSCALE_AUTH_KEY" \
+  -e "GRAFANA_ADMIN_PASSWORD=$GRAFANA_ADMIN_PASSWORD"

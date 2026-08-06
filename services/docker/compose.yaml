@@ -8,3 +8,6 @@ include:
   - sonarr/compose.yaml
   - jellyfin/compose.yaml
   - cadvisor/compose.yaml
+  - node-exporter/compose.yaml
+  - prometheus/compose.yaml
+  - grafana/compose.yaml

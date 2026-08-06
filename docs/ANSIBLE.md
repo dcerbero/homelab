@@ -21,7 +21,7 @@ bash run.sh
 | `docker` | `docker`, `containers` | Instalación de Docker Engine, Docker Compose, grupo docker |
 | `pihole` | `pihole`, `dns` | Despliegue del contenedor Pi-hole con Docker Compose |
 | `tailscale` | `tailscale`, `vpn` | Instalación y autenticación de Tailscale VPN |
-| `cadvisor` | `cadvisor`, `monitoring` | Despliegue del contenedor cAdvisor |
+| `cadvisor` | `cadvisor`, `monitoring` | Despliegue de cAdvisor y node-exporter (perfil `monitoring`) |
 | `openclaw` | `openclaw`, `ia` | Despliegue del contenedor OpenClaw (IA) |
 | `heimdall` | `heimdall`, `dashboard` | Despliegue del panel de control Heimdall |
 | `nginx` | `nginx`, `proxy` | Despliegue del proxy reverso nginx (recrea en drift de imagen/mount, recarga para cambios de `conf.d`) |
@@ -33,6 +33,7 @@ bash run.sh
 | `system-setup` | `system-setup`, `system`, `oracle` | Paquetes del SO, DNS stub, clonar repo |
 | `docker` | `docker`, `containers`, `oracle` | Instalación de Docker Engine + Compose |
 | `pihole` | `pihole`, `dns`, `oracle` | Pi-hole secundario (failover DNS) |
+| `monitoring` | `monitoring`, `metrics`, `oracle` | Stack de métricas centralizado: Prometheus, Grafana, node-exporter y cAdvisor |
 
 ## Playbook
 
@@ -71,6 +72,8 @@ roles:
     tags: [docker, containers, oracle]
   - role: pihole
     tags: [pihole, dns, oracle]
+  - role: monitoring
+    tags: [monitoring, metrics, oracle]
 ```
 
 ## Inventario
@@ -120,6 +123,7 @@ TAILSCALE_AUTH_KEY=tskey-auth-xxxxx
 |---|---|
 | `PIHOLE_PASS` | Contraseña de la interfaz web de Pi-hole |
 | `TAILSCALE_AUTH_KEY` | Clave de autenticación desde [Tailscale Admin](https://login.tailscale.com/admin/settings/keys) |
+| `GRAFANA_ADMIN_PASSWORD` | Contraseña del usuario admin de Grafana (stack de métricas en Oracle) |
 
 Solo secretos viven en `.env` (gitignorado). Las variables de máquina (`PATH_DATA`, `TAILSCALE_HOSTNAME`) viven en `inventory/host_vars/<host>.yml`.
 
