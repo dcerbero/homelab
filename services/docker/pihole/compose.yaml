@@ -21,14 +21,6 @@ services:
       - ${PATH_DATA}/persistence/pihole/etc-pihole-v2:/etc/pihole
       - ${PATH_DATA}/persistence/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
 
-    # Healthcheck mejorado
-    healthcheck:
-      test: ["CMD", "dig", "+time=2", "+tries=1", "google.com", "@127.0.0.1"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 60s
-
     # Variables de entorno organizadas por categoría
     environment:
       # Configuración básica

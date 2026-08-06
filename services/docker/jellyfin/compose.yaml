@@ -20,3 +20,9 @@ services:
       - "44"      # video
       - "107"     # render
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8096/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s

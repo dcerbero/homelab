@@ -17,3 +17,9 @@ services:
       - PGID=1000
       - TZ=America/Bogota
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:9091/transmission/web/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s

@@ -44,6 +44,24 @@ docker compose --all-profiles logs -f svcPihole
 docker compose --all-profiles restart svcSonarr
 ```
 
+## Healthchecks
+
+Todos los servicios exponen estado `healthy`/`unhealthy` en `docker ps` y en cAdvisor (métrica `container_health_state`). Un healthcheck es una sonda que el daemon de Docker ejecuta **dentro** del contenedor contra el endpoint HTTP de la propia app; no expone ningún puerto ni endpoint extra.
+
+| Servicio | Origen del healthcheck | Sonda |
+|---|---|---|
+| Pi-hole | embebido en la imagen | `dig pi.hole @127.0.0.1` |
+| nginx | compose | `curl -sS http://localhost/` (sin `-f`: 502 por backend caído ≠ unhealthy) |
+| Heimdall | compose | `curl -fsS http://localhost/` |
+| OpenClaw | embebido en la imagen | `node dist/docker-healthcheck.js` |
+| Transmission | compose | `curl -fsS http://localhost:9091/transmission/web/` |
+| Prowlarr | compose | `curl -fsS http://localhost:9696/ping` |
+| Sonarr | compose | `curl -fsS http://localhost:8989/ping` |
+| Jellyfin | compose | `curl -fsS http://localhost:8096/health` |
+| cAdvisor | embebido en la imagen | `wget .../healthz` |
+
+> Pi-hole, OpenClaw y cAdvisor traen su `HEALTHCHECK` definido en la imagen: no se define en el compose, porque definir uno lo sobreescribiría. El healthcheck no reinicia contenedores `unhealthy` (el `restart` solo actúa si el proceso muere); su valor es reporte de estado.
+
 ## Variables de Entorno
 
 `PATH_DATA` se resuelve desde `inventory/host_vars/<host>.yml` en Ansible. Para administración manual, crear `services/docker/.env`:
@@ -61,7 +79,7 @@ DNS server con bloqueo de anuncios. Crítico para la infraestructura.
 - **Puertos:** `53:53` (TCP/UDP) — DNS, `8085:80` — Web admin
 - **Volúmenes:** `$PATH_DATA/persistence/pihole/etc-pihole-v2`, `$PATH_DATA/persistence/pihole/etc-dnsmasq.d`
 - **Upstream DNS:** Quad9 (9.9.9.9) y Cloudflare Family (1.1.1.2)
-- **Healthcheck:** `dig google.com @127.0.0.1` cada 30s
+- **Healthcheck:** embebido en la imagen — `dig pi.hole @127.0.0.1` (consulta local, sin depender de internet)
 - **Web UI:** Acceso vía nginx proxy (puerto 80)
 - **Cache:** 20,000 entradas, TTL máximo 30 min
 - **Logs:** 7 días, máx 50MB
