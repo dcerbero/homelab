@@ -17,7 +17,7 @@
 | Streaming | Jellyfin |
 | Descargas | Sonarr + Prowlarr + Transmission |
 | IA | OpenClaw → OpenRouter API |
-| Monitorización | cAdvisor |
+| Monitorización | Prometheus + Grafana + cAdvisor + node-exporter |
 
 ## Documentación
 
@@ -28,5 +28,6 @@
 | [`ANSIBLE.md`](ANSIBLE.md) | Roles de Ansible, playbook, variables de entorno |
 | [`DOCKER.md`](DOCKER.md) | Servicios Docker Compose, perfiles, volúmenes, backup, actualización |
 | [`COMMANDS.md`](COMMANDS.md) | Comandos de uso diario, monitorización, health checks |
+| [`MONITORING.md`](MONITORING.md) | Stack de métricas (Prometheus/Grafana), estado y pendientes |
 | [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) | Problemas comunes y soluciones |
 | [`SECURITY.md`](SECURITY.md) | Hardening SSH, Tailscale ACLs, firewall |
