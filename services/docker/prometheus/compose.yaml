@@ -6,10 +6,10 @@ services:
       - metrics
     user: "1000:1000"
     volumes:
-      - "./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
+      - "./config:/etc/prometheus/config:ro"
       - "${PATH_DATA}/persistence/prometheus:/prometheus"
     command:
-      - --config.file=/etc/prometheus/prometheus.yml
+      - --config.file=/etc/prometheus/config/prometheus.yml
       - --storage.tsdb.path=/prometheus
       - --storage.tsdb.retention.time=15d
     restart: unless-stopped
