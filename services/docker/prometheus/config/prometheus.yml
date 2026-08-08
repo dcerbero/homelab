@@ -10,7 +10,25 @@ scrape_configs:
   - job_name: node-exporter
     static_configs:
       - targets: ["svcNodeExporter:9100", "raspberry-homeserver:9100"]
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: "svcNodeExporter:9100"
+        target_label: instance
+        replacement: oracle
+      - source_labels: [__address__]
+        regex: "raspberry-homeserver:9100"
+        target_label: instance
+        replacement: pi
 
   - job_name: cadvisor
     static_configs:
       - targets: ["svccAdvisor:8080", "raspberry-homeserver:9101"]
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: "svccAdvisor:8080"
+        target_label: instance
+        replacement: oracle
+      - source_labels: [__address__]
+        regex: "raspberry-homeserver:9101"
+        target_label: instance
+        replacement: pi

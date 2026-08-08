@@ -25,7 +25,7 @@
 ## Acceso
 
 - Grafana: `http://<ip-oracle>:3000` — usuario `admin`, password en `GRAFANA_ADMIN_PASSWORD` (`ansible/.env`).
-- En el dashboard, la variable **Host** (label `instance`) filtra por máquina: `svcNodeExporter:9100`/`svccAdvisor:8080` (Oracle) vs `raspberry-homeserver:9100`/`:9101` (Pi).
+- En el dashboard, la variable **Host** (label `instance`) filtra por máquina: `oracle` (node-exporter/cAdvisor de Oracle) vs `pi` (node-exporter/cAdvisor del Pi). El renombrado lo hace `relabel_configs` en `prometheus.yml`, mapeando las direcciones reales de cada target.
 
 ## Config en el repo
 
