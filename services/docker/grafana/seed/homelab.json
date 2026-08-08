@@ -192,8 +192,8 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum by (name) (rate(container_cpu_usage_seconds_total{name!=\"\"}[$__rate_interval]))",
-          "legendFormat": "{{name}}"
+          "expr": "sum by (instance, name) (rate(container_cpu_usage_seconds_total{name!=\"\"}[$__rate_interval]))",
+          "legendFormat": "{{instance}} {{name}}"
         }
       ],
       "fieldConfig": {
@@ -214,8 +214,8 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum by (name) (container_memory_usage_bytes{name!=\"\"}) / 1073741824",
-          "legendFormat": "{{name}}"
+          "expr": "sum by (instance, name) (container_memory_usage_bytes{name!=\"\"}) / 1073741824",
+          "legendFormat": "{{instance}} {{name}}"
         }
       ],
       "fieldConfig": {
@@ -237,7 +237,7 @@
         {
           "refId": "A",
           "expr": "container_health_state",
-          "legendFormat": "{{name}}"
+          "legendFormat": "{{instance}} {{name}}"
         }
       ],
       "fieldConfig": {

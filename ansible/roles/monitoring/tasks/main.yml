@@ -36,3 +36,7 @@
     GRAFANA_ADMIN_PASSWORD: "{{ GRAFANA_ADMIN_PASSWORD }}"
   register: monitoring_result
   changed_when: monitoring_result.stdout is search("Created|Started|Recreated")
+
+- name: Reload prometheus configuration (SIGHUP; bind mount :ro no recrea el contenedor)
+  command: docker exec prometheus kill -HUP 1
+  changed_when: false
