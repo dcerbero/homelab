@@ -236,7 +236,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "container_health_state",
+          "expr": "container_health_state{name!=\"\"}",
           "legendFormat": "{{instance}} {{name}}"
         }
       ],
@@ -245,6 +245,7 @@
           "unit": "short",
           "color": { "mode": "thresholds" },
           "mappings": [
+            { "type": "value", "options": { "-1": { "text": "Sin healthcheck", "color": "gray" } } },
             { "type": "value", "options": { "0": { "text": "Unhealthy", "color": "red" } } },
             { "type": "value", "options": { "1": { "text": "Healthy", "color": "green" } } },
             { "type": "value", "options": { "2": { "text": "Starting", "color": "yellow" } } }
