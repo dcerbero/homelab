@@ -7,6 +7,8 @@ services:
       - /dev/kmsg
     profiles:
       - monitoring
+    ports:
+      - "9101:8080"
     volumes:
       - "/:/rootfs:ro"
       - "/var/run:/var/run:ro"
