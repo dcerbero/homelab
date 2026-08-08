@@ -232,7 +232,7 @@
       "type": "stat",
       "title": "Container Health",
       "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 26 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 27 },
       "targets": [
         {
           "refId": "A",
@@ -259,7 +259,7 @@
       "id": 12,
       "type": "row",
       "title": "Services",
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 34 },
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 26 },
       "collapsed": false,
       "panels": []
     },
@@ -268,7 +268,7 @@
       "type": "stat",
       "title": "Scrape Targets",
       "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 35 },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 27 },
       "targets": [
         {
           "refId": "A",
