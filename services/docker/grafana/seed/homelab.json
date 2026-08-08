@@ -221,7 +221,7 @@
       "fieldConfig": {
         "defaults": {
           "unit": "gibytes",
-          "custom": { "drawStyle": "line", "fillOpacity": 10, "stacking": { "mode": "none" } },
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "stacking": { "mode": "normal" } },
           "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null } ] }
         },
         "overrides": []
