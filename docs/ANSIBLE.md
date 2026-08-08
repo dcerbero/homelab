@@ -33,7 +33,7 @@ bash run.sh
 | `system-setup` | `system-setup`, `system`, `oracle` | Paquetes del SO, DNS stub, clonar repo |
 | `docker` | `docker`, `containers`, `oracle` | Instalación de Docker Engine + Compose |
 | `pihole` | `pihole`, `dns`, `oracle` | Pi-hole secundario (failover DNS) |
-| `monitoring` | `monitoring`, `metrics`, `oracle` | Stack de métricas centralizado: Prometheus, Grafana, node-exporter y cAdvisor |
+| `monitoring` | `monitoring`, `metrics`, `oracle` | Stack de métricas centralizado: Prometheus, Grafana, node-exporter y cAdvisor. Tras el `compose up` recarga la config de Prometheus (`docker exec prometheus kill -HUP 1`) |
 
 ## Playbook
 
@@ -42,7 +42,7 @@ bash run.sh
 Dos plays independientes:
 
 1. **`homeserver`** — RPi4 local: todos los roles
-2. **`oracle`** — Oracle Cloud VM: solo Pi-hole failover (system-setup, docker, pihole)
+2. **`oracle`** — Oracle Cloud VM: Pi-hole failover + stack de monitoreo (system-setup, docker, pihole, monitoring)
 
 ```yaml
 # Play homeserver

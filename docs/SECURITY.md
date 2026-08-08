@@ -76,5 +76,8 @@ sudo ufw enable
 | 8083 | Prowlarr | Solo LAN |
 | 8084 | Sonarr | Solo LAN |
 | 51413 | Torrent | Requerido para descargas |
+| 9100 | node-exporter | Solo LAN o Tailscale |
+| 9101 | cAdvisor (Pi) | Solo LAN o Tailscale |
+| 3000 | Grafana (Oracle) | Solo Tailscale |
 
 > Recomendación: no exponer puertos directamente a Internet. Usar Tailscale para acceso remoto.

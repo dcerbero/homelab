@@ -166,10 +166,11 @@ Métricas del host (CPU, RAM, disco, red, temperatura) para Prometheus.
 Backend de métricas. Scrapea a los exporters de ambas máquinas.
 
 - **Puerto:** sin bind al host (interno)
-- **Config:** `services/docker/prometheus/config/prometheus.yml` (montada `:ro`)
+- **Config:** directorio `services/docker/prometheus/config/` (montado `:ro`; `--config.file=/etc/prometheus/config/prometheus.yml`) — se monta el directorio, no el archivo, para que el reload SIGHUP del rol lea los cambios que aplica `git pull` (el mount de archivo único se queda con el inode viejo)
 - **Volúmenes:** `$PATH_DATA/persistence/prometheus` (TSDB)
 - **Retención:** 15 días
-- **Targets (Paso 1):** self, node-exporter local, cAdvisor local
+- **Targets:** self, node-exporter y cAdvisor de Oracle (internos) + Pi vía Tailscale (`raspberry-homeserver:9100`, `raspberry-homeserver:9101`)
+- **Recarga de config:** el rol `monitoring` ejecuta `docker exec prometheus kill -HUP 1` (SIGHUP) tras cada deploy
 
 ### Grafana (metrics — solo Oracle)
 

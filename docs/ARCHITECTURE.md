@@ -15,6 +15,9 @@ graph TD
         
         subgraph OCI_VM [☁️ Oracle Cloud VM]
             OciPiHole[🛡️ Pi-hole failover]
+            Prometheus[📈 Prometheus]
+            Grafana[📊 Grafana]
+            OciNodeExp[🖥️ node-exporter]
         end
     end
 
@@ -27,6 +30,7 @@ graph TD
                 OpenClaw[🤖 OpenClaw]
                 PiHole[🛡️ Pi-hole DNS]
                 cAdvisor[📊 cAdvisor]
+                NodeExp[🖥️ node-exporter]
                 Heimdall[📋 Heimdall]
                 Jellyfin[🎬 Jellyfin]
                 Nginx[🌐 nginx Proxy]
@@ -52,10 +56,13 @@ graph TD
     RemoteNode -.->|DNS| Tailscale
     Tailscale -.->|DNS| PiHole
 
+    Prometheus -.->|scrape /metrics| NodeExp
+    Prometheus -.->|scrape /metrics| cAdvisor
+
     class WAN,ISP,OCI_VM wan;
     class Router,Pi,LocalDevices,RemoteNode node;
     class Tailscale vpn;
-    class Docker,OpenClaw,PiHole,cAdvisor,OciPiHole,Heimdall,Jellyfin,Nginx,Transmission,Sonarr,Prowlarr highlight;
+    class Docker,OpenClaw,PiHole,cAdvisor,OciPiHole,Heimdall,Jellyfin,Nginx,Transmission,Sonarr,Prowlarr,NodeExp,Prometheus,Grafana,OciNodeExp highlight;
 
     linkStyle 6,7 stroke:#10b981,stroke-width:3px;
 ```
@@ -75,6 +82,12 @@ graph TD
 - Tailscale mesh VPN conecta: Raspberry Pi, Oracle Cloud VM, dispositivos remotos
 - Subnet routing para acceso a red local desde fuera
 
+### Métricas (Monitoreo)
+- Prometheus (Oracle) scrapea los exporters de **ambas** máquinas vía Tailscale
+- Oracle: node-exporter (`svcNodeExporter:9100`) y cAdvisor (`svccAdvisor:8080`) internos
+- Pi: node-exporter (`raspberry-homeserver:9100`) y cAdvisor (`raspberry-homeserver:9101`)
+- Grafana (Oracle) expone el dashboard único, accesible solo por Tailscale
+
 ## Puertos Expuestos
 
 | Puerto | Servicio | Acceso |
@@ -88,3 +101,6 @@ graph TD
 | 8083 | Prowlarr | Local |
 | 8084 | Sonarr | Local |
 | 51413 (TCP/UDP) | Transmission Torrent | Local |
+| 9100 | node-exporter | Solo LAN o Tailscale |
+| 9101 | cAdvisor (Pi) | Solo LAN o Tailscale |
+| 3000 | Grafana (Oracle) | Solo Tailscale |

@@ -8,8 +8,8 @@ aprovisionada con Ansible y servicios Docker organizados por perfiles.
 | Componente | Tecnología |
 |---|---|
 | Servidores | Raspberry Pi 4 (Ubuntu 24.04) + Oracle Cloud VM |
-| Orquestación | Ansible (8 roles, 2 plays) |
-| Contenedores | Docker + Docker Compose (7 perfiles) |
+| Orquestación | Ansible (9 roles, 2 plays) |
+| Contenedores | Docker + Docker Compose (8 perfiles) |
 | DNS | Pi-hole (activo + failover) |
 | VPN | Tailscale |
 | Proxy | nginx |
@@ -17,7 +17,7 @@ aprovisionada con Ansible y servicios Docker organizados por perfiles.
 | Streaming | Jellyfin |
 | Descargas | Sonarr + Prowlarr + Transmission |
 | IA | OpenClaw → OpenRouter API |
-| Monitorización | cAdvisor |
+| Monitorización | Prometheus + Grafana + cAdvisor + node-exporter |
 
 ## Documentación
 
@@ -30,6 +30,7 @@ Toda la documentación está en [`docs/`](docs/README.md):
 | [`docs/ANSIBLE.md`](docs/ANSIBLE.md) | Roles de Ansible, playbook, variables |
 | [`docs/DOCKER.md`](docs/DOCKER.md) | Servicios Docker, perfiles, backup, actualización |
 | [`docs/COMMANDS.md`](docs/COMMANDS.md) | Comandos de uso diario, monitorización |
+| [`docs/MONITORING.md`](docs/MONITORING.md) | Stack de métricas (Prometheus/Grafana), estado |
 | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) | Problemas comunes y soluciones |
 | [`docs/SECURITY.md`](docs/SECURITY.md) | Hardening SSH, Tailscale, firewall |
 

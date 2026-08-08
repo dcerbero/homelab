@@ -58,16 +58,32 @@ docker system df
 docker system prune -a --volumes
 ```
 
-## Monitorización (cAdvisor)
+## Monitorización (Prometheus + Grafana)
 
-cAdvisor corre con acceso solo a red Docker (sin puerto expuesto al host).
+El stack vive en **Oracle** (Prometheus, Grafana, node-exporter, cAdvisor). En el **Pi** solo corren los exporters (cAdvisor `9101`, node-exporter `9100`).
 
 ```bash
-# Ver logs de cAdvisor
-docker compose --all-profiles logs svccAdvisor
+# Acceso a Grafana (usuario admin, password en GRAFANA_ADMIN_PASSWORD)
+# http://<ip-oracle>:3000
 
-# Health check manual (dentro de la red Docker)
-docker compose --all-profiles exec svccAdvisor wget -qO- http://localhost:8080/healthz
+# Estado de los contenedores de monitoreo (en cada máquina)
+docker compose --all-profiles ps
+
+# Logs de un servicio de monitoreo (en Oracle)
+docker compose --all-profiles logs -f svcPrometheus
+docker compose --all-profiles logs -f svcGrafana
+docker compose --all-profiles logs -f svcNodeExporter
+docker compose --all-profiles logs -f svccAdvisor
+
+# Ver targets de Prometheus (en Oracle; 5 targets: self, Oracle + Pi)
+docker exec prometheus wget -qO- http://localhost:9090/api/v1/targets
+
+# Recargar config de Prometheus sin reiniciar (Ansible ya lo hace en el rol)
+docker exec prometheus kill -HUP 1
+
+# Verificar los exporters del Pi desde Oracle (vía Tailscale)
+curl http://raspberry-homeserver:9101/metrics   # cAdvisor del Pi
+curl http://raspberry-homeserver:9100/metrics   # node-exporter del Pi
 ```
 
 ## Health Checks por Servicio
