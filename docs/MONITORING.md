@@ -31,7 +31,7 @@
 
 - `services/docker/prometheus/config/prometheus.yml` — montado como **directorio** `config/` (`--config.file=/etc/prometheus/config/prometheus.yml`).
 - `services/docker/grafana/config/provisioning/` (datasource + provider)
-- `services/docker/grafana/seed/homelab.json` → se copia a `$PATH_DATA/persistence/grafana/dashboards/` (editables desde la UI, `force: no`)
+- `services/docker/grafana/seed/homelab.json` → se copia a `$PATH_DATA/persistence/grafana/dashboards/` (`force: yes`, el repo es la fuente de verdad; no editables desde la UI, `allowUiUpdates: false`)
 
 ## Detalles de operación
 

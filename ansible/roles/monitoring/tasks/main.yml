@@ -18,14 +18,14 @@
     - ""
     - dashboards
 
-- name: Seed initial Grafana dashboard (no overwrite UI edits)
+- name: Seed Grafana dashboard from repo (repo is source of truth, overwrites runtime)
   ansible.builtin.copy:
     src: "{{ ansible_facts['env']['HOME'] }}/services/homelab/services/docker/grafana/seed/homelab.json"
     dest: "{{ PATH_DATA }}/persistence/grafana/dashboards/homelab.json"
     owner: "472"
     group: "0"
     mode: "0644"
-    force: false
+    force: true
     remote_src: true
 
 - name: Start monitoring services (prometheus, grafana, node-exporter, cadvisor)

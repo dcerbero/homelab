@@ -89,7 +89,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "node_load1",
+          "expr": "node_load1 unless on (instance) (up{job=\"node-exporter\"} == 0)",
           "legendFormat": "{{instance}}"
         }
       ],
@@ -162,7 +162,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "max by (instance) (node_hwmon_temp_celsius)",
+          "expr": "max by (instance) (node_hwmon_temp_celsius) unless on (instance) (up{job=\"node-exporter\"} == 0)",
           "legendFormat": "{{instance}}"
         }
       ],
@@ -176,10 +176,36 @@
       }
     },
     {
+      "id": 14,
+      "type": "stat",
+      "title": "Host Status",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 17 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "min by (instance) (up{job=~\"node-exporter|cadvisor\"})",
+          "legendFormat": "{{instance}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            { "type": "value", "options": { "0": { "text": "Down", "color": "red" } } },
+            { "type": "value", "options": { "1": { "text": "Up", "color": "green" } } }
+          ],
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "red", "value": 1 } ] }
+        },
+        "overrides": []
+      }
+    },
+    {
       "id": 8,
       "type": "row",
       "title": "Containers",
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 17 },
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 25 },
       "collapsed": false,
       "panels": []
     },
@@ -188,7 +214,7 @@
       "type": "timeseries",
       "title": "Container CPU (cores)",
       "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 18 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 26 },
       "targets": [
         {
           "refId": "A",
@@ -210,7 +236,7 @@
       "type": "timeseries",
       "title": "Container Memory (GiB)",
       "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 18 },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 26 },
       "targets": [
         {
           "refId": "A",
@@ -232,11 +258,11 @@
       "type": "stat",
       "title": "Container Health",
       "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 27 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 35 },
       "targets": [
         {
           "refId": "A",
-          "expr": "container_health_state{name!=\"\"}",
+          "expr": "container_health_state{name!=\"\"} unless on (instance) (up{job=\"cadvisor\"} == 0)",
           "legendFormat": "{{instance}} {{name}}"
         }
       ],
@@ -259,7 +285,7 @@
       "id": 12,
       "type": "row",
       "title": "Services",
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 26 },
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 34 },
       "collapsed": false,
       "panels": []
     },
@@ -268,7 +294,7 @@
       "type": "stat",
       "title": "Scrape Targets",
       "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 27 },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 35 },
       "targets": [
         {
           "refId": "A",

@@ -179,7 +179,7 @@ Dashboards y visualización. Acceso por Tailscale (`http://<ip-oracle>:3000`).
 - **Puerto:** `3000:3000`
 - **Admin:** usuario `admin`, password en `GRAFANA_ADMIN_PASSWORD` (secreto de `ansible/.env`)
 - **Provisioning:** datasource + provider en `services/docker/grafana/config/provisioning/` (montado `:ro`)
-- **Dashboards:** editables desde la UI, viven en `$PATH_DATA/persistence/grafana/dashboards/` (seed inicial `homelab.json` copiado solo si no existe, con `force: no`)
+- **Dashboards:** gestionados desde el repo (`seed/homelab.json` es la fuente de verdad; el rol `monitoring` lo copia a `$PATH_DATA/persistence/grafana/dashboards/` con `force: yes` en cada deploy). No editables desde la UI (`allowUiUpdates: false` en el provisioning): cualquier cambio se hace en el seed y se despliega con `git pull` + `run.sh oracle`.
 - **Volúmenes:** `$PATH_DATA/persistence/grafana`
 
 ## Almacenamiento Persistente
