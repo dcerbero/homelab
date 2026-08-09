@@ -13,3 +13,30 @@
     PATH_DATA={{ PATH_DATA }} docker compose --profile dashboard up -d
   register: heimdall_result
   changed_when: heimdall_result.stdout is search("Created|Started|Recreated")
+
+- name: Wait for heimdall database to exist
+  ansible.builtin.wait_for:
+    path: "{{ PATH_DATA }}/persistence/heimdall/config/www/app.sqlite"
+    state: present
+    timeout: 120
+
+- name: Copy tile icons to heimdall config
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../services/docker/heimdall/config/icons/"
+    dest: "{{ PATH_DATA }}/persistence/heimdall/config/www/icons/"
+    owner: "1000"
+    group: "1000"
+    mode: "0644"
+
+- name: Copy declarative tiles definition
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../services/docker/heimdall/config/tiles.json"
+    dest: "{{ PATH_DATA }}/persistence/heimdall/tiles.json"
+    owner: "1000"
+    group: "1000"
+    mode: "0644"
+
+- name: Seed heimdall tiles into database (idempotent)
+  ansible.builtin.script:
+    cmd: seed_tiles.py {{ PATH_DATA }}/persistence/heimdall/tiles.json {{ PATH_DATA }}/persistence/heimdall/config/www/app.sqlite
+  become: false
