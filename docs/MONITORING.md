@@ -35,7 +35,9 @@
 
 ## Detalles de operación
 
+- **`git pull` del repo**: lo hace el rol `system-setup` (tarea con `tags: always`, módulo `ansible.builtin.git`) en cada `run.sh`, así que no hay que tirar del repo manualmente en las máquinas.
 - **Recarga de config de Prometheus**: el rol `monitoring` ejecuta `docker exec prometheus kill -HUP 1` (SIGHUP) tras cada deploy. Se usa mount de directorio (no de archivo) porque `git pull` reemplaza el inode y un mount de archivo único seguiría mostrando la versión vieja.
+- **Grafana**: el rol `monitoring` copia el seed (`force: yes`) y reinicia el contenedor en cada deploy para que el provisioning (`dashboards.yml` con `allowUiUpdates: false`, `datasources.yml`) se aplique. No hay pasos manuales.
 - **node-exporter en el Pi** no tiene rol propio: lo levanta el rol `cadvisor` vía el perfil `monitoring` (`docker compose --profile monitoring up`).
 - **Verificación**: `docker exec prometheus wget -qO- http://localhost:9090/api/v1/targets` → 5 targets `up`.
 
