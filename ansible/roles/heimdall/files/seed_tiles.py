@@ -43,6 +43,14 @@ def main():
     legacy_id = existing_id(LEGACY_TITLE)
     changed = 0
 
+    def ensure_root_link(item_id):
+        cur.execute("SELECT 1 FROM item_tag WHERE item_id=? AND tag_id=0", (item_id,))
+        if cur.fetchone() is None:
+            cur.execute("INSERT INTO item_tag (item_id, tag_id) VALUES (?, 0)", (item_id,))
+            print(f"linked {item_id} to root tag")
+            return 1
+        return 0
+
     for i, tile in enumerate(tiles):
         title = tile["title"]
         colour = tile.get("colour")
@@ -59,6 +67,7 @@ def main():
                 "created_at, updated_at, type, user_id) VALUES (?,?,?,?,1,?,?,?,0,1)",
                 (title, colour, icon, url, order, now, now),
             )
+            row_id = cur.lastrowid
             changed += 1
             print(f"inserted {title}")
         else:
@@ -70,6 +79,7 @@ def main():
             )
             changed += cur.rowcount
             print(f"updated {title}")
+        changed += ensure_root_link(row_id)
 
     conn.commit()
     conn.close()
