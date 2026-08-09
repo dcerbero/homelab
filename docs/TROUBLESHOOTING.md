@@ -73,3 +73,19 @@ sudo lsof -i :53
 # Verificar que el router apunta a la IP del Pi-hole como DNS
 # Verificar que el firewall del router permite DNS (puerto 53)
 ```
+
+## Tag de imagen inexistente o sin arquitectura
+
+**Síntoma:** `Preflight falló: tag inexistente o sin la arquitectura requerida` (o en versiones previas: `compose up` fallaba al hacer pull y el contenedor quedaba stale).
+
+**Causa:** el tag versionado en el `compose.yaml` no existe en el registry o no tiene variante `arm64`.
+
+**Solución:**
+```bash
+# Verificar manualmente un tag contra su registry
+docker manifest inspect <imagen>:<tag>
+
+# Corregir el tag en services/docker/<servicio>/compose.yaml
+# y re-ejecutar
+bash run.sh homeserver --tags preflight
+```

@@ -31,6 +31,7 @@ homelab/
 
 ## Principios de Ingeniería
 
+- **REGLA NO NEGOCIABLE: NUNCA SUPONGAS** — el modelo y el agente en ningún caso deben suponer datos no verificados: arquitectura o specs de máquinas, versiones de imágenes, rutas, puertos, estados del sistema o intenciones del usuario. Toda afirmación o implementación debe basarse en algo verificado (archivos del repo, comandos read-only, preguntar al usuario). Una suposición no confirmada se trata como un bug en potencial.
 - **NUNCA SEAS COMPLACIENTE** — cuestiona requisitos malos, no hagas código inseguro ni uses prácticas obsoletas, y no evites decir "esto está mal".
 - **ENSEÑA, NO SOLO RECOMIENDES** — explica fundamentos y alternativas, hazme pensar, y si me equivoco dame una lección en una línea.
 - **ESCALERA DE EFICIENCIA (Ponytail Principle)** — antes de escribir código, en orden: YAGNI → ya existe en el codebase → stdlib → feature nativa de la plataforma → dependencia ya instalada → una línea → el mínimo que funcione. Perezoso, no negligente: validación, seguridad y errores nunca se recortan.
@@ -53,7 +54,8 @@ bash run.sh homeserver --tags pihole,dns   # por rol
 
 ## Convenciones
 
-- **Ansible**: todos los roles corren con `become: true`. Orden estricto en homeserver: `system-setup → docker → pihole → tailscale → cadvisor → openclaw → heimdall → nginx`. El play oracle solo ejecuta `system-setup → docker → pihole`.
+- **Ansible**: todos los roles corren con `become: true`. Orden estricto en homeserver: `system-setup → docker → preflight → pihole → tailscale → cadvisor → openclaw → heimdall → nginx`. El play oracle solo ejecuta `system-setup → docker → preflight → pihole → monitoring`.
+- **Preflight**: el rol `preflight` (validación de tags de imágenes antes de desplegar) declara como tags propias la unión de las tags de todos los roles de servicio que despliegan compose. Al añadir un rol de servicio nuevo, añade sus tags a la lista de tags del rol `preflight` en `playbook.yml` (ambos plays), o un `--tags <nuevo>` se saltaría la validación en silencio.
 - **Inventario**: `ansible/inventory/{homeserver,oracle}.yml` definen los hosts; `host_vars/` las variables por máquina (`PATH_DATA`, `TAILSCALE_HOSTNAME`). Conexión vía `~/.ssh/config`, sin credenciales en el repo.
 - **Nombres de servicios Compose**: prefijo `svc` (p. ej. `svcPihole`), excepto `openclaw` (compatibilidad con `proxy_pass` de nginx).
 - **UID/GID 1000** para contenedores linuxserver.io.

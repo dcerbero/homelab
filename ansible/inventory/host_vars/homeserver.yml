@@ -1,2 +1,3 @@
 PATH_DATA: /server
 TAILSCALE_HOSTNAME: raspberry-homeserver
+preflight_require_arch: true

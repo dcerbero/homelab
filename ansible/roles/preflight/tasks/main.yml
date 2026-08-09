@@ -1,0 +1,12 @@
+---
+- name: Resolve required architecture from host facts
+  ansible.builtin.set_fact:
+    preflight_required_arch: "{{ 'arm64' if ansible_machine is search('aarch64') else 'amd64' }}"
+
+- name: Verify image tags exist and match host architecture before deploy
+  ansible.builtin.script:
+    cmd: preflight.py {{ ansible_facts['env']['HOME'] }}/services/homelab/services/docker {{ preflight_required_arch }} {{ 1 if (preflight_require_arch | default(false)) else 0 }}
+    executable: python3
+  register: preflight_result
+  changed_when: false
+  failed_when: preflight_result.rc != 0

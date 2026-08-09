@@ -4,6 +4,13 @@ Todos los cambios relevantes de este proyecto se documentan en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2026.08.3] - 2026-08-09
+
+### Agregado
+- Rol Ansible `preflight`: verifica antes de desplegar que todos los tags de `image:` en los `compose.yaml` existen en su registry (y en homeserver, que tengan variante `arm64`), usando `docker manifest inspect` en paralelo. Evita que un tag inexistente falle el `compose up` a mitad del play (caso nginx 1.30.3). Solo valida existencia en oracle vía `preflight_require_arch`
+- El rol `preflight` hereda la unión de las tags de los roles de servicio que despliegan compose, de modo que también se ejecuta en runs etiquetados (`--tags pihole,dns`, `--tags ia`, etc.) y se salta en los que no tocan compose (`--tags system-setup`, `--tags docker`, `--tags tailscale`). Convención de mantenimiento documentada en `CLAUDE.md` y `docs/ANSIBLE.md`
+- `.gitignore`: `__pycache__/`
+
 ## [2026.08.2] - 2026-08-05
 
 ### Corregido
