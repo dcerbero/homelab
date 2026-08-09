@@ -1,7 +1,7 @@
 ---
 - name: Resolve required architecture from host facts
   ansible.builtin.set_fact:
-    preflight_required_arch: "{{ 'arm64' if ansible_machine is search('aarch64') else 'amd64' }}"
+    preflight_required_arch: "{{ 'arm64' if ansible_facts['machine'] is search('aarch64') else 'amd64' }}"
 
 - name: Verify image tags exist and match host architecture before deploy
   ansible.builtin.script:

@@ -89,3 +89,16 @@ docker manifest inspect <imagen>:<tag>
 # y re-ejecutar
 bash run.sh homeserver --tags preflight
 ```
+
+## Rate limit de Docker Hub en el preflight
+
+**Síntoma:** `Preflight falló: rate limit del registry (quota agotada)` para imágenes de Docker Hub, con el aviso `toomanyrequests: You have reached your unauthenticated pull rate limit`.
+
+**Causa:** Docker Hub limita a **100 pulls/6h por IP** para uso anónimo. `docker manifest inspect` consume esa quota, y la IP de casa (NAT) la comparte con el RPi, otras máquinas y los `docker compose up`. Al agotarse, el deploy no podría hacer pull de todas formas, así que el preflight falla antes con un mensaje claro.
+
+**Solución:**
+```bash
+# Esperar a que se renueve la ventana de 6 horas
+# o autenticar el daemon con una cuenta de Docker Hub (sin límite anónimo)
+docker login
+```

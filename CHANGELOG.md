@@ -11,6 +11,10 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.
 - El rol `preflight` hereda la unión de las tags de los roles de servicio que despliegan compose, de modo que también se ejecuta en runs etiquetados (`--tags pihole,dns`, `--tags ia`, etc.) y se salta en los que no tocan compose (`--tags system-setup`, `--tags docker`, `--tags tailscale`). Convención de mantenimiento documentada en `CLAUDE.md` y `docs/ANSIBLE.md`
 - `.gitignore`: `__pycache__/`
 
+### Corregido
+- `preflight`: clasifica los fallos de `docker manifest inspect` en `tag inexistente` / `rate limit del registry` / `verificación no concluyente`, y reintenta solo errores transitorios de red (timeout/EOF), no los 429. Un rate limit de Docker Hub ya no se reporta como "tag inexistente" (era un falso positivo que abortaba el deploy)
+- `preflight`: `ansible_machine` → `ansible_facts['machine']` (evita el deprecation warning de `INJECT_FACTS_AS_VARS`, eliminado en ansible-core 2.24)
+
 ## [2026.08.2] - 2026-08-05
 
 ### Corregido
