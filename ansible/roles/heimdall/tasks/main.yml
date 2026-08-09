@@ -36,7 +36,15 @@
     group: "1000"
     mode: "0644"
 
+- name: Copy declarative dashboard settings
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../services/docker/heimdall/config/settings.json"
+    dest: "{{ PATH_DATA }}/persistence/heimdall/settings.json"
+    owner: "1000"
+    group: "1000"
+    mode: "0644"
+
 - name: Seed heimdall tiles into database (idempotent)
   ansible.builtin.script:
-    cmd: seed_tiles.py {{ PATH_DATA }}/persistence/heimdall/tiles.json {{ PATH_DATA }}/persistence/heimdall/config/www/app.sqlite
+    cmd: seed_tiles.py {{ PATH_DATA }}/persistence/heimdall/tiles.json {{ PATH_DATA }}/persistence/heimdall/settings.json {{ PATH_DATA }}/persistence/heimdall/config/www/app.sqlite
   become: false

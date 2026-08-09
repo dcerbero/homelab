@@ -1,8 +1,8 @@
 [
-  { "title": "pihole-pi", "url": "http://raspberry-homeserver:8085/admin/", "icon": "icons/pihole.svg", "colour": "#161b1f", "order": 0, "tag": "Pi" },
-  { "title": "openclaw-pi", "url": "http://raspberry-homeserver/openclaw", "icon": "icons/openclaw.svg", "colour": "#7c3aed", "order": 1, "tag": "Pi" },
-  { "title": "cadvisor-pi", "url": "http://raspberry-homeserver:9101/", "icon": "icons/cadvisor.png", "colour": "#1e293b", "order": 2, "tag": "Pi" },
-  { "title": "pihole-oracle", "url": "http://ollama-server-2:8085/admin/", "icon": "icons/pihole.svg", "colour": "#161b1f", "order": 0, "tag": "Oracle" },
-  { "title": "cadvisor-oracle", "url": "http://ollama-server-2:9101/", "icon": "icons/cadvisor.png", "colour": "#1e293b", "order": 1, "tag": "Oracle" },
-  { "title": "grafana-oracle", "url": "http://ollama-server-2:3000/", "icon": "icons/grafana.svg", "colour": "#F46800", "order": 2, "tag": "Oracle" }
+  { "title": "cadvisor-pi", "url": "http://raspberry-homeserver:9101/", "icon": "icons/cadvisor.png", "colour": "#1e293b", "tag": "Pi" },
+  { "title": "openclaw-pi", "url": "http://raspberry-homeserver/openclaw", "icon": "icons/openclaw.svg", "colour": "#7c3aed", "tag": "Pi" },
+  { "title": "pihole-pi", "url": "http://raspberry-homeserver:8085/admin/", "icon": "icons/pihole.svg", "colour": "#161b1f", "tag": "Pi" },
+  { "title": "cadvisor-oracle", "url": "http://ollama-server-2:9101/", "icon": "icons/cadvisor.png", "colour": "#1e293b", "tag": "Oracle" },
+  { "title": "grafana-oracle", "url": "http://ollama-server-2:3000/", "icon": "icons/grafana.svg", "colour": "#F46800", "tag": "Oracle" },
+  { "title": "pihole-oracle", "url": "http://ollama-server-2:8085/admin/", "icon": "icons/pihole.svg", "colour": "#161b1f", "tag": "Oracle" }
 ]

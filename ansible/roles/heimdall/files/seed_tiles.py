@@ -11,7 +11,6 @@ LEGACY_RENAMES = {
     "grafana": "grafana-oracle",
 }
 NEW_TO_LEGACY = {new: old for old, new in LEGACY_RENAMES.items()}
-ROOT_TAG_ID = 0
 
 
 def slugify(title):
@@ -19,17 +18,19 @@ def slugify(title):
 
 
 def main():
-    if len(sys.argv) != 3:
-        print("usage: seed_tiles.py <tiles.json> <app.sqlite>", file=sys.stderr)
+    if len(sys.argv) != 4:
+        print("usage: seed_tiles.py <tiles.json> <settings.json> <app.sqlite>", file=sys.stderr)
         return 2
 
-    tiles_file, db_path = sys.argv[1], sys.argv[2]
+    tiles_file, settings_file, db_path = sys.argv[1], sys.argv[2], sys.argv[3]
 
     try:
         with open(tiles_file) as f:
             tiles = json.load(f)
+        with open(settings_file) as f:
+            settings = json.load(f)
     except (OSError, ValueError) as e:
-        print(f"error reading {tiles_file}: {e}", file=sys.stderr)
+        print(f"error reading config: {e}", file=sys.stderr)
         return 2
 
     try:
@@ -57,14 +58,12 @@ def main():
         return row[0] if row else None
 
     desired_titles = [tile["title"] for tile in tiles]
+    changed = 0
 
-    # Categorias: asegurar un item tag (type=1) por cada tag distinto.
+    # Categorias: una por tag distinto, ordenadas alfabeticamente.
     tag_order = 0
     tag_ids = {}
-    for tile in tiles:
-        tag = tile.get("tag")
-        if not tag or tag in tag_ids:
-            continue
+    for tag in sorted({tile["tag"] for tile in tiles if tile.get("tag")}, key=str.lower):
         tag_id = existing_id(tag, item_type=1)
         if tag_id is None:
             cur.execute(
@@ -83,8 +82,9 @@ def main():
         tag_ids[tag] = tag_id
         tag_order += 1
 
-    changed = 0
-    managed_ids = []
+    # Orden derivado: alfabetico dentro de cada categoria.
+    tiles = sorted(tiles, key=lambda t: (t.get("tag", "").lower(), t["title"].lower()))
+    per_tag_counter = {}
 
     for tile in tiles:
         title = tile["title"]
@@ -92,7 +92,9 @@ def main():
         colour = tile.get("colour")
         icon = tile.get("icon")
         url = tile.get("url", "")
-        order = tile.get("order", 0)
+        per_tag_counter[tag] = per_tag_counter.get(tag, 0)
+        order = per_tag_counter[tag]
+        per_tag_counter[tag] += 1
 
         row_id = existing_id(title)
         if row_id is None and title in NEW_TO_LEGACY:
@@ -116,7 +118,6 @@ def main():
             changed += cur.rowcount
             print(f"updated {title}")
 
-        managed_ids.append(row_id)
         category_id = tag_ids.get(tag)
         if category_id is not None:
             cur.execute("DELETE FROM item_tag WHERE item_id=?", (row_id,))
@@ -126,7 +127,7 @@ def main():
             )
             print(f"linked {title} -> {tag}")
 
-    # Limpieza: borrar tiles (type=0) gestionadas que ya no estan en tiles.json.
+    # Limpieza: borrar tiles (type=0) que ya no estan en tiles.json.
     placeholders = ",".join("?" * len(desired_titles))
     cur.execute(
         f"SELECT id FROM items WHERE type=0 AND user_id=1 AND deleted_at IS NULL "
@@ -140,13 +141,15 @@ def main():
         changed += 1
         print(f"cleaned {item_id}")
 
-    # Modo dashboard: categorias.
-    cur.execute(
-        "UPDATE settings SET value='categories' WHERE key='treat_tags_as' AND value != 'categories'"
-    )
-    if cur.rowcount:
-        changed += 1
-        print("treat_tags_as -> categories")
+    # Settings del dashboard desde settings.json.
+    for key, value in settings.items():
+        cur.execute(
+            "UPDATE settings SET value=? WHERE key=? AND value != ?",
+            (value, key, value),
+        )
+        if cur.rowcount:
+            changed += 1
+            print(f"setting {key} -> {value}")
 
     conn.commit()
     conn.close()
