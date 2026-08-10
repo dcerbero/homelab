@@ -17,6 +17,8 @@
       tags: [docker, containers]
     - role: preflight
       tags: [preflight, containers, pihole, dns, cadvisor, monitoring, openclaw, ia, heimdall, dashboard, nginx, proxy]
+    - role: systemd-resolved
+      tags: [systemd-resolved, dns, system]
     - role: pihole
       tags: [pihole, dns]
     - role: tailscale
@@ -48,6 +50,8 @@
       tags: [docker, containers, talos]
     - role: preflight
       tags: [preflight, containers, talos, pihole, dns, monitoring, metrics]
+    - role: systemd-resolved
+      tags: [systemd-resolved, dns, system, talos]
     - role: pihole
       tags: [pihole, dns, talos]
     - role: monitoring
@@ -65,5 +69,9 @@
       tags: always
 
   roles:
+    - role: system-setup
+      tags: [system-setup, system, anton]
+    - role: docker
+      tags: [docker, containers, anton]
     - role: tailscale
       tags: [tailscale, vpn, anton]

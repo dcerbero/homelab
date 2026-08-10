@@ -1,0 +1,17 @@
+---
+- name: Create DNS config directory
+  ansible.builtin.file:
+    path: /etc/systemd/resolved.conf.d
+    state: directory
+    mode: "0755"
+
+- name: Disable DNS stub listener on port 53
+  ansible.builtin.copy:
+    content: |
+      [Resolve]
+      DNSStubListener=no
+    dest: /etc/systemd/resolved.conf.d/dns.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: restart systemd-resolved

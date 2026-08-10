@@ -1,6 +1,6 @@
 # 🤖 Ansible — Aprovisionamiento
 
-Ansible es nuestro equipo de montaje: en una sola pasada deja cada máquina con el sistema operativo, Docker, Tailscale y los servicios listos para funcionar. Automatiza la configuración de la infraestructura: Raspberry Pi 4 ([yoda](HARDWARE.md#yoda)) + Oracle Cloud VM ([talos](HARDWARE.md#talos), Pi-hole failover DNS). El Equipo x86_64 ([anton](HARDWARE.md#anton)) tiene play e inventario propios con solo el rol `tailscale` por ahora; el resto de servicios se irán añadiendo al provisionarlo.
+Ansible es nuestro equipo de montaje: en una sola pasada deja cada máquina con el sistema operativo, Docker, Tailscale y los servicios listos para funcionar. Automatiza la configuración de la infraestructura: Raspberry Pi 4 ([yoda](HARDWARE.md#yoda)) + Oracle Cloud VM ([talos](HARDWARE.md#talos), Pi-hole failover DNS). El Equipo x86_64 ([anton](HARDWARE.md#anton)) tiene play e inventario propios con la base del sistema (system-setup, docker, tailscale); el stack media se añadirá al provisionarlo.
 
 ## Índice
 
@@ -27,9 +27,10 @@ bash run.sh
 
 | Rol | Tags | Descripción |
 |---|---|---|
-| `system-setup` | `system-setup`, `system` | Paquetes del SO, deshabilitar DNS stub, clonar repositorio |
+| `system-setup` | `system-setup`, `system` | Paquetes del SO, clonar repositorio, esqueleto `$PATH_DATA` |
 | `docker` | `docker`, `containers` | Instalación de Docker Engine, Docker Compose, grupo docker |
 | `preflight` | `preflight`, `containers` + unión de tags de roles compose | Verifica que todos los tags de `image:` en el repo existan en su registry y tengan variante `arm64` antes de desplegar |
+| `systemd-resolved` | `systemd-resolved`, `dns`, `system` | Desactiva el stub listener de systemd-resolved (libera el puerto 53 para Pi-hole) |
 | `pihole` | `pihole`, `dns` | Despliegue del contenedor Pi-hole con Docker Compose |
 | `tailscale` | `tailscale`, `vpn` | Instalación y autenticación de Tailscale VPN |
 | `cadvisor` | `cadvisor`, `monitoring` | Despliegue de cAdvisor y node-exporter (perfil `monitoring`) |
@@ -41,9 +42,10 @@ bash run.sh
 
 | Rol | Tags | Descripción |
 |---|---|---|
-| `system-setup` | `system-setup`, `system`, `talos` | Paquetes del SO, DNS stub, clonar repo |
+| `system-setup` | `system-setup`, `system`, `talos` | Paquetes del SO, clonar repo, esqueleto `$PATH_DATA` |
 | `docker` | `docker`, `containers`, `talos` | Instalación de Docker Engine + Compose |
 | `preflight` | `preflight`, `containers`, `talos` + unión de tags de roles compose | Verifica existencia de los tags (solo existencia; no exige arquitectura) |
+| `systemd-resolved` | `systemd-resolved`, `dns`, `system`, `talos` | Desactiva el stub listener de systemd-resolved (libera el puerto 53 para Pi-hole) |
 | `pihole` | `pihole`, `dns`, `talos` | Pi-hole secundario (failover DNS) |
 | `monitoring` | `monitoring`, `metrics`, `talos` | Stack de métricas centralizado: Prometheus, Grafana, node-exporter y cAdvisor. Tras el `compose up` recarga la config de Prometheus (`docker exec prometheus kill -HUP 1`) |
 
@@ -79,7 +81,7 @@ Tres plays independientes:
 
 1. **[`yoda`](HARDWARE.md#yoda)** — RPi4 local: todos los roles
 2. **[`talos`](HARDWARE.md#talos)** — Oracle Cloud VM: Pi-hole failover + stack de monitoreo (system-setup, docker, pihole, monitoring)
-3. **[`anton`](HARDWARE.md#anton)** — Equipo x86_64: **solo `tailscale` por ahora** (tags `tailscale`, `vpn`, `anton`). Al provisionar el resto (Docker, preflight, media) se irá completando este play.
+3. **[`anton`](HARDWARE.md#anton)** — Equipo x86_64: base del sistema (system-setup, docker, tailscale) con tags `…, anton`. El stack media (preflight + rol media) se añadirá al provisionarlo.
 
 La definición exacta de roles y tags está en [`ansible/playbook.yml`](../ansible/playbook.yml).
 
