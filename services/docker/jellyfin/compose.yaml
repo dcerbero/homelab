@@ -18,7 +18,7 @@ services:
       - 8096:8096
     group_add:
       - "44"      # video
-      - "107"     # render
+      - "993"     # render (gid en anton, único host que corre Jellyfin)
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://localhost:8096/health"]
