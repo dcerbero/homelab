@@ -9,5 +9,6 @@ include:
   - jellyfin/compose.yaml
   - cadvisor/compose.yaml
   - node-exporter/compose.yaml
+  - smartctl-exporter/compose.yaml
   - prometheus/compose.yaml
   - grafana/compose.yaml
