@@ -1,0 +1,7 @@
+---
+- name: Start smartctl-exporter service
+  shell: |
+    cd {{ ansible_facts['env']['HOME'] }}/services/homelab/services/docker
+    PATH_DATA={{ PATH_DATA }} docker compose --profile smart up -d --remove-orphans
+  register: smartctl_result
+  changed_when: smartctl_result.stdout is search("Created|Started|Recreated")

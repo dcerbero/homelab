@@ -73,5 +73,9 @@
       tags: [system-setup, system, anton]
     - role: docker
       tags: [docker, containers, anton]
+    - role: cadvisor
+      tags: [cadvisor, monitoring, anton]
+    - role: smartctl
+      tags: [smartctl, monitoring, anton]
     - role: tailscale
       tags: [tailscale, vpn, anton]

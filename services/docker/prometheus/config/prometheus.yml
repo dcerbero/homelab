@@ -9,7 +9,7 @@ scrape_configs:
 
   - job_name: node-exporter
     static_configs:
-      - targets: ["svcNodeExporter:9100", "yoda:9100"]
+      - targets: ["svcNodeExporter:9100", "yoda:9100", "anton:9100"]
     relabel_configs:
       - source_labels: [__address__]
         regex: "svcNodeExporter:9100"
@@ -19,10 +19,14 @@ scrape_configs:
         regex: "yoda:9100"
         target_label: instance
         replacement: yoda
+      - source_labels: [__address__]
+        regex: "anton:9100"
+        target_label: instance
+        replacement: anton
 
   - job_name: cadvisor
     static_configs:
-      - targets: ["svccAdvisor:8080", "yoda:9101"]
+      - targets: ["svccAdvisor:8080", "yoda:9101", "anton:9101"]
     relabel_configs:
       - source_labels: [__address__]
         regex: "svccAdvisor:8080"
@@ -32,3 +36,16 @@ scrape_configs:
         regex: "yoda:9101"
         target_label: instance
         replacement: yoda
+      - source_labels: [__address__]
+        regex: "anton:9101"
+        target_label: instance
+        replacement: anton
+
+  - job_name: smartctl
+    static_configs:
+      - targets: ["anton:9633"]
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: "anton:9633"
+        target_label: instance
+        replacement: anton

@@ -1,0 +1,17 @@
+services:
+  svcSmartctl:
+    image: prometheuscommunity/smartctl-exporter:v0.14.0
+    container_name: smartctl_exporter
+    privileged: true
+    user: root
+    profiles:
+      - smart
+    ports:
+      - "9633:9633"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:9633/metrics"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

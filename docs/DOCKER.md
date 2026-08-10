@@ -30,6 +30,7 @@ services/docker/
 ├── transmission/compose.yaml ← Perfil: media-download
 ├── cadvisor/compose.yaml     ← Perfil: monitoring
 ├── node-exporter/compose.yaml← Perfil: monitoring
+├── smartctl-exporter/compose.yaml ← Perfil: smart (SMART de discos, solo anton)
 ├── prometheus/compose.yaml   ← Perfil: metrics
 ├── prometheus/config/prometheus.yml  ← Config de scrape
 ├── grafana/compose.yaml      ← Perfil: metrics
@@ -46,7 +47,8 @@ services/docker/
 | `infra` | nginx | Proxy reverso |
 | `media-streaming` | Jellyfin | Streaming multimedia |
 | `media-download` | Transmission, Prowlarr, Sonarr | Descarga y gestión |
-| `monitoring` | cAdvisor, node-exporter | Exporters de métricas (ambas máquinas) |
+| `monitoring` | cAdvisor, node-exporter | Exporters de métricas (todas las máquinas) |
+| `smart` | smartctl-exporter | Salud SMART de discos (solo [anton](HARDWARE.md#anton)) |
 | `metrics` | Prometheus, Grafana | Backend y dashboards (solo [talos](HARDWARE.md#talos)) |
 
 ## Despliegue
