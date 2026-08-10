@@ -12,6 +12,9 @@ ARCH_ALIASES = {
     'arm64': ('arm64', 'arm64v8', 'aarch64'),
     'amd64': ('amd64', 'x86_64'),
 }
+# Servicios media: usan tags amd64- (solo se despliegan en anton, x86_64).
+# En hosts arm64 (yoda, talos) no se despliegan, así que su preflight no debe validarlos.
+AMD64_ONLY_DIRS = {'jellyfin', 'sonarr', 'transmission', 'prowlarr'}
 MISSING_PATTERNS = re.compile(r'no such manifest|manifest unknown|not found', re.IGNORECASE)
 AUTH_PATTERNS = re.compile(r'denied|unauthorized', re.IGNORECASE)
 RATE_LIMIT_PATTERNS = re.compile(r'429|too many requests|toomanyrequests|rate limit', re.IGNORECASE)
@@ -19,9 +22,11 @@ RETRIES = 3
 RETRY_DELAYS = (2, 4)
 
 
-def collect_images(compose_root):
+def collect_images(compose_root, required_arch):
     images = set()
     for compose in pathlib.Path(compose_root).rglob('compose.yaml'):
+        if required_arch != 'amd64' and compose.parent.name in AMD64_ONLY_DIRS:
+            continue
         for line in compose.read_text(errors='replace').splitlines():
             match = IMAGE_RE.match(line)
             if match:
@@ -63,7 +68,7 @@ def has_arch(manifest, required_arch, image):
 
 def main():
     compose_root, required_arch, check_arch = sys.argv[1], sys.argv[2], sys.argv[3] == '1'
-    images = collect_images(compose_root)
+    images = collect_images(compose_root, required_arch)
 
     daemon = subprocess.run(['docker', 'version'], capture_output=True, text=True)
     if daemon.returncode != 0:

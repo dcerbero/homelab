@@ -1,6 +1,6 @@
 # 🤖 Ansible — Aprovisionamiento
 
-Ansible es nuestro equipo de montaje: en una sola pasada deja cada máquina con el sistema operativo, Docker, Tailscale y los servicios listos para funcionar. Automatiza la configuración de la infraestructura: Raspberry Pi 4 ([yoda](HARDWARE.md#yoda)) + Oracle Cloud VM ([talos](HARDWARE.md#talos), Pi-hole failover DNS). El Equipo x86_64 ([anton](HARDWARE.md#anton)) tiene play e inventario propios con la base del sistema (system-setup, docker, tailscale); el stack media se añadirá al provisionarlo.
+Ansible es nuestro equipo de montaje: en una sola pasada deja cada máquina con el sistema operativo, Docker, Tailscale y los servicios listos para funcionar. Automatiza la configuración de la infraestructura: Raspberry Pi 4 ([yoda](HARDWARE.md#yoda)) + Oracle Cloud VM ([talos](HARDWARE.md#talos), Pi-hole failover DNS). El Equipo x86_64 ([anton](HARDWARE.md#anton)) tiene play e inventario propios: base del sistema, monitoreo y el stack media (Jellyfin + arr).
 
 ## Índice
 

@@ -1,6 +1,6 @@
 # 🐋 Docker Compose — Servicios
 
-Todos los servicios de [yoda](HARDWARE.md#yoda) se despliegan con Docker Compose usando perfiles independientes. Cada servicio vive en su propia carpeta con su `compose.yaml`, y el archivo principal los incluye a todos — así un servicio se puede arrancar solo o con todo el stack.
+Todos los servicios se despliegan con Docker Compose usando perfiles independientes. Cada servicio vive en su propia carpeta con su `compose.yaml`, y el archivo principal los incluye a todos — así un servicio se puede arrancar solo o con todo el stack. La máquina destino depende del perfil: DNS/dashboard/IA/infra en [yoda](HARDWARE.md#yoda), media en [anton](HARDWARE.md#anton), métricas en [talos](HARDWARE.md#talos).
 
 ## Índice
 
