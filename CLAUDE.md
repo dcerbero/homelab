@@ -4,7 +4,7 @@ Guía de trabajo para asistentes IA en este repositorio. El detalle completo viv
 
 ## Resumen
 
-Infraestructura híbrida: Raspberry Pi 4 (local) + Oracle Cloud VM (Pi-hole failover), aprovisionada con Ansible y servicios Docker organizados por perfiles.
+Infraestructura híbrida: Raspberry Pi 4 (local) + Oracle Cloud VM (Pi-hole failover) + máquina media x86_64 (pendiente de provisionar), aprovisionada con Ansible y servicios Docker organizados por perfiles.
 
 Dos subsistemas, cada uno con su ciclo de vida:
 

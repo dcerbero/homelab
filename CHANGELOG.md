@@ -4,6 +4,15 @@ Todos los cambios relevantes de este proyecto se documentan en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2026.08.4] - 2026-08-09
+
+### Agregado
+- Máquina media (192.168.0.3): x86_64, Intel i5-3470S (4c/4t), 7.7 GiB RAM, 3×1TB (sda OS; sdb/sdc datos sin configurar), Intel HD 2500 (QSV H.264). Pendiente de provisionar.
+- `docs/HARDWARE.md`: inventario del hardware (media, pi, oracle) con puntuación 0-10 por componente y promedios.
+
+### Documentación
+- `README.md` raíz y `docs/README.md`: incluida la máquina media.
+
 ## [2026.08.3] - 2026-08-09
 
 ### Agregado

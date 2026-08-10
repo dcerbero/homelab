@@ -1,13 +1,14 @@
 # ⚡ Homelab
 
-Infraestructura híbrida: servidor local (Raspberry Pi 4) + Oracle Cloud VM,
+Infraestructura híbrida: servidor local (Raspberry Pi 4) + Oracle Cloud VM +
+máquina media (pendiente provisionar),
 aprovisionada con Ansible y servicios Docker organizados por perfiles.
 
 ## Stack
 
 | Componente | Tecnología |
 |---|---|
-| Servidores | Raspberry Pi 4 (Ubuntu 24.04) + Oracle Cloud VM |
+| Servidores | Raspberry Pi 4 (Ubuntu 24.04) + Oracle Cloud VM + máquina media |
 | Orquestación | Ansible (9 roles, 2 plays) |
 | Contenedores | Docker + Docker Compose (8 perfiles) |
 | DNS | Pi-hole (activo + failover) |
@@ -26,6 +27,7 @@ Toda la documentación está en [`docs/`](docs/README.md):
 | Archivo | Contenido |
 |---|---|
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Topología de red, flujos, puertos |
+| [`docs/HARDWARE.md`](docs/HARDWARE.md) | Inventario de hardware y puntuación por máquina |
 | [`docs/SETUP.md`](docs/SETUP.md) | Configuración inicial de la Raspberry Pi |
 | [`docs/ANSIBLE.md`](docs/ANSIBLE.md) | Roles de Ansible, playbook, variables |
 | [`docs/DOCKER.md`](docs/DOCKER.md) | Servicios Docker, perfiles, backup, actualización |
