@@ -38,7 +38,7 @@
       "type": "timeseries",
       "title": "CPU Usage",
       "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 1 },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 9 },
       "targets": [
         {
           "refId": "A",
@@ -62,7 +62,7 @@
       "type": "timeseries",
       "title": "Memory Used",
       "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 1 },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 9 },
       "targets": [
         {
           "refId": "A",
@@ -108,7 +108,7 @@
       "type": "timeseries",
       "title": "Disk Usage /",
       "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 9 },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 17 },
       "targets": [
         {
           "refId": "A",
@@ -132,7 +132,7 @@
       "type": "timeseries",
       "title": "Network Traffic",
       "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 9 },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 9 },
       "targets": [
         {
           "refId": "A",
@@ -159,7 +159,7 @@
       "type": "stat",
       "title": "Temperature",
       "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 9 },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 1 },
       "targets": [
         {
           "refId": "A",
@@ -182,7 +182,7 @@
       "type": "stat",
       "title": "Host Status",
       "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 17 },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 1 },
       "targets": [
         {
           "refId": "A",
@@ -205,10 +205,114 @@
       }
     },
     {
+      "id": 15,
+      "type": "row",
+      "title": "Disks",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 25 },
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "id": 16,
+      "type": "stat",
+      "title": "Disk Health",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 26 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "smartctl_device_smart_status{instance=~\"$instance\",device=~\"sd[b-c]\"}",
+          "legendFormat": "{{device}}",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            { "type": "value", "options": { "0": { "text": "FAIL", "color": "red" } } },
+            { "type": "value", "options": { "1": { "text": "OK", "color": "green" } } }
+          ],
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "red", "value": 1 } ] }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 17,
+      "type": "stat",
+      "title": "Reallocated",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 6, "x": 6, "y": 26 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "smartctl_device_attribute{instance=~\"$instance\",device=~\"sd[b-c]\",attribute_name=\"Reallocated_Sector_Ct\",attribute_value_type=\"raw\"}",
+          "legendFormat": "{{device}}",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "red", "value": 1 } ] }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 18,
+      "type": "stat",
+      "title": "Pending",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 26 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "smartctl_device_attribute{instance=~\"$instance\",device=~\"sd[b-c]\",attribute_name=\"Current_Pending_Sector\",attribute_value_type=\"raw\"}",
+          "legendFormat": "{{device}}",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "red", "value": 1 } ] }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 19,
+      "type": "stat",
+      "title": "Disk Temp",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 26 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "smartctl_device_temperature{instance=~\"$instance\",device=~\"sd[b-c]\",temperature_type=\"current\"}",
+          "legendFormat": "{{device}}",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "yellow", "value": 50 }, { "color": "red", "value": 60 } ] }
+        },
+        "overrides": []
+      }
+    },
+    {
       "id": 8,
       "type": "row",
       "title": "Containers",
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 25 },
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 34 },
       "collapsed": false,
       "panels": []
     },
@@ -217,7 +321,7 @@
       "type": "timeseries",
       "title": "Container CPU (cores)",
       "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 26 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 35 },
       "targets": [
         {
           "refId": "A",
@@ -239,7 +343,7 @@
       "type": "timeseries",
       "title": "Container Memory (GiB)",
       "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 26 },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 35 },
       "targets": [
         {
           "refId": "A",
@@ -261,7 +365,7 @@
       "type": "stat",
       "title": "Container Health",
       "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 35 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 44 },
       "targets": [
         {
           "refId": "A",
@@ -289,7 +393,7 @@
       "id": 12,
       "type": "row",
       "title": "Services",
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 34 },
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 43 },
       "collapsed": false,
       "panels": []
     },
@@ -298,7 +402,7 @@
       "type": "stat",
       "title": "Scrape Targets",
       "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 35 },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 44 },
       "targets": [
         {
           "refId": "A",
