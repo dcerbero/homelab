@@ -135,7 +135,7 @@ bash run.sh
 # Solo yoda (RPi)
 bash run.sh yoda
 
-# Solo talos (Pi-hole failover)
+# Solo talos
 bash run.sh talos
 
 # Solo un rol específico en una máquina

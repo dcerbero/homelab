@@ -52,7 +52,7 @@ bash run.sh
 # Solo yoda:
 bash run.sh yoda
 
-# Solo talos (failover Pi-hole):
+# Solo talos:
 bash run.sh talos
 ```
 

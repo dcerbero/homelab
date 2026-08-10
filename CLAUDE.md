@@ -45,7 +45,7 @@ cd ansible/
 cp .env.example .env     # editar con secretos
 bash run.sh              # todas las máquinas
 bash run.sh yoda         # solo RPi
-bash run.sh talos        # solo Oracle (failover Pi-hole)
+bash run.sh talos        # solo Oracle
 bash run.sh yoda --tags pihole,dns   # por rol
 ```
 
