@@ -1,8 +1,17 @@
-# 🛠️ Setup Inicial de la Raspberry Pi
+# 🛠️ Setup Inicial de las Máquinas
 
-La primera vez que la Pi llega a casa hay que dejarla con IP fija, DNS libre y el sistema listo para que Ansible haga lo suyo. Es un trabajo de una sola vez, pero bien hecho evita sorpresas después.
+Configuración bare-metal de una sola vez, previa al aprovisionamiento con Ansible. Cubre la Raspberry Pi ([yoda](HARDWARE.md#yoda)) y los discos del servidor media ([anton](HARDWARE.md#anton)).
 
 ## Índice
+
+- [Setup de la Raspberry Pi](#setup-de-la-raspberry-pi)
+- [Discos de anton — RAID1 media](#5-discos-de-anton--raid1-media)
+
+---
+
+# Setup de la Raspberry Pi
+
+La primera vez que la Pi llega a casa hay que dejarla con IP fija, DNS libre y el sistema listo para que Ansible haga lo suyo. Es un trabajo de una sola vez, pero bien hecho evita sorpresas después.
 
 - [Requisitos](#requisitos)
 - [1. Configurar IP Estática](#1-configurar-ip-estática)
@@ -103,3 +112,50 @@ bash run.sh
 ```
 
 Ver [`ANSIBLE.md`](ANSIBLE.md) para detalles.
+
+---
+
+# 5. Discos de anton — RAID1 media
+
+anton es el servidor media. El disco de sistema (**sda**, Seagate 2.5" con 221k load/unload cycles) se trata como **descartable**: solo SO, Docker y swap. Todos los datos de servicios viven en el **RAID1** de los dos WD Green, montado en `/server` (que es `PATH_DATA`). Si sda muere o se cambia: reinstalar + `bash run.sh`, y el array se re-ensambla solo — cero pérdida de datos.
+
+## Layout
+
+```text
+/dev/md0 RAID1 (sdb1 + sdc1, ext4)  →  /server/   (persistence/ + media/*)
+sda (Seagate ST1000LM035)           →  SO + Docker + swap  (descartable)
+```
+
+`PATH_DATA=/server` (igual que [yoda](HARDWARE.md#yoda) y [talos](HARDWARE.md#talos)), así que los `compose.yaml` no cambian: `${PATH_DATA}/media/*` cae dentro del mount del array.
+
+## Configuración aplicada (2026-08-10)
+
+| Aspecto | Valor |
+|---|---|
+| RAID | `mdadm` nivel 1, metadata 1.2, array `media:media` (`/dev/md127`, symlink `/dev/md/media`) |
+| Miembros | `/dev/sdb1` + `/dev/sdc1` (GPT, 1 partición tipo `fd00` cada uno, alineación 2048 sectores) |
+| Filesystem | ext4, `-m 0` (sin bloques reservados → **916G útiles**) |
+| fstab | `UUID=<del array>  /server  ext4  defaults,noatime,commit=600,nofail  0  2` |
+| Auto-ensamblaje | `ARRAY /dev/md/media ...` por UUID en `/etc/mdadm/mdadm.conf` + `update-initramfs -u` |
+| Resync inicial | doble burn-in de superficie (~3–4h en background, retomable por bitmap tras reboot) |
+| Head-park WD Green | `idle3ctl -d /dev/sdb /dev/sdc` (desactiva el timer idle3 en el **firmware**; los EADS no soportan APM, por eso no vale `hdparm -B`) |
+| Ownership | `/server` completo con `1000:1000` (esqueleto que crea Ansible `system-setup`) |
+
+> [!NOTE]
+> `idle3ctl -d` queda grabado en el firmware del disco, pero solo se activa tras un **apagado/encendido real** (power cycle) del equipo, no con un simple reboot.
+
+## Comandos de mantenimiento
+
+```bash
+cat /proc/mdstat                                   # estado del array / progreso
+mdadm --detail /dev/md127                          # salud de los miembros
+echo check > /sys/block/md127/md/sync_action       # verifica integridad de ambos espejos (read-only)
+smartctl -a /dev/sdb                               # salud SMART
+smartctl -t long /dev/sdb                          # burn-in de superficie (~4.5h, en background)
+```
+
+## Qué NO hacer
+
+- No particionar/formatear sdb o sdc fuera de este layout: romperías el array.
+- No quitar `nofail` de la línea fstab: si el array no ensambla, el sistema debe arrancar igualmente.
+- Si algún día se reemplaza un WD Green: repetir `idle3ctl -d` en el disco nuevo, verificar el rebuild con `mdadm --detail` y confirmar estado `clean` al terminar.

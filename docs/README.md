@@ -6,7 +6,7 @@ Todo lo que necesitas saber sobre nuestro homelab, organizado por tema. Este es 
 
 | Componente | Tecnología |
 |---|---|
-| Servidor | [yoda](HARDWARE.md#yoda) — Raspberry Pi 4 (Ubuntu 24.04) + [anton](HARDWARE.md#anton) — Equipo x86_64 (pendiente provisionar) |
+| Servidor | [yoda](HARDWARE.md#yoda) — Raspberry Pi 4 (Ubuntu 24.04) + [anton](HARDWARE.md#anton) — Equipo x86_64 (servidor media) |
 | Nube | [talos](HARDWARE.md#talos) — Oracle Cloud VM (failover DNS) |
 | Orquestación | Ansible |
 | Contenedores | Docker + Docker Compose |
@@ -25,7 +25,7 @@ Todo lo que necesitas saber sobre nuestro homelab, organizado por tema. Este es 
 |---|---|
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | Topología de red, flujos, diagrama de infraestructura |
 | [`HARDWARE.md`](HARDWARE.md) | Inventario de hardware y puntuación por máquina |
-| [`SETUP.md`](SETUP.md) | Configuración inicial de la Raspberry Pi |
+| [`SETUP.md`](SETUP.md) | Configuración inicial de las máquinas (RPi y discos RAID1 de anton) |
 | [`ANSIBLE.md`](ANSIBLE.md) | Roles de Ansible, playbook, variables de entorno |
 | [`DOCKER.md`](DOCKER.md) | Servicios Docker Compose, perfiles, volúmenes, backup, actualización |
 | [`COMMANDS.md`](COMMANDS.md) | Comandos de uso diario, monitorización, health checks |

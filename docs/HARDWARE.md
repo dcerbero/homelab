@@ -14,7 +14,7 @@ Cada máquina de esta casa tiene un nombre, un papel y una historia. Aquí está
 
 | Máquina | Alias SSH | SO | Arquitectura | CPU | RAM | Almacenamiento | GPU / transcode | Consumo energético | Rol |
 |---|---|---|---|---|---|---|---|---|---|
-| [**anton**](#anton) | `anton` | Ubuntu 24.04.4 LTS | x86_64 | Intel Core i5-3470S (4c/4t @ 2.9GHz, Ivy Bridge) | 7.7 GiB + 4 GiB swap | 3×1TB: sda Seagate ST1000LM035 (OS, root LVM 100G); sdb+sdc WD10EADS-00P (datos, **sin configurar**) | Intel HD 2500 (`/dev/dri/renderD128`) — QSV H.264, sin HEVC | ~30–40W *(estimado)* | Equipo x86_64 (pendiente provisionar) |
+| [**anton**](#anton) | `anton` | Ubuntu 24.04.4 LTS | x86_64 | Intel Core i5-3470S (4c/4t @ 2.9GHz, Ivy Bridge) | 7.7 GiB + 4 GiB swap | sda Seagate ST1000LM035 (OS+Docker, **descartable**) · **sdb+sdc WD10EADS-00P → RAID1** (mdadm, 916G, `/server` = persistence+media) | Intel HD 2500 (`/dev/dri/renderD128`) — QSV H.264, sin HEVC | ~30–40W *(estimado)* | Servidor media (provisionar) |
 | [**yoda**](#yoda) | `yoda` | Ubuntu 24.04.4 LTS | aarch64 | Raspberry Pi 4 Model B Rev 1.2 (BCM2711 Cortex-A72, 4c) | 3.7 GiB (4GB, parte reservada a GPU) | KINGSTON SA400S37240G 240GB SSD | VideoCore VI (Broadcom) — sin QSV | ~3–7W (documentado) | Pi-hole, Heimdall, nginx, OpenClaw, cAdvisor, media (hoy) |
 | [**talos**](#talos) | `talos` | Ubuntu 24.04.4 LTS | aarch64 | Ampere A1 Flex (ARM Neoverse-N1, 4c) | 23 GiB | BlockVolume OCI 150G | n/a (cloud) | n/a (nube, 0W local) | VM OCI: Pi-hole failover + monitoreo (Prometheus, Grafana) |
 
@@ -64,4 +64,4 @@ Puntajes de aptitud de hardware pura (capacidad y eficiencia), sin considerar pa
 | [yoda](#yoda) | 5.0 |
 
 > [!NOTE]
-> Datos verificados por SSH (2026-08-09). Puntajes subjetivos basados en la rúbrica anterior. [`anton`](#anton) es el alias SSH de un Equipo x86_64 pendiente de provisionar.
+> Datos verificados por SSH (2026-08-09). Puntajes subjetivos basados en la rúbrica anterior. [`anton`](#anton) es el alias SSH de un Equipo x86_64 destinado a media; el RAID1 de sus discos de datos (`/server`) se configuró el 2026-08-10 (ver [`SETUP.md`](SETUP.md#5-discos-de-anton--raid1-media)).
