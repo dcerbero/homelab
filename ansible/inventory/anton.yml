@@ -1,0 +1,6 @@
+all:
+  children:
+    anton:
+      hosts:
+        anton:
+          ansible_host: anton

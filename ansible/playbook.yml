@@ -52,3 +52,18 @@
       tags: [pihole, dns, talos]
     - role: monitoring
       tags: [monitoring, metrics, talos]
+
+- name: Setup anton
+  hosts: anton
+  become: true
+  gather_facts: no
+
+  pre_tasks:
+    - name: Gather facts as connection user
+      ansible.builtin.setup:
+      become: false
+      tags: always
+
+  roles:
+    - role: tailscale
+      tags: [tailscale, vpn, anton]

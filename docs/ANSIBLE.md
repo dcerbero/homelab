@@ -1,6 +1,6 @@
 # 🤖 Ansible — Aprovisionamiento
 
-Ansible es nuestro equipo de montaje: en una sola pasada deja cada máquina con el sistema operativo, Docker, Tailscale y los servicios listos para funcionar. Automatiza la configuración de la infraestructura: Raspberry Pi 4 ([yoda](HARDWARE.md#yoda)) + Oracle Cloud VM ([talos](HARDWARE.md#talos), Pi-hole failover DNS). El Equipo x86_64 ([anton](HARDWARE.md#anton)) está pendiente de provisionar, aún sin play ni inventario.
+Ansible es nuestro equipo de montaje: en una sola pasada deja cada máquina con el sistema operativo, Docker, Tailscale y los servicios listos para funcionar. Automatiza la configuración de la infraestructura: Raspberry Pi 4 ([yoda](HARDWARE.md#yoda)) + Oracle Cloud VM ([talos](HARDWARE.md#talos), Pi-hole failover DNS). El Equipo x86_64 ([anton](HARDWARE.md#anton)) tiene play e inventario propios con solo el rol `tailscale` por ahora; el resto de servicios se irán añadiendo al provisionarlo.
 
 ## Índice
 
@@ -75,12 +75,11 @@ bash run.sh yoda --tags preflight
 
 **Archivo:** [`ansible/playbook.yml`](../ansible/playbook.yml)
 
-Dos plays independientes:
+Tres plays independientes:
 
 1. **[`yoda`](HARDWARE.md#yoda)** — RPi4 local: todos los roles
 2. **[`talos`](HARDWARE.md#talos)** — Oracle Cloud VM: Pi-hole failover + stack de monitoreo (system-setup, docker, pihole, monitoring)
-
-> Pendiente: el Equipo x86_64 ([anton](HARDWARE.md#anton)) se incorporará como un tercer play cuando se provisione.
+3. **[`anton`](HARDWARE.md#anton)** — Equipo x86_64: **solo `tailscale` por ahora** (tags `tailscale`, `vpn`, `anton`). Al provisionar el resto (Docker, preflight, media) se irá completando este play.
 
 La definición exacta de roles y tags está en [`ansible/playbook.yml`](../ansible/playbook.yml).
 
@@ -94,12 +93,14 @@ Inventario en formato directorio con variables por host. Cada máquina define su
 inventory/
 ├── yoda.yml                      # Definición del host RPi
 ├── talos.yml                     # Definición del host Oracle Cloud
+├── anton.yml                     # Definición del host Equipo x86_64
 ├── host_vars/
 │   ├── yoda.yml                  # PATH_DATA, TAILSCALE_HOSTNAME, preflight_require_arch
-│   └── talos.yml                 # PATH_DATA, TAILSCALE_HOSTNAME
+│   ├── talos.yml                 # PATH_DATA, TAILSCALE_HOSTNAME
+│   └── anton.yml                 # PATH_DATA, TAILSCALE_HOSTNAME
 ```
 
-> El Equipo x86_64 ([anton](HARDWARE.md#anton)) aún no tiene entrada en el inventario; se añadirá al provisionar.
+> El Equipo x86_64 ([anton](HARDWARE.md#anton)) ya tiene entrada en el inventario (`inventory/anton.yml` + `host_vars/anton.yml` con `PATH_DATA=/server`); se completa su play al provisionar el resto de roles.
 
 ### SSH
 

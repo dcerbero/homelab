@@ -47,8 +47,10 @@
     enabled: yes
 
 - name: Authenticate Tailscale with auth key
-  shell: tailscale up --authkey={{ TAILSCALE_AUTH_KEY }} \
+  shell: tailscale up --authkey={{ tailscale_auth_key }} \
     --hostname={{ TAILSCALE_HOSTNAME }}
+  vars:
+    tailscale_auth_key: "{{ vars['TAILSCALE_AUTH_KEY_' ~ (TAILSCALE_HOSTNAME | upper)] | default(TAILSCALE_AUTH_KEY | default('')) }}"
   ignore_errors: true
 
 - name: Get Tailscale IP
