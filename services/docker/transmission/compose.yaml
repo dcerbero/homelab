@@ -16,8 +16,10 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=America/Bogota
-      - TRANSMISSION_RPC_USERNAME=${TRANSMISSION_RPC_USERNAME}
-      - TRANSMISSION_RPC_PASSWORD=${TRANSMISSION_RPC_PASSWORD}
+      # La imagen linuxserver (4.x) habilita RPC auth solo con USER/PASS
+      # (ignora TRANSMISSION_RPC_*); los valores vienen de TRANSMISSION_RPC_* en .env
+      - USER=${TRANSMISSION_RPC_USERNAME}
+      - PASS=${TRANSMISSION_RPC_PASSWORD}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://localhost:9091/transmission/web/"]
