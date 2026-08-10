@@ -1,5 +1,16 @@
 # 📊 Monitoreo — Prometheus + Grafana
 
+Todo lo que pasa en el homelab termina en un dashboard: las métricas de ambas máquinas viajan por Tailscale hasta el monitor central, donde se ven de un vistazo. Así sabemos si todo respira bien o si algo empieza a cojear.
+
+## Índice
+
+- [Estado de implementación](#estado-de-implementación)
+- [Arquitectura](#arquitectura)
+- [Componentes](#componentes)
+- [Acceso](#acceso)
+- [Detalle operativo](#detalle-operativo)
+- [Próximos pasos opcionales](#próximos-pasos-opcionales)
+
 ## Estado de implementación
 
 - [x] **Paso 1 — [talos](HARDWARE.md#talos)**: stack completo (Prometheus, Grafana, node-exporter, cAdvisor) desplegado y funcional.
@@ -32,6 +43,9 @@
 La configuración, targets, recarga y gestión de Prometheus/Grafana están documentadas en [`DOCKER.md`](DOCKER.md) (secciones "Prometheus" y "Grafana").
 
 ## Próximos pasos opcionales
+
+> [!TIP]
+> Ideas pendientes por si algún día sobra tiempo — ninguna es necesaria hoy, pero todas mejorarían el día a día.
 
 - Alertas (Grafana alerting + notificaciones a ntfy/Telegram).
 - Dashboard de Pi-hole en Grafana (`alantoch/pihole-exporter`).

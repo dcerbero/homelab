@@ -1,6 +1,18 @@
 # 🐋 Docker Compose — Servicios
 
-Todos los servicios de [yoda](HARDWARE.md#yoda) se despliegan con Docker Compose usando perfiles independientes.
+Todos los servicios de [yoda](HARDWARE.md#yoda) se despliegan con Docker Compose usando perfiles independientes. Cada servicio vive en su propia carpeta con su `compose.yaml`, y el archivo principal los incluye a todos — así un servicio se puede arrancar solo o con todo el stack.
+
+## Índice
+
+- [Estructura](#estructura)
+- [Perfiles](#perfiles)
+- [Despliegue](#despliegue)
+- [Healthchecks](#healthchecks)
+- [Variables de Entorno](#variables-de-entorno)
+- [Servicios](#servicios)
+- [Almacenamiento Persistente](#almacenamiento-persistente)
+- [Backup](#backup)
+- [Actualización de Servicios](#actualización-de-servicios)
 
 ## Estructura
 
@@ -39,7 +51,7 @@ services/docker/
 
 ## Despliegue
 
-Todos los servicios se despliegan via **Ansible** (`bash run.sh yoda`). No se ejecuta `docker compose` manualmente para el aprovisionamiento.
+Todos los servicios se despliegan via **Ansible** (`bash run.sh yoda`). No se ejecuta `docker compose` manualmente para el aprovisionamiento — así el estado del repo es siempre la fuente de verdad y un `git pull` + `run.sh` devuelve todo a como debe estar.
 
 Para administración manual (logs, reinicios, estado):
 
@@ -69,6 +81,7 @@ Todos los servicios exponen estado `healthy`/`unhealthy` en `docker ps` y en cAd
 | Prometheus | compose | `wget http://localhost:9090/-/healthy` |
 | Grafana | compose | `curl -fsS http://localhost:3000/api/health` |
 
+> [!NOTE]
 > Pi-hole, OpenClaw y cAdvisor traen su `HEALTHCHECK` definido en la imagen: no se define en el compose, porque definir uno lo sobreescribiría. El healthcheck no reinicia contenedores `unhealthy` (el `restart` solo actúa si el proceso muere); su valor es reporte de estado.
 
 ## Variables de Entorno
@@ -216,6 +229,7 @@ Ansible garantiza la creación y propiedad de los directorios de datos (no se de
 - Cada rol de servicio asegura su propio directorio de persistencia (`heimdall`, `openclaw`, `pihole`)
 - Todos con owner/group `1000:1000` (uid del primer usuario del sistema), que es el uid que usan las imágenes linuxserver.io vía `PUID`/`PGID`
 
+> [!NOTE]
 > `pihole` corre como root en su imagen oficial, así que no le importa el owner; se fija `1000:1000` solo por uniformidad.
 >
 > Excepción: Grafana corre con uid `472` (su imagen oficial), por eso sus directorios y el seed de dashboards se crean con `472:0`.

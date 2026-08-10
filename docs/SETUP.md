@@ -1,5 +1,15 @@
 # 🛠️ Setup Inicial de la Raspberry Pi
 
+La primera vez que la Pi llega a casa hay que dejarla con IP fija, DNS libre y el sistema listo para que Ansible haga lo suyo. Es un trabajo de una sola vez, pero bien hecho evita sorpresas después.
+
+## Índice
+
+- [Requisitos](#requisitos)
+- [1. Configurar IP Estática](#1-configurar-ip-estática)
+- [2. Deshabilitar DNS Stub Listener](#2-deshabilitar-dns-stub-listener)
+- [3. Datos Persistentes (`PATH_DATA`)](#3-datos-persistentes-path_data)
+- [4. Siguiente Paso](#4-siguiente-paso)
+
 ## Requisitos
 
 - Raspberry Pi 4 con Ubuntu 24.04 LTS instalado
@@ -7,6 +17,8 @@
 - SSD USB como disco de arranque (datos persistentes en `$PATH_DATA`)
 
 ## 1. Configurar IP Estática
+
+Queremos que la Pi siempre tenga la misma IP en la red local, para que el resto de servicios la encuentren sin sorpresas.
 
 Editar `/etc/netplan/`:
 
@@ -27,6 +39,7 @@ network:
           - 8.8.8.8
 ```
 
+> [!NOTE]
 > Reemplazar `192.168.1.100` con la IP deseada y `192.168.1.1` con tu gateway.
 
 Aplicar:
@@ -37,8 +50,9 @@ sudo netplan apply
 
 ## 2. Deshabilitar DNS Stub Listener
 
-Pi-hole necesita el puerto 53 libre. systemd-resolved lo ocupa por defecto.
+Pi-hole necesita el puerto 53 libre. systemd-resolved lo ocupa por defecto, así que hay que apartarlo para dejarle el sitio.
 
+> [!NOTE]
 > El rol Ansible `system-setup` automatiza este paso. El procedimiento manual de abajo solo aplica si provisionas sin Ansible.
 
 Crear `/etc/systemd/resolved.conf.d/dns.conf`:
@@ -74,7 +88,8 @@ Si más adelante quieres mover los datos a un disco dedicado: formatea, monta el
 UUID=tu-uuid-aqui  /mnt/data  ext4  defaults,nofail  0  2
 ```
 
-> `nofail` evita que el sistema no arranque si el disco no está presente.
+> [!TIP]
+> `nofail` evita que el sistema no arranque si el disco no está presente — importante cuando el disco de datos no es el de arranque.
 
 ## 4. Siguiente Paso
 

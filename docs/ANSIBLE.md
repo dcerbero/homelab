@@ -1,6 +1,16 @@
 # 🤖 Ansible — Aprovisionamiento
 
-Automatiza la configuración de la infraestructura: Raspberry Pi 4 ([yoda](HARDWARE.md#yoda)) + Oracle Cloud VM ([talos](HARDWARE.md#talos), Pi-hole failover DNS). El Equipo x86_64 ([anton](HARDWARE.md#anton)) está pendiente de provisionar, aún sin play ni inventario.
+Ansible es nuestro equipo de montaje: en una sola pasada deja cada máquina con el sistema operativo, Docker, Tailscale y los servicios listos para funcionar. Automatiza la configuración de la infraestructura: Raspberry Pi 4 ([yoda](HARDWARE.md#yoda)) + Oracle Cloud VM ([talos](HARDWARE.md#talos), Pi-hole failover DNS). El Equipo x86_64 ([anton](HARDWARE.md#anton)) está pendiente de provisionar, aún sin play ni inventario.
+
+## Índice
+
+- [Inicio Rápido](#inicio-rápido)
+- [Roles](#roles)
+- [Preflight (validación de imágenes)](#preflight-validación-de-imágenes)
+- [Playbook](#playbook)
+- [Inventario](#inventario)
+- [Variables de Entorno](#variables-de-entorno)
+- [Ejecución](#ejecución)
 
 ## Inicio Rápido
 
@@ -39,7 +49,7 @@ bash run.sh
 
 ## Preflight (validación de imágenes)
 
-Rol `preflight` que corre **antes** de desplegar cualquier servicio (tras `docker`, antes de `pihole`). Evita el fallo del `compose up` a mitad de play cuando un tag no existe (p. ej. el incidente de `nginx:1.30.3-bookworm` del 2026-08-05, que dejaba el contenedor stale).
+Rol `preflight` que corre **antes** de desplegar cualquier servicio (tras `docker`, antes de `pihole`). Evita el fallo del `compose up` a mitad de play cuando un tag no existe — nos pasó con el incidente de `nginx:1.30.3-bookworm` del 2026-08-05, que dejaba el contenedor stale. Desde entonces, mejor comprobar antes que arrepentirse.
 
 Qué hace ([`files/preflight.py`](../ansible/roles/preflight/files/preflight.py)):
 
@@ -52,6 +62,9 @@ Si alguna imagen falla, el play aborta listando los tags problemáticos antes de
 El rol `preflight` declara como tags propias la unión de las tags de los roles de servicio que despliegan compose (`pihole`, `dns`, `cadvisor`, `monitoring`, `ia`, `dashboard`, `proxy`, `metrics`…). Así se activa también en runs etiquetados que tocan compose y se salta en los que no (p. ej. `--tags system-setup`, `--tags docker`, `--tags tailscale`).
 
 **Regla de mantenimiento:** al añadir un rol de servicio que despliegue compose, hay que añadir sus tags a la lista del rol `preflight` en `playbook.yml` (ambos plays), o un `--tags <nuevo>` reabriría el hueco en silencio. Efecto colateral conocido: `--skip-tags <tag_compartida>` también se salta preflight.
+
+> [!WARNING]
+> Es fácil olvidarlo, pero esta regla evita que un `--tags` nuevo salte la validación sin que nos demos cuenta.
 
 ```bash
 # Probar solo el preflight

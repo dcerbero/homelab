@@ -1,5 +1,17 @@
 # 🔧 Solución de Problemas
 
+Si algo se rompe, aquí está lo que ya nos ha pasado y cómo se arregla. No es magia: es el cuaderno de bitácora de los fallos que hemos ido resolviendo.
+
+## Índice
+
+- [Conflictos de Puertos](#conflictos-de-puertos)
+- [Permisos de Volúmenes](#permisos-de-volúmenes)
+- [Tailscale no autentica](#tailscale-no-autentica)
+- [Ansible falla por conexión SSH](#ansible-falla-por-conexión-ssh)
+- [DNS no resuelve desde dispositivos](#dns-no-resuelve-desde-dispositivos)
+- [Tag de imagen inexistente o sin arquitectura](#tag-de-imagen-inexistente-o-sin-arquitectura)
+- [Rate limit de Docker Hub en el preflight](#rate-limit-de-docker-hub-en-el-preflight)
+
 ## Conflictos de Puertos
 
 **Síntoma:** Un servicio no arranca con error de puerto.
@@ -78,6 +90,9 @@ bash run.sh yoda --tags preflight
 **Síntoma:** `Preflight falló: rate limit del registry (quota agotada)` para imágenes de Docker Hub, con el aviso `toomanyrequests: You have reached your unauthenticated pull rate limit`.
 
 **Causa:** Docker Hub limita a **100 pulls/6h por IP** para uso anónimo. `docker manifest inspect` consume esa quota, y la IP de casa (NAT) la comparte con el RPi, otras máquinas y los `docker compose up`. Al agotarse, el deploy no podría hacer pull de todas formas, así que el preflight falla antes con un mensaje claro.
+
+> [!TIP]
+> Si te pasa seguido, autentica el daemon con una cuenta de Docker Hub y se acabó el límite anónimo.
 
 **Solución:**
 ```bash

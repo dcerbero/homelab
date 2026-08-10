@@ -1,6 +1,17 @@
 # ⌨️ Comandos de Uso Diario
 
+Las recetas que uso cuando hay que meter mano a mano: ver el estado, revisar logs, reiniciar un servicio. Nada de provisionar aquí.
+
+> [!NOTE]
 > El despliegue de servicios se hace vía **Ansible** (`bash run.sh yoda`). Estos comandos son solo para administración manual (estado, logs, reinicios).
+
+## Índice
+
+- [Docker Compose](#docker-compose)
+- [Red](#red)
+- [Sistema](#sistema)
+- [Monitorización (Prometheus + Grafana)](#monitorización-prometheus--grafana)
+- [Health Checks por Servicio](#health-checks-por-servicio)
 
 ## Docker Compose
 

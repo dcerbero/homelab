@@ -1,7 +1,15 @@
 # ⚡ Homelab
 
-Infraestructura híbrida: 2 equipos locales (Raspberry Pi 4 [yoda](docs/HARDWARE.md#yoda) + Equipo x86_64 [anton](docs/HARDWARE.md#anton), pendiente de provisionar) + Oracle Cloud VM [talos](docs/HARDWARE.md#talos),
-aprovisionada con Ansible y servicios Docker organizados por perfiles.
+Bienvenido a mi pequeña red doméstica: dos equipos locales que trabajan en casa y una VM en la nube que vigila las espaldas, todo aprovisionado con Ansible y desplegado en contenedores Docker.
+
+Nuestras tres máquinas tienen nombre y apellido —Raspberry Pi 4 [yoda](docs/HARDWARE.md#yoda), Equipo x86_64 [anton](docs/HARDWARE.md#anton) (pendiente de provisionar) y Oracle Cloud VM [talos](docs/HARDWARE.md#talos)—, cada una con su historia ([origen de los nombres](docs/HARDWARE.md#origen-de-los-nombres)).
+
+## Índice
+
+- [Stack](#stack)
+- [Documentación](#documentación)
+- [Inicio Rápido](#inicio-rápido)
+- [Recursos adicionales](#recursos-adicionales)
 
 ## Stack
 
@@ -55,6 +63,9 @@ bash run.sh yoda
 # Solo talos:
 bash run.sh talos
 ```
+
+> [!TIP]
+> Si solo tienes encendida la Raspberry, `bash run.sh yoda` es suficiente —talos se aprovisiona aparte y anton aún no está listo.
 
 ## Recursos adicionales
 

@@ -1,6 +1,6 @@
 # 📚 Documentación del Homelab
 
-Índice central de toda la documentación del proyecto.
+Todo lo que necesitas saber sobre nuestro homelab, organizado por tema. Este es el punto de partida para entender qué tenemos, cómo se montó y cómo se mantiene día a día.
 
 ## Stack
 

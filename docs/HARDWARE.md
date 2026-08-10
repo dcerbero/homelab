@@ -1,6 +1,14 @@
 # 🖥️ Hardware del Laboratorio
 
-Inventario de hardware de las máquinas del laboratorio (2 equipos físicos + 1 VM en Oracle Cloud), con puntuación de aptitud agnóstica al rol.
+Cada máquina de esta casa tiene un nombre, un papel y una historia. Aquí está el inventario de las tres —dos equipos físicos y una VM en la nube— con una puntuación de aptitud que no mira para qué se usa cada una, sino cuánto puede dar de sí.
+
+## Índice
+
+- [Especificaciones](#especificaciones)
+- [Origen de los nombres](#origen-de-los-nombres)
+- [Rúbrica de puntuación (agnóstica al rol)](#rúbrica-de-puntuación-agnóstica-al-rol)
+- [Puntuaciones (0–10)](#puntuaciones-010)
+- [Promedios](#promedios)
 
 ## Especificaciones
 
@@ -12,14 +20,16 @@ Inventario de hardware de las máquinas del laboratorio (2 equipos físicos + 1 
 
 ## Origen de los nombres
 
+Ponerle nombre a las máquinas no es un capricho: es la forma de que cada una tenga identidad propia y de saber de qué hablamos cuando se cae una. Todos son homenajes a historias que ya existían.
+
 ### anton
-Equipo x86_64 destinado a media. El servidor armado de Gilfoyle en *Silicon Valley*: un PC veterano reutilizado para la biblioteca media.
+Equipo x86_64 destinado a media. Es el servidor armado de Gilfoyle en *Silicon Valley*: un PC veterano que rescaté de la jubilación y que pronto se encargará de la biblioteca media de la casa. Como el original, lo nuestro es armarlo pieza a pieza.
 
 ### yoda
-Raspberry Pi 4. El maestro Jedi pequeño, sabio y veterano que guía a todos: la Pi guía la red (DNS) y es el corazón del homelab.
+Raspberry Pi 4. El maestro Jedi pequeño, sabio y veterano que guía a todos sin moverse de su sitio: así es la Pi, el corazón del homelab que da DNS a toda la red (Pi-hole) y mantiene los servicios esenciales siempre encendidos.
 
 ### talos
-Oracle Cloud VM. El autómata de bronce que vigilaba Creta sin descanso: monitorea toda la infraestructura y cubre las espaldas (failover).
+Oracle Cloud VM. En la mitología griega, el autómata de bronce que patrullaba las costas de Creta sin descanso, vigilando que nada se le escapara. Igual que él, esta VM monitorea toda la infraestructura y cubre las espaldas con el failover de Pi-hole.
 
 ## Rúbrica de puntuación (agnóstica al rol)
 
@@ -53,4 +63,5 @@ Puntajes de aptitud de hardware pura (capacidad y eficiencia), sin considerar pa
 | [anton](#anton) | 5.3 |
 | [yoda](#yoda) | 5.0 |
 
+> [!NOTE]
 > Datos verificados por SSH (2026-08-09). Puntajes subjetivos basados en la rúbrica anterior. [`anton`](#anton) es el alias SSH de un Equipo x86_64 pendiente de provisionar.

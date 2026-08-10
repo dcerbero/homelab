@@ -39,6 +39,9 @@ homelab/
 
 ## Operaciones Comunes
 
+> [!TIP]
+> La gestión del día a día (estado, logs, actualización) y los health checks están en `docs/DOCKER.md` y `docs/COMMANDS.md`.
+
 ```bash
 # Provisionar / reprovisionar
 cd ansible/

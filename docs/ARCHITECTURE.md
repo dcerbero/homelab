@@ -1,5 +1,13 @@
 # 🏗️ Arquitectura de Red
 
+Cómo se conectan nuestras máquinas entre sí y con el mundo. La idea de fondo es simple: todo lo importante vive en casa, la nube cubre las espaldas y nada se expone a Internet sin pasar por Tailscale.
+
+## Índice
+
+- [Topología](#topología)
+- [Flujos de Red](#flujos-de-red)
+- [Puertos Expuestos](#puertos-expuestos)
+
 ## Topología
 
 ```mermaid
@@ -67,9 +75,12 @@ graph TD
     linkStyle 6,7 stroke:#10b981,stroke-width:3px;
 ```
 
-> La máquina [`anton`](HARDWARE.md#anton) (Equipo x86_64, `<ip-anton>`, pendiente de provisionar) no aparece en el diagrama: aún no tiene servicios desplegados. Se integrará cuando se provisione.
+> [!NOTE]
+> La máquina [`anton`](HARDWARE.md#anton) (Equipo x86_64, `<ip-anton>`, pendiente de provisionar) no aparece en el diagrama: aún no tiene servicios desplegados. Se integrará cuando esté listo.
 
 ## Flujos de Red
+
+Aquí va el resumen de cómo se mueve el tráfico entre los servicios, sin tecnicismos de más.
 
 ### DNS (Verde)
 - Todos los dispositivos locales resuelven DNS contra Pi-hole

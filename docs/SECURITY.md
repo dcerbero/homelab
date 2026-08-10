@@ -1,5 +1,7 @@
 # 🛡️ Seguridad
 
+La regla de oro de este homelab: **nada sale a Internet sin pasar por Tailscale**. Aquí está el resumen de lo que cerramos para que las cosas sigan funcionando en casa sin invitar a curiosos.
+
 ## Hardening SSH
 
 Deshabilitar autenticación por contraseña y acceso root.
@@ -17,7 +19,8 @@ Reiniciar SSH:
 sudo systemctl restart sshd
 ```
 
-> Asegurarse de tener una clave SSH configurada **antes** de aplicar estos cambios.
+> [!WARNING]
+> Asegurarse de tener una clave SSH configurada **antes** de aplicar estos cambios, o te quedas fuera de tu propia máquina.
 
 ## Tailscale
 
@@ -40,6 +43,7 @@ En [Tailscale Admin → ACLs](https://login.tailscale.com/admin/acls):
 }
 ```
 
+> [!NOTE]
 > Para un homelab personal, permitir todo entre nodos es aceptable. Para entornos con más usuarios, restringir por tags.
 
 ### Subnet Routing (opcional)
