@@ -1,14 +1,13 @@
 # ⚡ Homelab
 
-Infraestructura híbrida: servidor local (Raspberry Pi 4) + Oracle Cloud VM +
-PC antiguo (alias `media`, pendiente provisionar),
+Infraestructura híbrida: servidor local (Raspberry Pi 4) + Oracle Cloud VM,
 aprovisionada con Ansible y servicios Docker organizados por perfiles.
 
 ## Stack
 
 | Componente | Tecnología |
 |---|---|
-| Servidores | Raspberry Pi 4 (Ubuntu 24.04) + Oracle Cloud VM + PC antiguo (`media`) |
+| Servidores | Raspberry Pi 4 + Oracle Cloud VM |
 | Orquestación | Ansible (9 roles, 2 plays) |
 | Contenedores | Docker + Docker Compose (8 perfiles) |
 | DNS | Pi-hole (activo + failover) |
