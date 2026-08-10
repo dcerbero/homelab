@@ -4,5 +4,9 @@
   { "title": "pihole-yoda", "url": "http://yoda:8085/admin/", "icon": "icons/pihole.svg", "colour": "#161b1f", "tag": "yoda" },
   { "title": "cadvisor-talos", "url": "http://talos:9101/", "icon": "icons/cadvisor.png", "colour": "#1e293b", "tag": "talos" },
   { "title": "grafana-talos", "url": "http://talos:3000/", "icon": "icons/grafana.svg", "colour": "#F46800", "tag": "talos" },
-  { "title": "pihole-talos", "url": "http://talos:8085/admin/", "icon": "icons/pihole.svg", "colour": "#161b1f", "tag": "talos" }
+  { "title": "pihole-talos", "url": "http://talos:8085/admin/", "icon": "icons/pihole.svg", "colour": "#161b1f", "tag": "talos" },
+  { "title": "jellyfin-anton", "url": "http://anton:8096/", "icon": "icons/jellyfin.svg", "colour": "#AA5CC3", "tag": "anton" },
+  { "title": "transmission-anton", "url": "http://anton:8082/", "icon": "icons/transmission.svg", "colour": "#179C4E", "tag": "anton" },
+  { "title": "prowlarr-anton", "url": "http://anton:8083/", "icon": "icons/prowlarr.svg", "colour": "#E7A82B", "tag": "anton" },
+  { "title": "sonarr-anton", "url": "http://anton:8084/", "icon": "icons/sonarr.svg", "colour": "#38D0D4", "tag": "anton" }
 ]
