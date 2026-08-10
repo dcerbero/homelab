@@ -6,7 +6,7 @@
 
 | Componente | Tecnología |
 |---|---|
-| Servidor | Raspberry Pi 4 — Ubuntu 24.04 |
+| Servidor | Raspberry Pi 4 — Ubuntu 24.04 + máquina media (pendiente provisionar) |
 | Nube | Oracle Cloud VM (failover DNS) |
 | Orquestación | Ansible |
 | Contenedores | Docker + Docker Compose |
@@ -24,6 +24,7 @@
 | Archivo | Contenido |
 |---|---|
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | Topología de red, flujos, diagrama de infraestructura |
+| [`HARDWARE.md`](HARDWARE.md) | Inventario de hardware y puntuación por máquina |
 | [`SETUP.md`](SETUP.md) | Configuración inicial de la Raspberry Pi |
 | [`ANSIBLE.md`](ANSIBLE.md) | Roles de Ansible, playbook, variables de entorno |
 | [`DOCKER.md`](DOCKER.md) | Servicios Docker Compose, perfiles, volúmenes, backup, actualización |
