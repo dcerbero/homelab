@@ -67,7 +67,7 @@ graph TD
     linkStyle 6,7 stroke:#10b981,stroke-width:3px;
 ```
 
-> La máquina `anton` (Equipo x86_64, `<ip-anton>`, pendiente de provisionar) no aparece en el diagrama: aún no tiene servicios desplegados. Se integrará cuando se provisione.
+> La máquina [`anton`](HARDWARE.md#anton) (Equipo x86_64, `<ip-anton>`, pendiente de provisionar) no aparece en el diagrama: aún no tiene servicios desplegados. Se integrará cuando se provisione.
 
 ## Flujos de Red
 
@@ -81,14 +81,14 @@ graph TD
 - Procesamiento local, modelos remotos
 
 ### VPN (Discontinuo)
-- Tailscale mesh VPN conecta: yoda, talos, dispositivos remotos
+- Tailscale mesh VPN conecta: [yoda](HARDWARE.md#yoda), [talos](HARDWARE.md#talos), dispositivos remotos
 - Subnet routing para acceso a red local desde fuera
 
 ### Métricas (Monitoreo)
-- Prometheus (talos) scrapea los exporters de **ambas** máquinas vía Tailscale
-- talos: node-exporter (`svcNodeExporter:9100`) y cAdvisor (`svccAdvisor:8080`) internos
-- yoda: node-exporter (`yoda:9100`) y cAdvisor (`yoda:9101`)
-- Grafana (talos) expone el dashboard único, accesible solo por Tailscale
+- Prometheus ([talos](HARDWARE.md#talos)) scrapea los exporters de **ambas** máquinas vía Tailscale
+- [talos](HARDWARE.md#talos): node-exporter (`svcNodeExporter:9100`) y cAdvisor (`svccAdvisor:8080`) internos
+- [yoda](HARDWARE.md#yoda): node-exporter (`yoda:9100`) y cAdvisor (`yoda:9101`)
+- Grafana ([talos](HARDWARE.md#talos)) expone el dashboard único, accesible solo por Tailscale
 
 ## Puertos Expuestos
 
@@ -105,5 +105,5 @@ graph TD
 | 8084 | Sonarr | Local |
 | 51413 (TCP/UDP) | Transmission Torrent | Local |
 | 9100 | node-exporter | Solo LAN o Tailscale |
-| 9101 | cAdvisor (yoda) | Solo LAN o Tailscale |
-| 3000 | Grafana (talos) | Solo Tailscale |
+| 9101 | cAdvisor ([yoda](HARDWARE.md#yoda)) | Solo LAN o Tailscale |
+| 3000 | Grafana ([talos](HARDWARE.md#talos)) | Solo Tailscale |

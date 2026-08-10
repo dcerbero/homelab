@@ -1,6 +1,6 @@
 # 🐋 Docker Compose — Servicios
 
-Todos los servicios de yoda se despliegan con Docker Compose usando perfiles independientes.
+Todos los servicios de [yoda](HARDWARE.md#yoda) se despliegan con Docker Compose usando perfiles independientes.
 
 ## Estructura
 
@@ -35,7 +35,7 @@ services/docker/
 | `media-streaming` | Jellyfin | Streaming multimedia |
 | `media-download` | Transmission, Prowlarr, Sonarr | Descarga y gestión |
 | `monitoring` | cAdvisor, node-exporter | Exporters de métricas (ambas máquinas) |
-| `metrics` | Prometheus, Grafana | Backend y dashboards (solo talos) |
+| `metrics` | Prometheus, Grafana | Backend y dashboards (solo [talos](HARDWARE.md#talos)) |
 
 ## Despliegue
 
@@ -149,7 +149,7 @@ Interfaz de IA local. Usa la **API de OpenRouter** para inferencia.
 
 Métricas de uso de recursos de todos los contenedores.
 
-- **Puerto:** `9101:8080` en yoda (acceso de scraping vía Tailscale); en talos sin bind al host (scrape interno por nombre de servicio)
+- **Puerto:** `9101:8080` en [yoda](HARDWARE.md#yoda) (acceso de scraping vía Tailscale); en [talos](HARDWARE.md#talos) sin bind al host (scrape interno por nombre de servicio)
 - **Volúmenes:** monta `/`, `/var/run`, `/sys`, `/var/lib/docker`, `/dev/disk` (solo lectura)
 - **Intervalos:** housekeeping 10s, max housekeeping 15s, global 1m
 
@@ -160,9 +160,9 @@ Métricas del host (CPU, RAM, disco, red, temperatura) para Prometheus.
 - **Puerto:** `9100:9100`
 - **Volúmenes:** monta `/proc`, `/sys`, `/` (solo lectura)
 - **Colectores:** por defecto (incluye `node_hwmon` para temperatura del RPi)
-- **Despliegue:** en yoda no tiene rol propio; lo levanta el rol `cadvisor` vía el perfil `monitoring` (`docker compose --profile monitoring up`)
+- **Despliegue:** en [yoda](HARDWARE.md#yoda) no tiene rol propio; lo levanta el rol `cadvisor` vía el perfil `monitoring` (`docker compose --profile monitoring up`)
 
-### Prometheus (metrics — solo talos)
+### Prometheus (metrics — solo [talos](HARDWARE.md#talos))
 
 Backend de métricas. Scrapea a los exporters de ambas máquinas.
 
@@ -170,10 +170,10 @@ Backend de métricas. Scrapea a los exporters de ambas máquinas.
 - **Config:** directorio `services/docker/prometheus/config/` (montado `:ro`; `--config.file=/etc/prometheus/config/prometheus.yml`) — se monta el directorio, no el archivo, para que el reload SIGHUP del rol lea los cambios que aplica `git pull` (el mount de archivo único se queda con el inode viejo)
 - **Volúmenes:** `$PATH_DATA/persistence/prometheus` (TSDB)
 - **Retención:** 15 días
-- **Targets:** self, node-exporter y cAdvisor de talos (internos) + yoda vía Tailscale (`yoda:9100`, `yoda:9101`). El label `instance` se renombra vía `relabel_configs` a `talos`/`yoda` para el dashboard.
+- **Targets:** self, node-exporter y cAdvisor de [talos](HARDWARE.md#talos) (internos) + [yoda](HARDWARE.md#yoda) vía Tailscale (`yoda:9100`, `yoda:9101`). El label `instance` se renombra vía `relabel_configs` a `talos`/`yoda` para el dashboard.
 - **Recarga de config:** el rol `monitoring` ejecuta `docker exec prometheus kill -HUP 1` (SIGHUP) tras cada deploy
 
-### Grafana (metrics — solo talos)
+### Grafana (metrics — solo [talos](HARDWARE.md#talos))
 
 Dashboards y visualización. Acceso por Tailscale (`http://<ip-talos>:3000`).
 

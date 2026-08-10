@@ -6,8 +6,8 @@
 
 | Componente | Tecnología |
 |---|---|
-| Servidor | yoda — Raspberry Pi 4 (Ubuntu 24.04) + anton — Equipo x86_64 (pendiente provisionar) |
-| Nube | talos — Oracle Cloud VM (failover DNS) |
+| Servidor | [yoda](HARDWARE.md#yoda) — Raspberry Pi 4 (Ubuntu 24.04) + [anton](HARDWARE.md#anton) — Equipo x86_64 (pendiente provisionar) |
+| Nube | [talos](HARDWARE.md#talos) — Oracle Cloud VM (failover DNS) |
 | Orquestación | Ansible |
 | Contenedores | Docker + Docker Compose |
 | DNS | Pi-hole |

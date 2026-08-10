@@ -1,13 +1,13 @@
 # ⚡ Homelab
 
-Infraestructura híbrida: 2 equipos locales (Raspberry Pi 4 yoda + Equipo x86_64 anton, pendiente de provisionar) + Oracle Cloud VM talos,
+Infraestructura híbrida: 2 equipos locales (Raspberry Pi 4 [yoda](docs/HARDWARE.md#yoda) + Equipo x86_64 [anton](docs/HARDWARE.md#anton), pendiente de provisionar) + Oracle Cloud VM [talos](docs/HARDWARE.md#talos),
 aprovisionada con Ansible y servicios Docker organizados por perfiles.
 
 ## Stack
 
 | Componente | Tecnología |
 |---|---|
-| Servidores | Raspberry Pi 4 + Oracle Cloud VM + Equipo x86_64 |
+| Servidores | [yoda](docs/HARDWARE.md#yoda) (Raspberry Pi 4) + [talos](docs/HARDWARE.md#talos) (Oracle Cloud VM) + [anton](docs/HARDWARE.md#anton) (Equipo x86_64) |
 | Orquestación | Ansible (10 roles, 2 plays) |
 | Contenedores | Docker + Docker Compose (8 perfiles) |
 | DNS | Pi-hole (activo + failover) |

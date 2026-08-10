@@ -1,6 +1,6 @@
 # 🤖 Ansible — Aprovisionamiento
 
-Automatiza la configuración de la infraestructura: Raspberry Pi 4 (yoda) + Oracle Cloud VM (talos, Pi-hole failover DNS). El Equipo x86_64 (anton) está pendiente de provisionar, aún sin play ni inventario.
+Automatiza la configuración de la infraestructura: Raspberry Pi 4 ([yoda](HARDWARE.md#yoda)) + Oracle Cloud VM ([talos](HARDWARE.md#talos), Pi-hole failover DNS). El Equipo x86_64 ([anton](HARDWARE.md#anton)) está pendiente de provisionar, aún sin play ni inventario.
 
 ## Inicio Rápido
 
@@ -13,7 +13,7 @@ bash run.sh
 
 ## Roles
 
-### yoda (RPi4)
+### [yoda](HARDWARE.md#yoda) (RPi4)
 
 | Rol | Tags | Descripción |
 |---|---|---|
@@ -27,7 +27,7 @@ bash run.sh
 | `heimdall` | `heimdall`, `dashboard` | Despliegue del panel de control Heimdall |
 | `nginx` | `nginx`, `proxy` | Despliegue del proxy reverso nginx (recrea en drift de imagen/mount, recarga para cambios de `conf.d`) |
 
-### talos (Oracle Cloud VM)
+### [talos](HARDWARE.md#talos) (Oracle Cloud VM)
 
 | Rol | Tags | Descripción |
 |---|---|---|
@@ -45,9 +45,9 @@ Qué hace ([`files/preflight.py`](../ansible/roles/preflight/files/preflight.py)
 
 1. Extrae todos los `image:` de los `compose.yaml` del repo clonado.
 2. Verifica cada tag con `docker manifest inspect` en paralelo (sin descargar la imagen).
-3. Con `preflight_require_arch: true` (yoda) exige además que el tag tenga variante `arm64`.
+3. Con `preflight_require_arch: true` ([yoda](HARDWARE.md#yoda)) exige además que el tag tenga variante `arm64`.
 
-Si alguna imagen falla, el play aborta listando los tags problemáticos antes de tocar contenedores. En talos solo se valida existencia (la arquitectura se resuelve en runtime con el fact `ansible_machine`, pero talos no exige `preflight_require_arch` porque no despliega los servicios media con tags `arm64v8-`).
+Si alguna imagen falla, el play aborta listando los tags problemáticos antes de tocar contenedores. En [talos](HARDWARE.md#talos) solo se valida existencia (la arquitectura se resuelve en runtime con el fact `ansible_machine`, pero talos no exige `preflight_require_arch` porque no despliega los servicios media con tags `arm64v8-`).
 
 El rol `preflight` declara como tags propias la unión de las tags de los roles de servicio que despliegan compose (`pihole`, `dns`, `cadvisor`, `monitoring`, `ia`, `dashboard`, `proxy`, `metrics`…). Así se activa también en runs etiquetados que tocan compose y se salta en los que no (p. ej. `--tags system-setup`, `--tags docker`, `--tags tailscale`).
 
@@ -64,10 +64,10 @@ bash run.sh yoda --tags preflight
 
 Dos plays independientes:
 
-1. **`yoda`** — RPi4 local: todos los roles
-2. **`talos`** — Oracle Cloud VM: Pi-hole failover + stack de monitoreo (system-setup, docker, pihole, monitoring)
+1. **[`yoda`](HARDWARE.md#yoda)** — RPi4 local: todos los roles
+2. **[`talos`](HARDWARE.md#talos)** — Oracle Cloud VM: Pi-hole failover + stack de monitoreo (system-setup, docker, pihole, monitoring)
 
-> Pendiente: el Equipo x86_64 (anton) se incorporará como un tercer play cuando se provisione.
+> Pendiente: el Equipo x86_64 ([anton](HARDWARE.md#anton)) se incorporará como un tercer play cuando se provisione.
 
 La definición exacta de roles y tags está en [`ansible/playbook.yml`](../ansible/playbook.yml).
 
@@ -86,7 +86,7 @@ inventory/
 │   └── talos.yml                 # PATH_DATA, TAILSCALE_HOSTNAME
 ```
 
-> El Equipo x86_64 (anton) aún no tiene entrada en el inventario; se añadirá al provisionar.
+> El Equipo x86_64 ([anton](HARDWARE.md#anton)) aún no tiene entrada en el inventario; se añadirá al provisionar.
 
 ### SSH
 
@@ -120,7 +120,7 @@ TAILSCALE_AUTH_KEY=tskey-auth-xxxxx
 |---|---|
 | `PIHOLE_PASS` | Contraseña de la interfaz web de Pi-hole |
 | `TAILSCALE_AUTH_KEY` | Clave de autenticación desde [Tailscale Admin](https://login.tailscale.com/admin/settings/keys) |
-| `GRAFANA_ADMIN_PASSWORD` | Contraseña del usuario admin de Grafana (stack de métricas en talos) |
+| `GRAFANA_ADMIN_PASSWORD` | Contraseña del usuario admin de Grafana (stack de métricas en [talos](HARDWARE.md#talos)) |
 
 Solo secretos viven en `.env` (gitignorado). Las variables de máquina (`PATH_DATA`, `TAILSCALE_HOSTNAME`) viven en `inventory/host_vars/<host>.yml`.
 

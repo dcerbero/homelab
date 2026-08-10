@@ -54,7 +54,7 @@ docker system prune -a --volumes
 
 ## Monitorización (Prometheus + Grafana)
 
-El stack vive en **talos** (Prometheus, Grafana, node-exporter, cAdvisor). En **yoda** solo corren los exporters (cAdvisor `9101`, node-exporter `9100`).
+El stack vive en **[talos](HARDWARE.md#talos)** (Prometheus, Grafana, node-exporter, cAdvisor). En **[yoda](HARDWARE.md#yoda)** solo corren los exporters (cAdvisor `9101`, node-exporter `9100`).
 
 ```bash
 # Acceso a Grafana (usuario admin, password en GRAFANA_ADMIN_PASSWORD)

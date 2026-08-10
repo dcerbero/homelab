@@ -54,7 +54,7 @@ bash run.sh yoda --tags pihole,dns   # por rol
 
 ## Convenciones
 
-- **Ansible**: todos los roles corren con `become: true`. Orden estricto en yoda: `system-setup → docker → preflight → pihole → tailscale → cadvisor → openclaw → heimdall → nginx`. El play talos solo ejecuta `system-setup → docker → preflight → pihole → monitoring`.
+- **Ansible**: todos los roles corren con `become: true`. Orden estricto en [yoda](docs/HARDWARE.md#yoda): `system-setup → docker → preflight → pihole → tailscale → cadvisor → openclaw → heimdall → nginx`. El play [talos](docs/HARDWARE.md#talos) solo ejecuta `system-setup → docker → preflight → pihole → monitoring`.
 - **Preflight**: el rol `preflight` (validación de tags de imágenes antes de desplegar) declara como tags propias la unión de las tags de todos los roles de servicio que despliegan compose. Al añadir un rol de servicio nuevo, añade sus tags a la lista de tags del rol `preflight` en `playbook.yml` (ambos plays), o un `--tags <nuevo>` se saltaría la validación en silencio.
 - **Inventario**: `ansible/inventory/{yoda,talos}.yml` definen los hosts; `host_vars/` las variables por máquina (`PATH_DATA`, `TAILSCALE_HOSTNAME`). Conexión vía `~/.ssh/config`, sin credenciales en el repo.
 - **Nombres de servicios Compose**: prefijo `svc` (p. ej. `svcPihole`), excepto `openclaw` (compatibilidad con `proxy_pass` de nginx).
