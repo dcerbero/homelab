@@ -1,6 +1,6 @@
 services:
   svcSonarr:
-    image: linuxserver/sonarr:arm64v8-4.0.14
+    image: linuxserver/sonarr:amd64-4.0.19
     container_name: sonarr
     profiles:
       - media-download

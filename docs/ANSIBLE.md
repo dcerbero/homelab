@@ -81,7 +81,7 @@ Tres plays independientes:
 
 1. **[`yoda`](HARDWARE.md#yoda)** — RPi4 local: todos los roles
 2. **[`talos`](HARDWARE.md#talos)** — Oracle Cloud VM: Pi-hole failover + stack de monitoreo (system-setup, docker, pihole, monitoring)
-3. **[`anton`](HARDWARE.md#anton)** — Equipo x86_64: base del sistema + monitoreo (system-setup, docker, cadvisor, smartctl, tailscale) con tags `…, anton`. El stack media (preflight + rol media) se añadirá al provisionarlo.
+3. **[`anton`](HARDWARE.md#anton)** — Equipo x86_64: base + monitoreo + media (system-setup, docker, preflight, cadvisor, smartctl, tailscale, media) con tags `…, anton`. El rol `media` despliega los perfiles `media-streaming` (Jellyfin) y `media-download` (Transmission, Prowlarr, Sonarr).
 
 La definición exacta de roles y tags está en [`ansible/playbook.yml`](../ansible/playbook.yml).
 

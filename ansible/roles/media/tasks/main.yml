@@ -1,0 +1,20 @@
+---
+- name: Ensure media persistence directories exist (uid 1000 para linuxserver.io)
+  ansible.builtin.file:
+    path: "{{ PATH_DATA }}/persistence/{{ item }}"
+    state: directory
+    owner: "1000"
+    group: "1000"
+    mode: "0755"
+  loop:
+    - jellyfin/library
+    - transmission/config
+    - prowlarr
+    - sonarr/data
+
+- name: Start media services (streaming + download)
+  shell: |
+    cd {{ ansible_facts['env']['HOME'] }}/services/homelab/services/docker
+    PATH_DATA={{ PATH_DATA }} docker compose --profile media-streaming --profile media-download up -d --remove-orphans
+  register: media_result
+  changed_when: media_result.stdout is search("Created|Started|Recreated")

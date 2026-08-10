@@ -45,8 +45,8 @@ services/docker/
 | `dashboard` | Heimdall | Panel de control |
 | `ia` | OpenClaw | Interfaz de IA local (OpenRouter API) |
 | `infra` | nginx | Proxy reverso |
-| `media-streaming` | Jellyfin | Streaming multimedia |
-| `media-download` | Transmission, Prowlarr, Sonarr | Descarga y gestión |
+| `media-streaming` | Jellyfin | Streaming multimedia (rol `media`, [anton](HARDWARE.md#anton)) |
+| `media-download` | Transmission, Prowlarr, Sonarr | Descarga y gestión (rol `media`, [anton](HARDWARE.md#anton)) |
 | `monitoring` | cAdvisor, node-exporter | Exporters de métricas (todas las máquinas) |
 | `smart` | smartctl-exporter | Salud SMART de discos (solo [anton](HARDWARE.md#anton)) |
 | `metrics` | Prometheus, Grafana | Backend y dashboards (solo [talos](HARDWARE.md#talos)) |
@@ -126,11 +126,13 @@ Proxy reverso para los servicios web.
 
 ### Jellyfin (media-streaming)
 
-Servidor de streaming multimedia.
+Servidor de streaming multimedia. Solo en [anton](HARDWARE.md#anton) (tags `amd64-`).
 
 - **Puertos:** `8096:8096`
 - **Volúmenes:** `$PATH_DATA/persistence/jellyfin/library`, `$PATH_DATA/media/tvseries`, `$PATH_DATA/media/movies`
-- **Hardware:** `/dev/dri/renderD128` (transcodificación GPU)
+- **Hardware:** `/dev/dri/renderD128` (transcodificación GPU QSV/VA-API, H.264/MPEG2/VC1)
+- **Groups:** `video` (44) + `render` (gid 993 de anton) — necesarios para acceder a `renderD128`
+- **Config recomendada:** HW accel QSV/VA-API, HW encode on, HW decode H.264/MPEG2/VC1 (HEVC/VP9/AV1 off — gen7 no los soporta), transcode temp en `/dev/shm`, HDR tone mapping off
 
 ### Transmission (media-download)
 

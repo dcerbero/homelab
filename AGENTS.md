@@ -44,10 +44,11 @@ homelab/
 | `dashboard` | Heimdall | `heimdall` | yoda |
 | `infra` | nginx | `nginx` | yoda |
 | `ia` | OpenClaw (→ OpenRouter) | `openclaw` | yoda |
-| `monitoring` | cAdvisor, node-exporter | `cadvisor` (yoda), `monitoring` (talos) | yoda + talos |
+| `monitoring` | cAdvisor, node-exporter | `cadvisor` (yoda, anton), `monitoring` (talos) | yoda + talos + anton |
+| `smart` | smartctl-exporter | `smartctl` | anton |
 | `metrics` | Prometheus, Grafana | `monitoring` | talos |
-| `media-streaming` | Jellyfin | *(sin rol — despliegue manual)* | yoda |
-| `media-download` | Transmission, Prowlarr, Sonarr | *(sin rol — despliegue manual)* | yoda |
+| `media-streaming` | Jellyfin | `media` | anton |
+| `media-download` | Transmission, Prowlarr, Sonarr | `media` | anton |
 
 ## Hechos clave
 
@@ -55,16 +56,16 @@ homelab/
 - **OpenClaw → OpenRouter API** para inferencia; sin puertos expuestos, solo detrás de nginx.
 - **Config en el repo, datos en `$PATH_DATA`** — configs versionadas con montajes `:ro` (nginx `conf.d`, grafana provisioning, prometheus config); estado runtime en `$PATH_DATA`: `persistence/<svc>/` (durable) y `media/` (`downloads`, `movies`, `tvseries`, `watch`). `PATH_DATA` se define por máquina en `host_vars/<host>.yml`.
 - **Pi-hole failover** — secundario en talos. Mismas adlists y gravity independiente, sin sync (estado runtime, no versionado). Los nameservers de Tailscale DNS (MagicDNS) se configuran en la consola de Tailscale, no en el repo.
-- **Puerto 53** — `system-setup` desactiva el stub de systemd-resolved (`DNSStubListener=no`).
+- **Puerto 53** — el rol `systemd-resolved` (yoda, talos) desactiva el stub de systemd-resolved (`DNSStubListener=no`); anton no lo incluye (no corre Pi-hole).
 
 ## Convenciones
 
-- **Ansible**: roles con `become: true`. Orden estricto en [yoda](docs/HARDWARE.md#yoda): `system-setup → docker → preflight → pihole → tailscale → cadvisor → openclaw → heimdall → nginx`; en [talos](docs/HARDWARE.md#talos): `system-setup → docker → preflight → pihole → monitoring`.
+- **Ansible**: roles con `become: true`. Orden estricto en [yoda](docs/HARDWARE.md#yoda): `system-setup → docker → preflight → systemd-resolved → pihole → tailscale → cadvisor → openclaw → heimdall → nginx`; en [talos](docs/HARDWARE.md#talos): `system-setup → docker → preflight → systemd-resolved → pihole → monitoring`; en [anton](docs/HARDWARE.md#anton): `system-setup → docker → preflight → cadvisor → smartctl → tailscale → media`.
 - **Preflight**: valida tags de imágenes (`preflight.py`) y declara como tags propias la unión de las tags de los roles de servicio que despliegan compose. Al añadir un rol de servicio nuevo, añade sus tags al rol `preflight` en `playbook.yml` (ambos plays), o un `--tags <nuevo>` se saltaría la validación en silencio. `preflight_require_arch: true` solo en yoda (exige variante arm64).
 - **Compose**: nombre de servicio con prefijo `svc` (`svcPihole`); `container_name` sin prefijo (`pihole`, `openclaw`, `nginx_proxy`, `prometheus`, ...) — los roles usan `docker exec <container_name>`.
 - **UID/GID 1000** para contenedores linuxserver.io (PUID/PGID). Excepciones: Grafana `472:0`, Prometheus `1000:1000`.
 - **Transcodificación HW**: `/dev/dri/renderD128` solo en Jellyfin.
-- **Imágenes arch-pinned**: los servicios media usan tags `arm64v8-` (corren en yoda). Al provisionar anton (amd64) habrá que revisarlas; la verificación la hace el rol `preflight`.
+- **Imágenes arch-pinned**: los servicios media usan tags `amd64-` (corren solo en anton, x86_64); el rol `preflight` valida su existencia. En yoda/talos (arm64) no se despliegan.
 - **Secretos** en `ansible/.env` (gitignored, ver `.env.example`): `TAILSCALE_AUTH_KEY`, `PIHOLE_PASS`, `GRAFANA_ADMIN_PASSWORD`.
 - **Prefijos de PR**: `feat/`, `fix/`, `refactor/`, `docs/`.
 

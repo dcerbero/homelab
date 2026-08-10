@@ -73,9 +73,13 @@
       tags: [system-setup, system, anton]
     - role: docker
       tags: [docker, containers, anton]
+    - role: preflight
+      tags: [preflight, containers, anton, cadvisor, monitoring, smartctl, media, media-streaming, media-download]
     - role: cadvisor
       tags: [cadvisor, monitoring, anton]
     - role: smartctl
       tags: [smartctl, monitoring, anton]
     - role: tailscale
       tags: [tailscale, vpn, anton]
+    - role: media
+      tags: [media, media-streaming, media-download, anton]

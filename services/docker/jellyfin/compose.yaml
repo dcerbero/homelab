@@ -1,6 +1,6 @@
 services:
   svcJellyfin:
-    image: lscr.io/linuxserver/jellyfin:arm64v8-10.10.7
+    image: lscr.io/linuxserver/jellyfin:amd64-10.11.11
     container_name: jellyfin
     profiles:
       - media-streaming

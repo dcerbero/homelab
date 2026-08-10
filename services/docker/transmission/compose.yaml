@@ -1,7 +1,7 @@
 services:
   svcTransmission:
     container_name: transmission
-    image: linuxserver/transmission:arm64v8-4.0.6
+    image: linuxserver/transmission:amd64-4.1.3
     profiles:
       - media-download
     ports:
