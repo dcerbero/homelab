@@ -4,10 +4,23 @@ Todos los cambios relevantes de este proyecto se documentan en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2026.08.6] - 2026-08-10
+
+### Cambiado
+- Renombrado completo de máquinas: `homeserver` (RPi) → `yoda`, `oracle` (VM OCI) → `talos`, `media` (x86_64) → `anton`. Afecta inventario Ansible (`inventory/{yoda,talos}.yml`), `host_vars/`, `playbook.yml` (plays y tags), `TAILSCALE_HOSTNAME` (MagicDNS: `yoda`, `talos`), targets y labels `instance` de `prometheus.yml`, tiles y categorías de Heimdall (`tiles.json`, `seed_tiles.py`) y toda la documentación.
+- `tiles.json`: corregido el hostname obsoleto `ollama-server-2` (apuntaba a la VM OCI con un MagicDNS antiguo) → `talos`.
+- Eliminado el término "homeserver" como descriptor de la Pi (`README.md`, `docs/HARDWARE.md`): ahora son 2 equipos locales (yoda + anton) + VM OCI (talos).
+
+## [2026.08.5] - 2026-08-10
+
+### Documentación
+- Parque de 3 equipos reflejado en toda la documentación: Raspberry Pi 4 (local) + Oracle Cloud VM (Pi-hole failover) + Equipo x86_64 (pendiente de provisionar).
+- Renombrado del alias de máquina `media` → `anton` (referencia al servidor de Gilfoyle en Silicon Valley) en `docs/HARDWARE.md`, `docs/ARCHITECTURE.md`, `README.md` raíz y `docs/ANSIBLE.md`. El término "PC antiguo" se sustituye por "Equipo x86_64".
+
 ## [2026.08.4] - 2026-08-09
 
 ### Agregado
-- Nueva máquina: PC antiguo con alias `media`, x86_64, Intel i5-3470S (4c/4t), 7.7 GiB RAM, 3×1TB (sda OS; sdb/sdc datos sin configurar), Intel HD 2500 (QSV H.264). Pendiente de provisionar.
+- Nueva máquina: Equipo x86_64, Intel i5-3470S (4c/4t), 7.7 GiB RAM, 3×1TB (sda OS; sdb/sdc datos sin configurar), Intel HD 2500 (QSV H.264). Pendiente de provisionar.
 - `docs/HARDWARE.md`: inventario del hardware (media, pi, oracle) con puntuación 0-10 por componente y promedios.
 
 ### Documentación

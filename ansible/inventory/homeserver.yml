@@ -1,6 +1,0 @@
-all:
-  children:
-    homeserver:
-      hosts:
-        homeserver:
-          ansible_host: pi

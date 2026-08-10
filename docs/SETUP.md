@@ -39,6 +39,8 @@ sudo netplan apply
 
 Pi-hole necesita el puerto 53 libre. systemd-resolved lo ocupa por defecto.
 
+> El rol Ansible `system-setup` automatiza este paso. El procedimiento manual de abajo solo aplica si provisionas sin Ansible.
+
 Crear `/etc/systemd/resolved.conf.d/dns.conf`:
 
 ```ini
@@ -68,7 +70,7 @@ El esqueleto (`$PATH_DATA/persistence` y `$PATH_DATA/media/{downloads,movies,tvs
 
 Si más adelante quieres mover los datos a un disco dedicado: formatea, monta el disco en `/mnt/data`, agrega la línea al `/etc/fstab` y cambia `PATH_DATA` en `host_vars`:
 
-```
+```text
 UUID=tu-uuid-aqui  /mnt/data  ext4  defaults,nofail  0  2
 ```
 

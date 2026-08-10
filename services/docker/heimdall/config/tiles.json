@@ -1,8 +1,8 @@
 [
-  { "title": "cadvisor-pi", "url": "http://raspberry-homeserver:9101/", "icon": "icons/cadvisor.png", "colour": "#1e293b", "tag": "Pi" },
-  { "title": "openclaw-pi", "url": "http://raspberry-homeserver/openclaw", "icon": "icons/openclaw.svg", "colour": "#7c3aed", "tag": "Pi" },
-  { "title": "pihole-pi", "url": "http://raspberry-homeserver:8085/admin/", "icon": "icons/pihole.svg", "colour": "#161b1f", "tag": "Pi" },
-  { "title": "cadvisor-oracle", "url": "http://ollama-server-2:9101/", "icon": "icons/cadvisor.png", "colour": "#1e293b", "tag": "Oracle" },
-  { "title": "grafana-oracle", "url": "http://ollama-server-2:3000/", "icon": "icons/grafana.svg", "colour": "#F46800", "tag": "Oracle" },
-  { "title": "pihole-oracle", "url": "http://ollama-server-2:8085/admin/", "icon": "icons/pihole.svg", "colour": "#161b1f", "tag": "Oracle" }
+  { "title": "cadvisor-yoda", "url": "http://yoda:9101/", "icon": "icons/cadvisor.png", "colour": "#1e293b", "tag": "yoda" },
+  { "title": "openclaw-yoda", "url": "http://yoda/openclaw", "icon": "icons/openclaw.svg", "colour": "#7c3aed", "tag": "yoda" },
+  { "title": "pihole-yoda", "url": "http://yoda:8085/admin/", "icon": "icons/pihole.svg", "colour": "#161b1f", "tag": "yoda" },
+  { "title": "cadvisor-talos", "url": "http://talos:9101/", "icon": "icons/cadvisor.png", "colour": "#1e293b", "tag": "talos" },
+  { "title": "grafana-talos", "url": "http://talos:3000/", "icon": "icons/grafana.svg", "colour": "#F46800", "tag": "talos" },
+  { "title": "pihole-talos", "url": "http://talos:8085/admin/", "icon": "icons/pihole.svg", "colour": "#161b1f", "tag": "talos" }
 ]

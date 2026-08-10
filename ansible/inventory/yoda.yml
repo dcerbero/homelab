@@ -1,0 +1,6 @@
+all:
+  children:
+    yoda:
+      hosts:
+        yoda:
+          ansible_host: yoda

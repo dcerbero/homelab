@@ -1,10 +1,10 @@
 # 🐋 Docker Compose — Servicios
 
-Todos los servicios del homeserver se despliegan con Docker Compose usando perfiles independientes.
+Todos los servicios de yoda se despliegan con Docker Compose usando perfiles independientes.
 
 ## Estructura
 
-```
+```text
 services/docker/
 ├── compose.yaml              ← Archivo principal con includes
 ├── heimdall/compose.yaml     ← Perfil: dashboard
@@ -35,11 +35,11 @@ services/docker/
 | `media-streaming` | Jellyfin | Streaming multimedia |
 | `media-download` | Transmission, Prowlarr, Sonarr | Descarga y gestión |
 | `monitoring` | cAdvisor, node-exporter | Exporters de métricas (ambas máquinas) |
-| `metrics` | Prometheus, Grafana | Backend y dashboards (solo Oracle) |
+| `metrics` | Prometheus, Grafana | Backend y dashboards (solo talos) |
 
 ## Despliegue
 
-Todos los servicios se despliegan via **Ansible** (`bash run.sh homeserver`). No se ejecuta `docker compose` manualmente para el aprovisionamiento.
+Todos los servicios se despliegan via **Ansible** (`bash run.sh yoda`). No se ejecuta `docker compose` manualmente para el aprovisionamiento.
 
 Para administración manual (logs, reinicios, estado):
 
@@ -149,7 +149,7 @@ Interfaz de IA local. Usa la **API de OpenRouter** para inferencia.
 
 Métricas de uso de recursos de todos los contenedores.
 
-- **Puerto:** `9101:8080` en el Pi (acceso de scraping vía Tailscale); en Oracle sin bind al host (scrape interno por nombre de servicio)
+- **Puerto:** `9101:8080` en yoda (acceso de scraping vía Tailscale); en talos sin bind al host (scrape interno por nombre de servicio)
 - **Volúmenes:** monta `/`, `/var/run`, `/sys`, `/var/lib/docker`, `/dev/disk` (solo lectura)
 - **Intervalos:** housekeeping 10s, max housekeeping 15s, global 1m
 
@@ -160,8 +160,9 @@ Métricas del host (CPU, RAM, disco, red, temperatura) para Prometheus.
 - **Puerto:** `9100:9100`
 - **Volúmenes:** monta `/proc`, `/sys`, `/` (solo lectura)
 - **Colectores:** por defecto (incluye `node_hwmon` para temperatura del RPi)
+- **Despliegue:** en yoda no tiene rol propio; lo levanta el rol `cadvisor` vía el perfil `monitoring` (`docker compose --profile monitoring up`)
 
-### Prometheus (metrics — solo Oracle)
+### Prometheus (metrics — solo talos)
 
 Backend de métricas. Scrapea a los exporters de ambas máquinas.
 
@@ -169,22 +170,22 @@ Backend de métricas. Scrapea a los exporters de ambas máquinas.
 - **Config:** directorio `services/docker/prometheus/config/` (montado `:ro`; `--config.file=/etc/prometheus/config/prometheus.yml`) — se monta el directorio, no el archivo, para que el reload SIGHUP del rol lea los cambios que aplica `git pull` (el mount de archivo único se queda con el inode viejo)
 - **Volúmenes:** `$PATH_DATA/persistence/prometheus` (TSDB)
 - **Retención:** 15 días
-- **Targets:** self, node-exporter y cAdvisor de Oracle (internos) + Pi vía Tailscale (`raspberry-homeserver:9100`, `raspberry-homeserver:9101`). El label `instance` se renombra vía `relabel_configs` a `oracle`/`pi` para el dashboard.
+- **Targets:** self, node-exporter y cAdvisor de talos (internos) + yoda vía Tailscale (`yoda:9100`, `yoda:9101`). El label `instance` se renombra vía `relabel_configs` a `talos`/`yoda` para el dashboard.
 - **Recarga de config:** el rol `monitoring` ejecuta `docker exec prometheus kill -HUP 1` (SIGHUP) tras cada deploy
 
-### Grafana (metrics — solo Oracle)
+### Grafana (metrics — solo talos)
 
-Dashboards y visualización. Acceso por Tailscale (`http://<ip-oracle>:3000`).
+Dashboards y visualización. Acceso por Tailscale (`http://<ip-talos>:3000`).
 
 - **Puerto:** `3000:3000`
 - **Admin:** usuario `admin`, password en `GRAFANA_ADMIN_PASSWORD` (secreto de `ansible/.env`)
 - **Provisioning:** datasource + provider en `services/docker/grafana/config/provisioning/` (montado `:ro`)
-- **Dashboards:** gestionados desde el repo (`seed/homelab.json` es la fuente de verdad; el rol `monitoring` lo copia a `$PATH_DATA/persistence/grafana/dashboards/` con `force: yes` y reinicia el contenedor en cada deploy para aplicar el provisioning). No editables desde la UI (`allowUiUpdates: false` en el provisioning): cualquier cambio se hace en el seed y se despliega con `git pull` + `run.sh oracle`.
+- **Dashboards:** gestionados desde el repo (`seed/homelab.json` es la fuente de verdad; el rol `monitoring` lo copia a `$PATH_DATA/persistence/grafana/dashboards/` con `force: yes` y reinicia el contenedor en cada deploy para aplicar el provisioning). No editables desde la UI (`allowUiUpdates: false` en el provisioning): cualquier cambio se hace en el seed y se despliega con `git pull` + `run.sh talos`.
 - **Volúmenes:** `$PATH_DATA/persistence/grafana`
 
 ## Almacenamiento Persistente
 
-```
+```text
 $PATH_DATA/
 ├── persistence/            (estado durable de cada servicio)
 │   ├── heimdall/config

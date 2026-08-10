@@ -4,7 +4,7 @@ Guía de trabajo para asistentes IA en este repositorio. El detalle completo viv
 
 ## Resumen
 
-Infraestructura híbrida: Raspberry Pi 4 (local) + Oracle Cloud VM (Pi-hole failover) + PC antiguo x86_64 (alias `media`, pendiente de provisionar), aprovisionada con Ansible y servicios Docker organizados por perfiles.
+Infraestructura híbrida: Raspberry Pi 4 (local) + Oracle Cloud VM (Pi-hole failover) + Equipo x86_64 (pendiente de provisionar), aprovisionada con Ansible y servicios Docker organizados por perfiles.
 
 Dos subsistemas, cada uno con su ciclo de vida:
 
@@ -13,10 +13,10 @@ Dos subsistemas, cada uno con su ciclo de vida:
 
 ## Arquitectura
 
-```
+```text
 homelab/
-├── ansible/          # playbook.yml (2 plays), run.sh, inventory/ (host_vars), 8 roles
-├── services/docker/  # compose.yaml + compose.yaml por servicio (perfiles: dns, dashboard, infra, ia, monitoring, media-streaming, media-download)
+├── ansible/          # playbook.yml (2 plays), run.sh, inventory/ (host_vars), 10 roles
+├── services/docker/  # compose.yaml + compose.yaml por servicio (perfiles: dns, dashboard, infra, ia, monitoring, metrics, media-streaming, media-download)
 ├── config/           # scripts auxiliares
 └── docs/             # documentación detallada (índice en docs/README.md)
 ```
@@ -44,9 +44,9 @@ homelab/
 cd ansible/
 cp .env.example .env     # editar con secretos
 bash run.sh              # todas las máquinas
-bash run.sh homeserver   # solo RPi
-bash run.sh oracle       # solo Oracle (failover Pi-hole)
-bash run.sh homeserver --tags pihole,dns   # por rol
+bash run.sh yoda         # solo RPi
+bash run.sh talos        # solo Oracle (failover Pi-hole)
+bash run.sh yoda --tags pihole,dns   # por rol
 ```
 
 - Los servicios se despliegan vía **Ansible**, no con `docker compose` manual. La gestión manual (estado, logs, actualización) y los health checks están en `docs/DOCKER.md` y `docs/COMMANDS.md`.
@@ -54,9 +54,9 @@ bash run.sh homeserver --tags pihole,dns   # por rol
 
 ## Convenciones
 
-- **Ansible**: todos los roles corren con `become: true`. Orden estricto en homeserver: `system-setup → docker → preflight → pihole → tailscale → cadvisor → openclaw → heimdall → nginx`. El play oracle solo ejecuta `system-setup → docker → preflight → pihole → monitoring`.
+- **Ansible**: todos los roles corren con `become: true`. Orden estricto en yoda: `system-setup → docker → preflight → pihole → tailscale → cadvisor → openclaw → heimdall → nginx`. El play talos solo ejecuta `system-setup → docker → preflight → pihole → monitoring`.
 - **Preflight**: el rol `preflight` (validación de tags de imágenes antes de desplegar) declara como tags propias la unión de las tags de todos los roles de servicio que despliegan compose. Al añadir un rol de servicio nuevo, añade sus tags a la lista de tags del rol `preflight` en `playbook.yml` (ambos plays), o un `--tags <nuevo>` se saltaría la validación en silencio.
-- **Inventario**: `ansible/inventory/{homeserver,oracle}.yml` definen los hosts; `host_vars/` las variables por máquina (`PATH_DATA`, `TAILSCALE_HOSTNAME`). Conexión vía `~/.ssh/config`, sin credenciales en el repo.
+- **Inventario**: `ansible/inventory/{yoda,talos}.yml` definen los hosts; `host_vars/` las variables por máquina (`PATH_DATA`, `TAILSCALE_HOSTNAME`). Conexión vía `~/.ssh/config`, sin credenciales en el repo.
 - **Nombres de servicios Compose**: prefijo `svc` (p. ej. `svcPihole`), excepto `openclaw` (compatibilidad con `proxy_pass` de nginx).
 - **UID/GID 1000** para contenedores linuxserver.io.
 - **Transcodificación HW** en Pi 4: `/dev/dri/renderD128` (solo Jellyfin).

@@ -1,50 +1,32 @@
 services:
   svcPihole:
-    # Identificación básica
     container_name: pihole
     image: pihole/pihole:2026.07.2
     profiles:
       - dns
-    restart: always  # Infraestructura crítica (router + VPN DNS)
-
-    # Networking
+    restart: always
     ports:
       - "53:53/tcp"
       - "53:53/udp"
-      - "8085:80"     # Web admin v6 (8082 en uso por Transmission)
+      - "8085:80"   # Web admin (8082 en uso por Transmission)
     dns:
       - 9.9.9.9
       - 1.1.1.2
-
-    # Volúmenes de persistencia
     volumes:
       - ${PATH_DATA}/persistence/pihole/etc-pihole-v2:/etc/pihole
       - ${PATH_DATA}/persistence/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
-
-    # Variables de entorno organizadas por categoría
     environment:
-      # Configuración básica
       TZ: "America/Bogota"
       WEBTHEME: "default-dark"
-
-      # Configuración DNS básica
       FTLCONF_dns_listeningMode: 'all'
       FTLCONF_dns_upstreams: '9.9.9.9;1.1.1.2;2620:fe::fe;2606:4700:4700::1112'
-
-      # Optimizaciones de Logging
-      FTLCONF_maxlogage: "168"    # 7 días de logs
-      FTLCONF_maxlogsize: "50"     # 50MB máximo
-
-      # Optimizaciones de Cache DNS
-      FTLCONF_dns_cache_size: "20000"      # 20,000 entradas cache
-      FTLCONF_dns_max_cache_ttl: "1800"    # TTL máximo: 30 minutos
-
-      # Blocking Mode
-      FTLCONF_blockingmode: "NULL"         # 0.0.0.0 para bloqueados (más rápido)
-
-      # Extensiones y optimizaciones DNS
-      FTLCONF_dns_edns0: "yes"             # Extensiones DNS modernas
-      FTLCONF_dns_check_aaaa: "yes"        # IPv6 habilitado
-      FTLCONF_dns_compress: "yes"          # Compresión DNS
-      FTLCONF_dns_prefetch: "yes"          # Prefetch de dominios comunes
-      FTLCONF_dns_forward_max: "150"       # Límite conexiones concurrentes
+      FTLCONF_maxlogage: "168"
+      FTLCONF_maxlogsize: "50"
+      FTLCONF_dns_cache_size: "20000"
+      FTLCONF_dns_max_cache_ttl: "1800"
+      FTLCONF_blockingmode: "NULL"
+      FTLCONF_dns_edns0: "yes"
+      FTLCONF_dns_check_aaaa: "yes"
+      FTLCONF_dns_compress: "yes"
+      FTLCONF_dns_prefetch: "yes"
+      FTLCONF_dns_forward_max: "150"

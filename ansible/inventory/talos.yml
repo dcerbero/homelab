@@ -1,0 +1,6 @@
+all:
+  children:
+    talos:
+      hosts:
+        talos:
+          ansible_host: talos

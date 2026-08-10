@@ -1,6 +1,6 @@
 # 🤖 Ansible — Aprovisionamiento
 
-Automatiza la configuración de la infraestructura: Raspberry Pi 4 (homeserver) + Oracle Cloud VM (Pi-hole failover DNS).
+Automatiza la configuración de la infraestructura: Raspberry Pi 4 (yoda) + Oracle Cloud VM (talos, Pi-hole failover DNS). El Equipo x86_64 (anton) está pendiente de provisionar, aún sin play ni inventario.
 
 ## Inicio Rápido
 
@@ -13,7 +13,7 @@ bash run.sh
 
 ## Roles
 
-### homeserver (RPi4)
+### yoda (RPi4)
 
 | Rol | Tags | Descripción |
 |---|---|---|
@@ -27,15 +27,15 @@ bash run.sh
 | `heimdall` | `heimdall`, `dashboard` | Despliegue del panel de control Heimdall |
 | `nginx` | `nginx`, `proxy` | Despliegue del proxy reverso nginx (recrea en drift de imagen/mount, recarga para cambios de `conf.d`) |
 
-### Oracle Cloud VM
+### talos (Oracle Cloud VM)
 
 | Rol | Tags | Descripción |
 |---|---|---|
-| `system-setup` | `system-setup`, `system`, `oracle` | Paquetes del SO, DNS stub, clonar repo |
-| `docker` | `docker`, `containers`, `oracle` | Instalación de Docker Engine + Compose |
-| `preflight` | `preflight`, `containers`, `oracle` + unión de tags de roles compose | Verifica existencia de los tags (solo existencia; no exige arquitectura) |
-| `pihole` | `pihole`, `dns`, `oracle` | Pi-hole secundario (failover DNS) |
-| `monitoring` | `monitoring`, `metrics`, `oracle` | Stack de métricas centralizado: Prometheus, Grafana, node-exporter y cAdvisor. Tras el `compose up` recarga la config de Prometheus (`docker exec prometheus kill -HUP 1`) |
+| `system-setup` | `system-setup`, `system`, `talos` | Paquetes del SO, DNS stub, clonar repo |
+| `docker` | `docker`, `containers`, `talos` | Instalación de Docker Engine + Compose |
+| `preflight` | `preflight`, `containers`, `talos` + unión de tags de roles compose | Verifica existencia de los tags (solo existencia; no exige arquitectura) |
+| `pihole` | `pihole`, `dns`, `talos` | Pi-hole secundario (failover DNS) |
+| `monitoring` | `monitoring`, `metrics`, `talos` | Stack de métricas centralizado: Prometheus, Grafana, node-exporter y cAdvisor. Tras el `compose up` recarga la config de Prometheus (`docker exec prometheus kill -HUP 1`) |
 
 ## Preflight (validación de imágenes)
 
@@ -45,9 +45,9 @@ Qué hace ([`files/preflight.py`](../ansible/roles/preflight/files/preflight.py)
 
 1. Extrae todos los `image:` de los `compose.yaml` del repo clonado.
 2. Verifica cada tag con `docker manifest inspect` en paralelo (sin descargar la imagen).
-3. Con `preflight_require_arch: true` (homeserver) exige además que el tag tenga variante `arm64`.
+3. Con `preflight_require_arch: true` (yoda) exige además que el tag tenga variante `arm64`.
 
-Si alguna imagen falla, el play aborta listando los tags problemáticos antes de tocar contenedores. En oracle solo se valida existencia (la arquitectura se resuelve en runtime con el fact `ansible_machine`, pero oracle no exige `preflight_require_arch` porque no despliega los servicios media con tags `arm64v8-`).
+Si alguna imagen falla, el play aborta listando los tags problemáticos antes de tocar contenedores. En talos solo se valida existencia (la arquitectura se resuelve en runtime con el fact `ansible_machine`, pero talos no exige `preflight_require_arch` porque no despliega los servicios media con tags `arm64v8-`).
 
 El rol `preflight` declara como tags propias la unión de las tags de los roles de servicio que despliegan compose (`pihole`, `dns`, `cadvisor`, `monitoring`, `ia`, `dashboard`, `proxy`, `metrics`…). Así se activa también en runs etiquetados que tocan compose y se salta en los que no (p. ej. `--tags system-setup`, `--tags docker`, `--tags tailscale`).
 
@@ -55,7 +55,7 @@ El rol `preflight` declara como tags propias la unión de las tags de los roles 
 
 ```bash
 # Probar solo el preflight
-bash run.sh homeserver --tags preflight
+bash run.sh yoda --tags preflight
 ```
 
 ## Playbook
@@ -64,44 +64,12 @@ bash run.sh homeserver --tags preflight
 
 Dos plays independientes:
 
-1. **`homeserver`** — RPi4 local: todos los roles
-2. **`oracle`** — Oracle Cloud VM: Pi-hole failover + stack de monitoreo (system-setup, docker, pihole, monitoring)
+1. **`yoda`** — RPi4 local: todos los roles
+2. **`talos`** — Oracle Cloud VM: Pi-hole failover + stack de monitoreo (system-setup, docker, pihole, monitoring)
 
-```yaml
-# Play homeserver
-roles:
-  - role: system-setup
-    tags: [system-setup, system]
-  - role: docker
-    tags: [docker, containers]
-  - role: preflight
-    tags: [preflight, containers]
-  - role: pihole
-    tags: [pihole, dns]
-  - role: tailscale
-    tags: [tailscale, vpn]
-  - role: cadvisor
-    tags: [cadvisor, monitoring]
-  - role: openclaw
-    tags: [openclaw, ia]
-  - role: heimdall
-    tags: [heimdall, dashboard]
-  - role: nginx
-    tags: [nginx, proxy]
+> Pendiente: el Equipo x86_64 (anton) se incorporará como un tercer play cuando se provisione.
 
-# Play oracle
-roles:
-  - role: system-setup
-    tags: [system-setup, system, oracle]
-  - role: docker
-    tags: [docker, containers, oracle]
-  - role: preflight
-    tags: [preflight, containers, oracle]
-  - role: pihole
-    tags: [pihole, dns, oracle]
-  - role: monitoring
-    tags: [monitoring, metrics, oracle]
-```
+La definición exacta de roles y tags está en [`ansible/playbook.yml`](../ansible/playbook.yml).
 
 ## Inventario
 
@@ -111,12 +79,14 @@ Inventario en formato directorio con variables por host. Cada máquina define su
 
 ```text
 inventory/
-├── homeserver.yml              # Definición del host RPi
-├── oracle.yml                  # Definición del host Oracle Cloud
+├── yoda.yml                      # Definición del host RPi
+├── talos.yml                     # Definición del host Oracle Cloud
 ├── host_vars/
-│   ├── homeserver.yml          # PATH_DATA, TAILSCALE_HOSTNAME, preflight_require_arch
-│   └── oracle.yml              # PATH_DATA, TAILSCALE_HOSTNAME
+│   ├── yoda.yml                  # PATH_DATA, TAILSCALE_HOSTNAME, preflight_require_arch
+│   └── talos.yml                 # PATH_DATA, TAILSCALE_HOSTNAME
 ```
+
+> El Equipo x86_64 (anton) aún no tiene entrada en el inventario; se añadirá al provisionar.
 
 ### SSH
 
@@ -124,13 +94,13 @@ La conexión se resuelve via `~/.ssh/config` local (fuera del repo). Ansible sol
 
 ```text
 # ~/.ssh/config
-Host pi
-    HostName <ip_homeserver>
+Host yoda
+    HostName <ip_yoda>
     User <username>
     IdentityFile ~/.ssh/<clave_privada>
 
-Host oracle
-    HostName <ip_oracle>
+Host talos
+    HostName <ip_talos>
     User <username>
     IdentityFile ~/.ssh/<clave_privada>
 ```
@@ -150,7 +120,7 @@ TAILSCALE_AUTH_KEY=tskey-auth-xxxxx
 |---|---|
 | `PIHOLE_PASS` | Contraseña de la interfaz web de Pi-hole |
 | `TAILSCALE_AUTH_KEY` | Clave de autenticación desde [Tailscale Admin](https://login.tailscale.com/admin/settings/keys) |
-| `GRAFANA_ADMIN_PASSWORD` | Contraseña del usuario admin de Grafana (stack de métricas en Oracle) |
+| `GRAFANA_ADMIN_PASSWORD` | Contraseña del usuario admin de Grafana (stack de métricas en talos) |
 
 Solo secretos viven en `.env` (gitignorado). Las variables de máquina (`PATH_DATA`, `TAILSCALE_HOSTNAME`) viven en `inventory/host_vars/<host>.yml`.
 
@@ -162,21 +132,21 @@ El script [`run.sh`](../ansible/run.sh) carga los secretos del `.env`, usa `inve
 # Todas las máquinas
 bash run.sh
 
-# Solo homeserver (RPi)
-bash run.sh homeserver
+# Solo yoda (RPi)
+bash run.sh yoda
 
-# Solo Oracle (Pi-hole failover)
-bash run.sh oracle
+# Solo talos (Pi-hole failover)
+bash run.sh talos
 
 # Solo un rol específico en una máquina
-bash run.sh homeserver --tags pihole,dns
-bash run.sh oracle --tags docker
+bash run.sh yoda --tags pihole,dns
+bash run.sh talos --tags docker
 
-# Stack IA completo en homeserver
-bash run.sh homeserver --tags ia
+# Stack IA completo en yoda
+bash run.sh yoda --tags ia
 
-# Todo Oracle (aprovecha las tags oracle)
-bash run.sh oracle --tags oracle
+# Todo talos (aprovecha las tags talos)
+bash run.sh talos --tags talos
 
 # Todo excepto system-setup (salta el apt upgrade)
 bash run.sh --skip-tags system

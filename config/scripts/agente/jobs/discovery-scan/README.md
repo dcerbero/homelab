@@ -23,7 +23,7 @@ Escaneo semanal de nuevas herramientas y recursos AI/Dev/Infra.
 
 ## Payload
 
-```
+```text
 Sistema: Escaneo semanal de nuevas herramientas y recursos AI/Dev/Infra (Sábados 11:00 COT):
 
 1. Configuración de Filtros de Viabilidad Estrictos:

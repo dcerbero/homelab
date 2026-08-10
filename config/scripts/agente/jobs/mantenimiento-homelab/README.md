@@ -23,7 +23,7 @@ Auditoría semanal de versiones de imágenes Docker del repositorio Homelab.
 
 ## Payload
 
-```
+```text
 Sistema: Auditoría semanal de versiones del repositorio Homelab (Viernes 08:00 COT):
 
 1. Sincronización Estricta de la Rama Main (Garantía de Origen):

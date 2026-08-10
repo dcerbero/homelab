@@ -1,22 +1,5 @@
 # 🔧 Solución de Problemas
 
-## Puerto 53 en uso
-
-**Síntoma:** Pi-hole no arranca, error `port already in use`.
-
-**Causa:** systemd-resolved está usando el puerto 53.
-
-**Solución:**
-```bash
-# Verificar qué proceso usa el puerto
-sudo lsof -i :53
-
-# Deshabilitar DNS stub listener
-echo "[Resolve]
-DNSStubListener=no" | sudo tee /etc/systemd/resolved.conf.d/dns.conf
-sudo systemctl restart systemd-resolved
-```
-
 ## Conflictos de Puertos
 
 **Síntoma:** Un servicio no arranca con error de puerto.
@@ -48,15 +31,15 @@ sudo chown -R 1000:1000 ${PATH_DATA}
 
 ## Ansible falla por conexión SSH
 
-**Síntoma:** `fatal: [homeserver]: UNREACHABLE!`
+**Síntoma:** `fatal: [yoda]: UNREACHABLE!`
 
 **Solución:**
 ```bash
 # Verificar conectividad
-ssh <username>@<ip_homeserver>
+ssh <username>@<ip_yoda>
 
 # Verificar inventario
-cat ansible/inventory/homeserver.yml
+cat ansible/inventory/yoda.yml
 
 # Verificar que la IP y usuario sean correctos
 ```
@@ -87,7 +70,7 @@ docker manifest inspect <imagen>:<tag>
 
 # Corregir el tag en services/docker/<servicio>/compose.yaml
 # y re-ejecutar
-bash run.sh homeserver --tags preflight
+bash run.sh yoda --tags preflight
 ```
 
 ## Rate limit de Docker Hub en el preflight

@@ -13,7 +13,7 @@ graph TD
         direction LR
         ISP[🌐 Internet / ISP]
         
-        subgraph OCI_VM [☁️ Oracle Cloud VM]
+        subgraph OCI_VM [☁️ talos — Oracle Cloud VM]
             OciPiHole[🛡️ Pi-hole failover]
             Prometheus[📈 Prometheus]
             Grafana[📊 Grafana]
@@ -25,7 +25,7 @@ graph TD
 
     subgraph LAN [Red Local]
         Router[🖧 Router]
-        subgraph Pi [🍓 Raspberry Pi 4]
+        subgraph Pi [🍓 yoda — Raspberry Pi 4]
             subgraph Docker [🐋 Docker Engine]
                 OpenClaw[🤖 OpenClaw]
                 PiHole[🛡️ Pi-hole DNS]
@@ -67,7 +67,7 @@ graph TD
     linkStyle 6,7 stroke:#10b981,stroke-width:3px;
 ```
 
-> La máquina `media` (alias de un PC antiguo x86_64, `<ip-media>`, pendiente de provisionar) no aparece en el diagrama: aún no tiene servicios desplegados. Se integrará cuando se provisione.
+> La máquina `anton` (Equipo x86_64, `<ip-anton>`, pendiente de provisionar) no aparece en el diagrama: aún no tiene servicios desplegados. Se integrará cuando se provisione.
 
 ## Flujos de Red
 
@@ -81,19 +81,20 @@ graph TD
 - Procesamiento local, modelos remotos
 
 ### VPN (Discontinuo)
-- Tailscale mesh VPN conecta: Raspberry Pi, Oracle Cloud VM, dispositivos remotos
+- Tailscale mesh VPN conecta: yoda, talos, dispositivos remotos
 - Subnet routing para acceso a red local desde fuera
 
 ### Métricas (Monitoreo)
-- Prometheus (Oracle) scrapea los exporters de **ambas** máquinas vía Tailscale
-- Oracle: node-exporter (`svcNodeExporter:9100`) y cAdvisor (`svccAdvisor:8080`) internos
-- Pi: node-exporter (`raspberry-homeserver:9100`) y cAdvisor (`raspberry-homeserver:9101`)
-- Grafana (Oracle) expone el dashboard único, accesible solo por Tailscale
+- Prometheus (talos) scrapea los exporters de **ambas** máquinas vía Tailscale
+- talos: node-exporter (`svcNodeExporter:9100`) y cAdvisor (`svccAdvisor:8080`) internos
+- yoda: node-exporter (`yoda:9100`) y cAdvisor (`yoda:9101`)
+- Grafana (talos) expone el dashboard único, accesible solo por Tailscale
 
 ## Puertos Expuestos
 
 | Puerto | Servicio | Acceso |
 |---|---|---|
+| 22 | SSH | Solo LAN o Tailscale |
 | 53 (TCP/UDP) | Pi-hole DNS | Local |
 | 80 | nginx (Heimdall, OpenClaw) | Local |
 | 443 | nginx HTTPS | Local |
@@ -104,5 +105,5 @@ graph TD
 | 8084 | Sonarr | Local |
 | 51413 (TCP/UDP) | Transmission Torrent | Local |
 | 9100 | node-exporter | Solo LAN o Tailscale |
-| 9101 | cAdvisor (Pi) | Solo LAN o Tailscale |
-| 3000 | Grafana (Oracle) | Solo Tailscale |
+| 9101 | cAdvisor (yoda) | Solo LAN o Tailscale |
+| 3000 | Grafana (talos) | Solo Tailscale |

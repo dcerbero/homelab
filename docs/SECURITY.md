@@ -65,19 +65,4 @@ sudo ufw enable
 
 ### Puertos a considerar
 
-| Puerto | Servicio | ¿Exponer? |
-|---|---|---|
-| 22 | SSH | Solo LAN o Tailscale |
-| 53 | DNS | Solo LAN |
-| 80, 443 | HTTP/HTTPS | Solo LAN |
-| 8085 | Pi-hole Web admin | Solo LAN |
-| 8096 | Jellyfin | Solo LAN |
-| 8082 | Transmission Web UI | Solo LAN |
-| 8083 | Prowlarr | Solo LAN |
-| 8084 | Sonarr | Solo LAN |
-| 51413 | Torrent | Requerido para descargas |
-| 9100 | node-exporter | Solo LAN o Tailscale |
-| 9101 | cAdvisor (Pi) | Solo LAN o Tailscale |
-| 3000 | Grafana (Oracle) | Solo Tailscale |
-
-> Recomendación: no exponer puertos directamente a Internet. Usar Tailscale para acceso remoto.
+La tabla de puertos expuestos y su alcance de acceso está en [`ARCHITECTURE.md`](ARCHITECTURE.md) (sección "Puertos Expuestos"). Regla general: no exponer puertos directamente a Internet; usar Tailscale para acceso remoto.

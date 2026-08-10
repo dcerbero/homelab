@@ -23,7 +23,7 @@ Auditoría de costo-beneficio de modelos de IA. Ejecuta `costos.sh` desde el rep
 
 ## Payload
 
-```
+```text
 Tarea: auditoría semanal de costo-beneficio del modelo LLM configurado en OpenClaw.
 Compara el precio directo del proveedor contra el precio vía OpenRouter para el
 modelo actual, y contra el resto del mercado.

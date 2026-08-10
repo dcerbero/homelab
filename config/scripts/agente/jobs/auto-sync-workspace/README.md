@@ -22,7 +22,7 @@ Exportación y respaldo del workspace hacia GitHub. Cada 30 minutos.
 
 ## Payload
 
-```
+```text
 Sistema: Exportación y respaldo absoluto del Workspace hacia la nube (Local -> GitHub):
 
 1. Configuración de Entorno Estricto:

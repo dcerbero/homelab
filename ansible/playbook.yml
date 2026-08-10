@@ -1,6 +1,6 @@
 ---
-- name: Setup homeserver
-  hosts: homeserver
+- name: Setup yoda
+  hosts: yoda
   become: true
   gather_facts: no
 
@@ -25,14 +25,13 @@
       tags: [cadvisor, monitoring]
     - role: openclaw
       tags: [openclaw, ia]
-
     - role: heimdall
       tags: [heimdall, dashboard]
     - role: nginx
       tags: [nginx, proxy]
 
-- name: Setup Oracle Cloud VM (Pi-hole failover)
-  hosts: oracle
+- name: Setup talos
+  hosts: talos
   become: true
   gather_facts: no
 
@@ -44,12 +43,12 @@
 
   roles:
     - role: system-setup
-      tags: [system-setup, system, oracle]
+      tags: [system-setup, system, talos]
     - role: docker
-      tags: [docker, containers, oracle]
+      tags: [docker, containers, talos]
     - role: preflight
-      tags: [preflight, containers, oracle, pihole, dns, monitoring, metrics]
+      tags: [preflight, containers, talos, pihole, dns, monitoring, metrics]
     - role: pihole
-      tags: [pihole, dns, oracle]
+      tags: [pihole, dns, talos]
     - role: monitoring
-      tags: [monitoring, metrics, oracle]
+      tags: [monitoring, metrics, talos]

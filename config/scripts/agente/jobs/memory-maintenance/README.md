@@ -23,7 +23,7 @@ Consolidación diaria de memoria. No hace git push (lo cubre auto-sync-workspace
 
 ## Payload
 
-```
+```text
 Sistema: Consolidación de memoria general (Lun-Vie 23:00 COT)
 
 1. Ruta base: /home/node/.openclaw/workspace
