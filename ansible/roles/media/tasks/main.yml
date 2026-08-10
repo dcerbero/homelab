@@ -21,5 +21,8 @@
   shell: |
     cd {{ ansible_facts['env']['HOME'] }}/services/homelab/services/docker
     PATH_DATA={{ PATH_DATA }} docker compose --profile media-streaming --profile media-download up -d --remove-orphans
+  environment:
+    TRANSMISSION_RPC_USERNAME: "{{ TRANSMISSION_RPC_USERNAME }}"
+    TRANSMISSION_RPC_PASSWORD: "{{ TRANSMISSION_RPC_PASSWORD }}"
   register: media_result
   changed_when: media_result.stdout is search("Created|Started|Recreated")
