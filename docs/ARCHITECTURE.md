@@ -67,7 +67,7 @@ graph TD
     linkStyle 6,7 stroke:#10b981,stroke-width:3px;
 ```
 
-> La máquina **media** (x86_64, 192.168.0.3, pendiente de provisionar) no aparece en el diagrama: aún no tiene servicios desplegados. Se integrará cuando se provisione.
+> La máquina `media` (alias de un PC antiguo x86_64, 192.168.0.3, pendiente de provisionar) no aparece en el diagrama: aún no tiene servicios desplegados. Se integrará cuando se provisione.
 
 ## Flujos de Red
 

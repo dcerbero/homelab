@@ -6,7 +6,7 @@
 
 | Componente | Tecnología |
 |---|---|
-| Servidor | Raspberry Pi 4 — Ubuntu 24.04 + máquina media (pendiente provisionar) |
+| Servidor | Raspberry Pi 4 — Ubuntu 24.04 + PC antiguo (`media`, pendiente provisionar) |
 | Nube | Oracle Cloud VM (failover DNS) |
 | Orquestación | Ansible |
 | Contenedores | Docker + Docker Compose |
