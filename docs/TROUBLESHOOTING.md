@@ -43,17 +43,22 @@ sudo chown -R 1000:1000 ${PATH_DATA}
 
 ## Ansible falla por conexión SSH
 
-**Síntoma:** `fatal: [yoda]: UNREACHABLE!`
+**Síntoma:** `fatal: [yoda]: UNREACHABLE!` con `Permission denied (publickey,password)` aunque la clave SSH tiene passphrase y parece no pedirla.
+
+**Causa:** la clave privada está encriptada con passphrase pero ssh no puede usarla: no hay prompt disponible (sin TTY) y el ssh-agent está vacío. Sin la clave desbloqueada no puede firmar el challenge → `Permission denied`.
 
 **Solución:**
 ```bash
-# Verificar conectividad
-ssh <username>@<ip_yoda>
+# Cargar la clave en el agente y guardar la passphrase en el Keychain (macOS)
+ssh-add --apple-use-keychain ~/.ssh/<clave_privada>
 
-# Verificar inventario
-cat ansible/inventory/yoda.yml
+# En ~/.ssh/config, por cada host con clave con passphrase:
+#     UseKeychain yes
+#     AddKeysToAgent yes
 
-# Verificar que la IP y usuario sean correctos
+# Verificar
+ssh <host> true        # debe conectar sin pedir passphrase
+ssh-add -l             # la clave debe aparecer en el agente
 ```
 
 ## DNS no resuelve desde dispositivos
