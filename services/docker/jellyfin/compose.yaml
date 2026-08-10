@@ -12,6 +12,9 @@ services:
       - "${PATH_DATA}/persistence/jellyfin/library:/config"
       - "${PATH_DATA}/media/tvseries:/data/tvshows"
       - "${PATH_DATA}/media/movies:/data/movies"
+      # i965 VA-API driver: la imagen 10.11.11 (base Ubuntu 26.04) ya no lo incluye
+      # (Mesa 25+ lo eliminó) y el QSV en gen7/Ivy Bridge lo necesita.
+      - "/usr/lib/x86_64-linux-gnu/dri/i965_drv_video.so:/usr/lib/x86_64-linux-gnu/dri/i965_drv_video.so:ro"
     devices:
       - /dev/dri/renderD128:/dev/dri/renderD128
     ports:

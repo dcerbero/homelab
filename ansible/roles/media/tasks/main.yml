@@ -1,4 +1,9 @@
 ---
+- name: Install i965-va-driver (VA-API driver para QSV en gen7; se monta en el contenedor Jellyfin)
+  apt:
+    name: i965-va-driver
+    state: present
+
 - name: Ensure media persistence directories exist (uid 1000 para linuxserver.io)
   ansible.builtin.file:
     path: "{{ PATH_DATA }}/persistence/{{ item }}"
