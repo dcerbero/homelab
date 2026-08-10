@@ -70,4 +70,4 @@ bash run.sh talos
 ## Recursos adicionales
 
 - [`CHANGELOG.md`](CHANGELOG.md) — Historial de cambios del proyecto
-- [`CLAUDE.md`](CLAUDE.md) — Guía de desarrollo para asistentes IA
+- [`AGENTS.md`](AGENTS.md) — Guía de desarrollo para asistentes IA
