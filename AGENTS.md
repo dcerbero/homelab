@@ -61,6 +61,7 @@ homelab/
 ## Convenciones
 
 - **Ansible**: roles con `become: true`. Orden estricto en [yoda](docs/HARDWARE.md#yoda): `system-setup → docker → preflight → systemd-resolved → pihole → tailscale → cadvisor → openclaw → heimdall → nginx`; en [talos](docs/HARDWARE.md#talos): `system-setup → docker → preflight → systemd-resolved → pihole → monitoring`; en [anton](docs/HARDWARE.md#anton): `system-setup → docker → preflight → cadvisor → smartctl → tailscale → media`.
+- **Sync del repo**: cada play sincroniza `~/services/homelab` en sus `pre_tasks` (tags `always`) — el repo del host == `origin/main` antes de cualquier deploy, incluso con `--tags <rol>`. `system-setup` ya no lo hace.
 - **Preflight**: valida tags de imágenes (`preflight.py`) y declara como tags propias la unión de las tags de los roles de servicio que despliegan compose. Al añadir un rol de servicio nuevo, añade sus tags al rol `preflight` en `playbook.yml` (ambos plays), o un `--tags <nuevo>` se saltaría la validación en silencio. `preflight_require_arch: true` solo en yoda (exige variante arm64).
 - **Compose**: nombre de servicio con prefijo `svc` (`svcPihole`); `container_name` sin prefijo (`pihole`, `openclaw`, `nginx_proxy`, `prometheus`, ...) — los roles usan `docker exec <container_name>`.
 - **UID/GID 1000** para contenedores linuxserver.io (PUID/PGID). Excepciones: Grafana `472:0`, Prometheus `1000:1000`.

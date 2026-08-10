@@ -10,6 +10,29 @@
       become: false
       tags: always
 
+    - name: Ensure git is installed (needed to sync the repository)
+      ansible.builtin.apt:
+        name: git
+        state: present
+      tags: always
+
+    - name: Ensure services directory exists
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env']['HOME'] }}/services"
+        state: directory
+        mode: "0755"
+      become: false
+      tags: always
+
+    - name: Sync homelab repository (source of truth) before any deploy
+      ansible.builtin.git:
+        repo: "https://github.com/dcerbero/homelab.git"
+        dest: "{{ ansible_facts['env']['HOME'] }}/services/homelab"
+        version: main
+        force: yes
+      become: false
+      tags: always
+
   roles:
     - role: system-setup
       tags: [system-setup, system]
@@ -43,6 +66,29 @@
       become: false
       tags: always
 
+    - name: Ensure git is installed (needed to sync the repository)
+      ansible.builtin.apt:
+        name: git
+        state: present
+      tags: always
+
+    - name: Ensure services directory exists
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env']['HOME'] }}/services"
+        state: directory
+        mode: "0755"
+      become: false
+      tags: always
+
+    - name: Sync homelab repository (source of truth) before any deploy
+      ansible.builtin.git:
+        repo: "https://github.com/dcerbero/homelab.git"
+        dest: "{{ ansible_facts['env']['HOME'] }}/services/homelab"
+        version: main
+        force: yes
+      become: false
+      tags: always
+
   roles:
     - role: system-setup
       tags: [system-setup, system, talos]
@@ -65,6 +111,29 @@
   pre_tasks:
     - name: Gather facts as connection user
       ansible.builtin.setup:
+      become: false
+      tags: always
+
+    - name: Ensure git is installed (needed to sync the repository)
+      ansible.builtin.apt:
+        name: git
+        state: present
+      tags: always
+
+    - name: Ensure services directory exists
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env']['HOME'] }}/services"
+        state: directory
+        mode: "0755"
+      become: false
+      tags: always
+
+    - name: Sync homelab repository (source of truth) before any deploy
+      ansible.builtin.git:
+        repo: "https://github.com/dcerbero/homelab.git"
+        dest: "{{ ansible_facts['env']['HOME'] }}/services/homelab"
+        version: main
+        force: yes
       become: false
       tags: always
 

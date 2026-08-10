@@ -6,22 +6,6 @@
     cache_valid_time: 3600
   when: system_upgrade | default(true) | bool
 
-- name: create folder for services
-  ansible.builtin.file:
-    path: "{{ ansible_facts['env']['HOME'] }}/services"
-    state: directory
-    mode: "0755"
-  become: false
-
-- name: Clone/update homelab repository
-  ansible.builtin.git:
-    repo: "https://github.com/dcerbero/homelab.git"
-    dest: "{{ ansible_facts['env']['HOME'] }}/services/homelab"
-    version: main
-    force: yes
-  become: false
-  tags: always
-
 - name: Remove orphaned dependencies with purge
   ansible.builtin.apt:
     autoremove: true

@@ -27,7 +27,7 @@ bash run.sh
 
 | Rol | Tags | Descripción |
 |---|---|---|
-| `system-setup` | `system-setup`, `system` | Paquetes del SO, clonar repositorio, esqueleto `$PATH_DATA` |
+| `system-setup` | `system-setup`, `system` | Paquetes del SO, esqueleto `$PATH_DATA` |
 | `docker` | `docker`, `containers` | Instalación de Docker Engine, Docker Compose, grupo docker |
 | `preflight` | `preflight`, `containers` + unión de tags de roles compose | Verifica que todos los tags de `image:` en el repo existan en su registry y tengan variante `arm64` antes de desplegar |
 | `systemd-resolved` | `systemd-resolved`, `dns`, `system` | Desactiva el stub listener de systemd-resolved (libera el puerto 53 para Pi-hole) |
@@ -42,7 +42,7 @@ bash run.sh
 
 | Rol | Tags | Descripción |
 |---|---|---|
-| `system-setup` | `system-setup`, `system`, `talos` | Paquetes del SO, clonar repo, esqueleto `$PATH_DATA` |
+| `system-setup` | `system-setup`, `system`, `talos` | Paquetes del SO, esqueleto `$PATH_DATA` |
 | `docker` | `docker`, `containers`, `talos` | Instalación de Docker Engine + Compose |
 | `preflight` | `preflight`, `containers`, `talos` + unión de tags de roles compose | Verifica existencia de los tags (solo existencia; no exige arquitectura) |
 | `systemd-resolved` | `systemd-resolved`, `dns`, `system`, `talos` | Desactiva el stub listener de systemd-resolved (libera el puerto 53 para Pi-hole) |
@@ -172,3 +172,6 @@ bash run.sh --skip-tags system
 - Los argumentos extra se pasan directamente a `ansible-playbook`
 - `run.sh` usa `--ask-become-pass`: pide la contraseña de sudo una vez al inicio de cada pasada
 - No se usa `-k` (la conexión SSH se resuelve via `~/.ssh/config`); solo se pide el become password
+
+> [!NOTE]
+> **Sync del repo en `pre_tasks`**: cada play sincroniza `~/services/homelab` con `origin/main` en sus `pre_tasks` (tags `always`), antes de cualquier rol. Así `--tags <rol>` (p. ej. `--tags media`) también usa el repo actualizado, sin depender de `system-setup`.
