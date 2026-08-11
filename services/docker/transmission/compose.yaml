@@ -22,7 +22,9 @@ services:
       - PASS=${TRANSMISSION_RPC_PASSWORD}
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-fsS", "http://localhost:9091/transmission/web/"]
+      # El Web UI devuelve 401 sin credenciales (RPC auth USER/PASS, ver env arriba);
+      # se autentica con las env del contenedor para que el healthcheck sea fiable.
+      test: ["CMD-SHELL", "curl -fsS -u \"$USER:$PASS\" http://localhost:9091/transmission/web/"]
       interval: 30s
       timeout: 5s
       retries: 3
