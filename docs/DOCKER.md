@@ -141,7 +141,7 @@ Cliente Torrent.
 
 - **Puertos:** `8082:9091` (Web UI), `51413` (Torrent TCP/UDP)
 - **Volúmenes:** `$PATH_DATA/persistence/transmission/config`, `$PATH_DATA/media/downloads`, `$PATH_DATA/media/watch`
-- **Healthcheck:** autentica con `USER`/`PASS` (env del contenedor) — el Web UI devuelve 401 sin credenciales (RPC auth activado)
+- **Healthcheck:** autentica con `USER`/`PASS` (env del contenedor, con `$$` para escapar la interpolación de Compose) — el Web UI devuelve 401 sin credenciales (RPC auth activado)
 
 ### Sonarr (media-download)
 

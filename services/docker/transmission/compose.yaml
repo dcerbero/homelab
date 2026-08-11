@@ -22,9 +22,11 @@ services:
       - PASS=${TRANSMISSION_RPC_PASSWORD}
     restart: unless-stopped
     healthcheck:
-      # El Web UI devuelve 401 sin credenciales (RPC auth USER/PASS, ver env arriba);
-      # se autentica con las env del contenedor para que el healthcheck sea fiable.
-      test: ["CMD-SHELL", "curl -fsS -u \"$USER:$PASS\" http://localhost:9091/transmission/web/"]
+      # El Web UI devuelve 401 sin credenciales (RPC auth USER/PASS, ver env arriba).
+      # Se usa $$USER/$$PASS (no $USER/$PASS): Compose interpola $VAR en parseo con
+      # el env del shell que lo ejecuta (Ansible con become=root), lo que daría "root:";
+      # $$ escapa un $ literal para que el shell del contenedor expanda las env suyas.
+      test: ["CMD-SHELL", "curl -fsS -u \"$$USER:$$PASS\" http://localhost:9091/transmission/web/"]
       interval: 30s
       timeout: 5s
       retries: 3
