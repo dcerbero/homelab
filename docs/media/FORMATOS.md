@@ -59,16 +59,20 @@ Sonarr v4 (4.0.19 desplegado) soporta **Custom Formats** de forma nativa. Estrat
 | `4K` | Resolución ≥ 2160p | −100 |
 | `Remux` | `Release Title` contiene `Remux` | −25 (peso/espacio) |
 | `Español (Latino) Audio` | `Release Title` contiene `latino\|español latino\|es-lat\|doblaje` | +100 |
-| `Dual Audio` | `Release Title` contiene `dual\|dublado\|multi audio\|dual audio` | +50 |
+| `Audio Multi/Dual` | `Release Title` contiene `dual\|dublado\|multi\|multi audio\|dual audio` | +50 |
 
 **En el Quality Profile** (serie → Perfil de calidad): asigna los scores de los custom formats. Un release x264 1080p suma, uno x265 pierde → Sonarr elige automáticamente el H.264 cuando hay opciones, y solo cae al x265 si no hay alternativa (score positivo neto mínimo). Con esto el límite del perfil (p. ej. `1080p`) se mantiene, pero el códec se decide por score.
+
+**Requisitos del perfil (importantes, verificados en vivo):**
+- **Calidades permitidas:** además de HDTV/Bluray/Remux, deben estar permitidas las calidades **WEB** (`WEBRip-1080p`, `WEB-DL-1080p`, `WEBRip-720p`, `WEB-DL-720p`). Muchos releases de audio múltiple son WEB; si no se permiten, se rechazan.
+- **`language: Any` en Radarr:** el perfil de Radarr debe tener `language = Any` (no `Original`). Con `Original`, Radarr exige el idioma original de cada película y **rechaza todos los dubs** (ej. una película noruega solo acepta noruego). Con `Any`, los custom formats de audio deciden (español > multi > single-language).
 
 > [!TIP]
 > No hace falta borrar releases x265: basta el scoring negativo. Si en algún momento solo existe un release HEVC, Sonarr lo puede tomar igual (si su score neto sigue siendo aceptable) y queda documentado que será solo direct-play.
 
 ## Radarr
 
-Radarr está **desplegado** (perfil `media-download`, puerto `8085`). La estrategia de custom formats y scores de la sección anterior **ya está aplicada** (2026-08): perfil "Homelab 1080p (H.264)" en ambas apps, incluidos `Español (Latino) Audio` (+100) y `Dual Audio` (+50). En Radarr el idioma se gestiona con custom formats (`Language: Español (Latino)` +100, `Language: English` +50) porque v6 no usa language profiles; en Sonarr con el language profile "Español (Latino) + English".
+Radarr está **desplegado** (perfil `media-download`, puerto `8085`). La estrategia de custom formats y scores de la sección anterior **ya está aplicada** (2026-08): perfil "Homelab 1080p (H.264)" en ambas apps, incluidos `Español (Latino) Audio` (+100) y `Audio Multi/Dual` (+50), con `language: Any` y calidades WEB permitidas. En Radarr el idioma se gestiona con custom formats (`Language: Español (Latino)` +100, `Language: English` +50) porque v6 no usa language profiles; en Sonarr con el language profile "Español (Latino) + English".
 
 ## Prowlarr y Transmission
 
