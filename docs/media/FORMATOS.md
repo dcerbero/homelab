@@ -15,13 +15,12 @@ Guía de qué formato de archivos debe bajar y almacenar el stack media de [anto
 
 ## Regla de oro
 
-> **H.264 estricto.** La iGPU de anton (Intel HD 2500, gen7) solo sabe decodificar/codificar H.264 por hardware. Todo lo que no sea direct-play y no sea H.264 se ve mal o no se ve.
+> **H.264 estricto + español latino.** La iGPU de anton (Intel HD 2500, gen7) solo hace H.264. El audio debe ser **español latino** — si el título dice `latino`, `español latino`, `es-lat` o `doblaje`, se prefiere por +200 puntos sin importar el resto.
 
 Reglas derivadas (en orden):
 1. Si un archivo no lo reproduce el dispositivo **directo**, Jellyfin tiene que transcodificarlo → y anton solo transcodifica bien H.264.
-2. Por eso el stack debe **bajar H.264 1080p SDR** y rechazar el resto.
-3. Si llega algo fuera de norma, que sea direct-play puro (y asumir que quien no lo soporte no podrá verlo).
-4. **Audio (prioridad del hogar):** 1) dual **ES+EN que lo anuncie explícitamente** (única forma de validar por título); 2) español latino; 3) inglés. Los duales/multi genéricos sin señal de idioma no reciben bonus (gamble PT+FR). Los releases que anuncian idiomas extranjeros (francés, hindi, alemán…) se penalizan −150.
+2. El stack debe **bajar H.264 1080p SDR** y rechazar el resto.
+3. **Audio: español latino (+200).** Sin más reglas — si existe release con marcador latino/español, se agarra.
 
 ## Por qué: el hardware manda
 
@@ -58,24 +57,20 @@ Sonarr v4 (4.0.19 desplegado) soporta **Custom Formats** de forma nativa. Estrat
 | `HDR` | `Release Title` contiene `HDR|HDR10|DV|Dolby` | −50 |
 | `4K` | Resolución ≥ 2160p | −100 |
 | `Remux` | `Release Title` contiene `Remux` | −25 (peso/espacio) |
-| `Español (Latino) Audio` | `Release Title` contiene `latino\|español latino\|es-lat\|doblaje` | +100 |
-| `Dual Español+Inglés` | dual **que anuncia** español y/o inglés (ej. `Dual Español`, `Dual Latino`, `Español-Inglés`) | +80 |
-| `Audio Multi/Dual` (genérico) | `dual\|dublado\|multi` sin indicio de idioma específico | **0** (sin bonus — no arriesga PT+FR) |
-| `Idioma extranjero (no ES/EN)` | títulos que anuncian francés/hindi/portugués/alemán/italiano/ruso… (`trufrench\|french\|vff\|hindi\|portugu…`) | **−150** |
+| `Español (Latino) Audio` | `Release Title` contiene `latino\|español latino\|es-lat\|doblaje` | **+200** |
 
 **En el Quality Profile** (serie → Perfil de calidad): asigna los scores de los custom formats. Un release x264 1080p suma, uno x265 pierde → Sonarr elige automáticamente el H.264 cuando hay opciones, y solo cae al x265 si no hay alternativa (score positivo neto mínimo). Con esto el límite del perfil (p. ej. `1080p`) se mantiene, pero el códec se decide por score.
 
-**Requisitos del perfil (importantes, verificados en vivo):**
-- **Calidades permitidas:** todas las de ≤1080p (WEB/WEBRip/WEB-DL, HDTV, Bluray, Remux), sin CAM/TS/4K/BR-DISK.
-- **`language: Any` en Radarr:** el perfil de Radarr debe tener `language = Any` (no `Original`). Con `Original`, Radarr exige el idioma original de cada película y **rechaza todos los dubs** (ej. una película noruega solo acepta noruego). Con `Any`, los custom formats de audio deciden (español > multi > single-language).
-- **Orden de calidades (audio-first):** Radarr compara por CALIDAD de video primero (hardcodeado en el comparador: `CompareQuality` antes que `CompareCustomFormatScore`). Para que el audio mande, las calidades WEB/WEBRip (donde vive el español) se ponen **arriba**: `WEBDL-1080p → WEBRip-1080p → Bluray-1080p → Remux-1080p → HDTV-1080p → ...`. Así un LATINO.WEBRip (índice 1) siempre gana sobre un REMUX inglés (índice 3) sin importar el score. **Tradeoff:** el inglés en WEB gana sobre inglés en Bluray — coherente con "audio > video".
+**Requisitos del perfil (verificados en vivo):**
+- **`language: Any`** en Radarr — sin esto, exige el idioma original y rechaza los dubs.
+- **Calidades ≤1080p permitidas:** SDTV, DVD, Bluray-480p+, HDTV-720p/1080p, WEB/WEBRip/WEB-DL 720p/1080p, Bluray-1080p, Remux-1080p. **No permitidas:** CAM, TS, TELESYNC, DVD-R, BR-DISK, 4K/2160p (calidades basura o fuera del límite de hardware).
 
 > [!TIP]
 > No hace falta borrar releases x265: basta el scoring negativo. Si en algún momento solo existe un release HEVC, Sonarr lo puede tomar igual (si su score neto sigue siendo aceptable) y queda documentado que será solo direct-play.
 
 ## Radarr
 
-Radarr está **desplegado** (perfil `media-download`, puerto `8085`). La estrategia de custom formats y scores de la sección anterior **ya está aplicada** (2026-08): perfil "Homelab 1080p (H.264)" en ambas apps, incluidos `Español (Latino) Audio` (+100), `Dual Español+Inglés` (+80), `Audio Multi/Dual` (0), `Idioma extranjero` (−150), con `language: Any` y calidades WEB permitidas. En Radarr el idioma se gestiona con custom formats (`Language: Español (Latino)` +50, `Language: English` +50) porque v6 no usa language profiles; en Sonarr con el language profile "Español (Latino) + English".
+La estrategia de custom formats y scores de la sección anterior **ya está aplicada** (2026-08): perfil "Homelab 1080p (H.264)" en ambas apps con `Español (Latino) Audio` (+200) como **única regla de audio**. `language: Any`, sin calidades basura (CAM/TS/DVD-R), sin CFs de idioma adicionales. En Sonarr, el language profile "Español (Latino) + English" filtra por idioma.
 
 ## Prowlarr y Transmission
 
