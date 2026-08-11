@@ -164,6 +164,14 @@ Gestión de películas. Se integra con Transmission para descargas. Formato de a
 - **Puerto:** `8085:7878`
 - **Volúmenes:** `$PATH_DATA/persistence/radarr`, `$PATH_DATA/media/movies`, `$PATH_DATA/media/downloads`
 
+### Bazarr (media-download)
+
+Gestión de subtítulos para la biblioteca (Español Latino + English). Sonarr/Radarr no descargan subs; Bazarr escribe los `.srt` junto al vídeo en `/media`.
+
+- **Puerto:** `8086:6767`
+- **Volúmenes:** `$PATH_DATA/persistence/bazarr`, `$PATH_DATA/media` (mount común — subs sidecar)
+- **Proveedor:** OpenSubtitles.com (API key personal, config runtime en Settings → Providers)
+
 ### FlareSolverr (media-download)
 
 Helper de Prowlarr para indexadores con protección Cloudflare (1337x, EZTV). Corre Chrome headless (~1-1.5GB RAM). Solo red interna.

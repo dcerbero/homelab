@@ -11,6 +11,7 @@ Documentación de los servicios de streaming y descarga, que corren en [anton](.
 | Prowlarr | `media-download` | — *(ver [`DOCKER.md`](../DOCKER.md#prowlarr-media-download))* | En producción |
 | Transmission | `media-download` | — *(ver [`DOCKER.md`](../DOCKER.md#transmission-media-download))* | En producción |
 | FlareSolverr | `media-download` | — *(helper de Prowlarr para indexadores Cloudflare)* | En producción |
+| Bazarr | `media-download` | — *(subtítulos ES-LAT/EN para la biblioteca)* | En producción |
 | Radarr | `media-download` | — *(ver [`DOCKER.md`](../DOCKER.md#radarr-media-download))* | En producción |
 
 ## Guías
@@ -69,6 +70,15 @@ Cómo viaja el contenido de la descarga hasta la biblioteca, y por qué no queda
 
 > [!NOTE]
 > **Uso personal y legal:** este stack está configurado para contenido propio y **libre de derechos restrictivos** (contenido sin copyright, de dominio público, con licencia libre, o creado por ti). Este homelab es de uso privado y no distribuye contenido. No está destinado a descargar ni compartir obras con derechos de autor.
+
+## Subtítulos (Bazarr)
+
+Sonarr v4 y Radarr v6 **no descargan subtítulos** (feature eliminada de la plataforma). La gestión de subtítulos la hace **Bazarr**, que se conecta a ambos y escribe los `.srt` **al lado del vídeo** (sidecar) en las bibliotecas.
+
+- **Idiomas objetivo:** Español (Latino) + English.
+- **Proveedor:** OpenSubtitles.com (API key personal — configurado en Settings → Providers).
+- **Flujo:** Bazarr sincroniza con Sonarr/Radarr → al importar contenido nuevo descarga/mejora los subtítulos de los idiomas configurados → Jellyfin los lee automáticamente (mismo nombre base que el vídeo).
+- **Por qué Bazarr y no el plugin de Jellyfin:** los subs de Bazarr son **archivos reales en la biblioteca** (portables, incluidos en el backup de `/media`, consistentes en todos los clientes); los del plugin de Jellyfin viven en su caché interna y se re-buscan por reproducción. Coste hardware de Bazarr: despreciable (~200-300MB RAM en anton).
 
 ## Pendientes
 

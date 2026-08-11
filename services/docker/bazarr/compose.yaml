@@ -1,0 +1,24 @@
+services:
+  svcBazarr:
+    image: lscr.io/linuxserver/bazarr:amd64-1.6.0
+    container_name: bazarr
+    profiles:
+      - media-download
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Bogota
+    volumes:
+      - "${PATH_DATA}/persistence/bazarr:/config"
+      # Mount común de /media: Bazarr escribe los .srt al lado del vídeo
+      # (ver docs/media/README.md — flujo de subtítulos).
+      - "${PATH_DATA}/media:/media"
+    ports:
+      - 8086:6767
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:6767/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s

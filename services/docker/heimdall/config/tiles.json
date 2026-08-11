@@ -9,5 +9,6 @@
   { "title": "transmission-anton", "url": "http://anton:8082/", "icon": "icons/transmission.svg", "colour": "#179C4E", "tag": "anton" },
   { "title": "prowlarr-anton", "url": "http://anton:8083/", "icon": "icons/prowlarr.svg", "colour": "#E7A82B", "tag": "anton" },
   { "title": "sonarr-anton", "url": "http://anton:8084/", "icon": "icons/sonarr.svg", "colour": "#38D0D4", "tag": "anton" },
-  { "title": "radarr-anton", "url": "http://anton:8085/", "icon": "icons/radarr.svg", "colour": "#24292E", "tag": "anton" }
+  { "title": "radarr-anton", "url": "http://anton:8085/", "icon": "icons/radarr.svg", "colour": "#24292E", "tag": "anton" },
+  { "title": "bazarr-anton", "url": "http://anton:8086/", "icon": "icons/bazarr.png", "colour": "#EF4B4B", "tag": "anton" }
 ]
