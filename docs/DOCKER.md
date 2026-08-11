@@ -164,6 +164,14 @@ Gestión de películas. Se integra con Transmission para descargas. Formato de a
 - **Puerto:** `8085:7878`
 - **Volúmenes:** `$PATH_DATA/persistence/radarr`, `$PATH_DATA/media/movies`, `$PATH_DATA/media/downloads`
 
+### FlareSolverr (media-download)
+
+Helper de Prowlarr para indexadores con protección Cloudflare (1337x, EZTV). Corre Chrome headless (~1-1.5GB RAM). Solo red interna.
+
+- **Puertos:** ninguno (Prowlarr lo alcanza como `http://svcFlareSolverr:8191` en la red de Docker)
+- **Volúmenes:** ninguno (stateless)
+- **Uso:** Prowlarr → Settings → Indexers → FlareSolverr URL → `http://svcFlareSolverr:8191`
+
 ### OpenClaw (ia)
 
 Interfaz de IA local. Usa la **API de OpenRouter** para inferencia.

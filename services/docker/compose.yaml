@@ -5,6 +5,7 @@ include:
   - openclaw/compose.yaml
   - transmission/compose.yaml
   - prowlarr/compose.yaml
+  - flaresolverr/compose.yaml
   - sonarr/compose.yaml
   - radarr/compose.yaml
   - jellyfin/compose.yaml
