@@ -21,7 +21,7 @@ Reglas derivadas (en orden):
 1. Si un archivo no lo reproduce el dispositivo **directo**, Jellyfin tiene que transcodificarlo → y anton solo transcodifica bien H.264.
 2. Por eso el stack debe **bajar H.264 1080p SDR** y rechazar el resto.
 3. Si llega algo fuera de norma, que sea direct-play puro (y asumir que quien no lo soporte no podrá verlo).
-4. **Audio (prioridad del hogar):** primero **español (latino)** — solo o en dual (ES-LAT + EN); si no existe, **inglés**. El "Dual" del título NO garantiza español (hay duals Hindi+EN de grupos desi); por eso el español se puntúa por encima del dual genérico (ver tabla de custom formats).
+4. **Audio (prioridad del hogar):** 1) dual **ES+EN que lo anuncie explícitamente** (única forma de validar por título); 2) español latino; 3) inglés. Los duales/multi genéricos sin señal de idioma no reciben bonus (gamble PT+FR). Los releases que anuncian idiomas extranjeros (francés, hindi, alemán…) se penalizan −150.
 
 ## Por qué: el hardware manda
 
@@ -59,7 +59,9 @@ Sonarr v4 (4.0.19 desplegado) soporta **Custom Formats** de forma nativa. Estrat
 | `4K` | Resolución ≥ 2160p | −100 |
 | `Remux` | `Release Title` contiene `Remux` | −25 (peso/espacio) |
 | `Español (Latino) Audio` | `Release Title` contiene `latino\|español latino\|es-lat\|doblaje` | +100 |
-| `Audio Multi/Dual` | `Release Title` contiene `dual\|dublado\|multi\|multi audio\|dual audio` | +50 |
+| `Dual Español+Inglés` | dual **que anuncia** español y/o inglés (ej. `Dual Español`, `Dual Latino`, `Español-Inglés`) | +80 |
+| `Audio Multi/Dual` (genérico) | `dual\|dublado\|multi` sin indicio de idioma específico | **0** (sin bonus — no arriesga PT+FR) |
+| `Idioma extranjero (no ES/EN)` | títulos que anuncian francés/hindi/portugués/alemán/italiano/ruso… (`trufrench\|french\|vff\|hindi\|portugu…`) | **−150** |
 
 **En el Quality Profile** (serie → Perfil de calidad): asigna los scores de los custom formats. Un release x264 1080p suma, uno x265 pierde → Sonarr elige automáticamente el H.264 cuando hay opciones, y solo cae al x265 si no hay alternativa (score positivo neto mínimo). Con esto el límite del perfil (p. ej. `1080p`) se mantiene, pero el códec se decide por score.
 
@@ -72,7 +74,7 @@ Sonarr v4 (4.0.19 desplegado) soporta **Custom Formats** de forma nativa. Estrat
 
 ## Radarr
 
-Radarr está **desplegado** (perfil `media-download`, puerto `8085`). La estrategia de custom formats y scores de la sección anterior **ya está aplicada** (2026-08): perfil "Homelab 1080p (H.264)" en ambas apps, incluidos `Español (Latino) Audio` (+100) y `Audio Multi/Dual` (+50), con `language: Any` y calidades WEB permitidas. En Radarr el idioma se gestiona con custom formats (`Language: Español (Latino)` +100, `Language: English` +50) porque v6 no usa language profiles; en Sonarr con el language profile "Español (Latino) + English".
+Radarr está **desplegado** (perfil `media-download`, puerto `8085`). La estrategia de custom formats y scores de la sección anterior **ya está aplicada** (2026-08): perfil "Homelab 1080p (H.264)" en ambas apps, incluidos `Español (Latino) Audio` (+100), `Dual Español+Inglés` (+80), `Audio Multi/Dual` (0), `Idioma extranjero` (−150), con `language: Any` y calidades WEB permitidas. En Radarr el idioma se gestiona con custom formats (`Language: Español (Latino)` +50, `Language: English` +50) porque v6 no usa language profiles; en Sonarr con el language profile "Español (Latino) + English".
 
 ## Prowlarr y Transmission
 
