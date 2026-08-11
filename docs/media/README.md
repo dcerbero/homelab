@@ -61,7 +61,7 @@ Cómo viaja el contenido de la descarga hasta la biblioteca, y por qué no queda
 
 **Requisito para hardlinks:** mismo filesystem *y mismo mount* dentro de los contenedores. Por eso transmission/sonarr/radarr comparten un único mount `$PATH_DATA/media:/media` (los mounts separados fallan con `Cross-device link`/EXDEV). Si algún día descargas y biblioteca quedan en filesystems distintos, Sonarr/Radarr hacen copia+borrado (mismo resultado, pero copia en el import).
 
-**Remoción del torrent:** activada (`removeCompletedDownloads: true`). Con indexadores **públicos** no hay ratio que cuidar. Si algún día añades trackers **privados**, revisa esta decisión (remover al importar perjudica el ratio).
+**Remoción del torrent:** activada (`removeCompletedDownloads: true`). Además Transmission tiene `ratio-limit: 0` (`ratio-limit-enabled: true`): el torrent queda *Stopped* al completar, lo que hace que Radarr/Sonarr lo puedan remover justo tras el import (Radarr exige `CanBeRemoved` = torrent *Stopped* + límite de seed alcanzado). Con indexadores **públicos** no hay ratio que cuidar. Si algún día añades trackers **privados**, revisa esta decisión (remover al importar perjudica el ratio).
 
 **Torrents no importados (import fallido):** Transmission tiene `idle-seeding-limit` (30 min) activado: dejan de sembrar, pero no se borran (para no perder datos) — se limpian a mano en Transmission.
 
