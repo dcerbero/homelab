@@ -26,8 +26,18 @@ Documentación de los servicios de streaming y descarga, que corren en [anton](.
 - **Usuarios**: contenedores linuxserver.io con UID/GID 1000 (PUID/PGID).
 - **Imágenes arch-pinned**: los servicios media usan tags `amd64-` (solo anton, x86_64).
 
+## Configuración runtime aplicada (2026-08)
+
+Todo lo siguiente vive **dentro de cada servicio** (`$PATH_DATA/persistence/<svc>/`), no en el repo. Se replica si hace falta con las guías de [`FORMATOS.md`](FORMATOS.md).
+
+- **Indexadores (Prowlarr, 7 activos):** 1337x, YTS, The Pirate Bay, LimeTorrents, Torrent9, World-torrent, EZTV. 1337x y EZTV usan el proxy **FlareSolverr** (tag `flaresolverr` en Prowlarr) por Cloudflare.
+- **Apps (Prowlarr → Sonarr/Radarr):** sync `fullSync` con credenciales de auth.
+- **Download clients:** Transmission en Sonarr y Radarr (`svcTransmission:9091`, creds de `ansible/.env`).
+- **Root folders:** Radarr `/movies`, Sonarr `/tv`.
+- **Perfil de calidad:** "Homelab 1080p (H.264)" (renombrado el "Any") en Sonarr y Radarr — capa a ≤1080p, sin CAM/TS/BR-DISK/4K, con custom formats de [`FORMATOS.md`](FORMATOS.md) aplicados. En Radarr además CF de idioma (Español Latino +100, English +50).
+- **Idioma:** Sonarr language profile "Español (Latino) + English" (cutoff latino); Radarr vía custom formats de idioma.
+- **Auth:** login **Forms** en Prowlarr/Sonarr/Radarr (usuario `baldo`, contraseña `baldo<servicio>` — p. ej. `baldoradarr`). Guarda estas credenciales en tu gestor de contraseñas.
+
 ## Pendientes
 
-- Configurar la conexión Prowlarr ↔ Sonarr/Radarr y Radarr → Transmission (config runtime, dentro del servicio).
-- Aplicar los custom formats de [`FORMATOS.md`](FORMATOS.md) en Sonarr y Radarr.
 - Documentar Sonarr/Prowlarr/Transmission cuando tengan configuración que merezca registro propio.

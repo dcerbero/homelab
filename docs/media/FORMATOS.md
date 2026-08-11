@@ -65,7 +65,7 @@ Sonarr v4 (4.0.19 desplegado) soporta **Custom Formats** de forma nativa. Estrat
 
 ## Radarr
 
-Radarr está **desplegado** (perfil `media-download`, puerto `8085`). Aplicar la **misma estrategia de custom formats y scores** que Sonarr (tabla de la sección anterior). Pendiente de configuración runtime: biblioteca `/movies`, download client Transmission y custom formats.
+Radarr está **desplegado** (perfil `media-download`, puerto `8085`). La estrategia de custom formats y scores de la sección anterior **ya está aplicada** (2026-08): perfil "Homelab 1080p (H.264)" en ambas apps. En Radarr el idioma se gestiona con custom formats (`Language: Español (Latino)` +100, `Language: English` +50) porque v6 no usa language profiles; en Sonarr con el language profile "Español (Latino) + English".
 
 ## Prowlarr y Transmission
 
