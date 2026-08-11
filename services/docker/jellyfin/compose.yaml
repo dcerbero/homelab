@@ -12,8 +12,14 @@ services:
       - "${PATH_DATA}/persistence/jellyfin/library:/config"
       - "${PATH_DATA}/media/tvseries:/data/tvshows"
       - "${PATH_DATA}/media/movies:/data/movies"
+      # Transcode temp en /dev/shm (tmpfs del host, 3.9G). El default del contenedor
+      # son 64 MB y el RAID1 de WD Green es lento; Jellyfin usa /dev/shm como
+      # TranscodingTempPath (encoding.xml, runtime). Ver docs/media/JELLYFIN.md.
+      - "/dev/shm:/dev/shm"
       # i965 VA-API driver: la imagen 10.11.11 (base Ubuntu 26.04) ya no lo incluye
-      # (Mesa 25+ lo eliminó) y el QSV en gen7/Ivy Bridge lo necesita.
+      # (Mesa 25+ lo eliminó). Se usa VA-API, NO QSV: el ffmpeg bundled trae libva
+      # con iHD hardcodeado (driver gen8+) e ignora LIBVA_DRIVER_NAME; VA-API hace
+      # fallback a i965 y funciona. Ver docs/media/JELLYFIN.md.
       - "/usr/lib/x86_64-linux-gnu/dri/i965_drv_video.so:/usr/lib/x86_64-linux-gnu/dri/i965_drv_video.so:ro"
     devices:
       - /dev/dri/renderD128:/dev/dri/renderD128

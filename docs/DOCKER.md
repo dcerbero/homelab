@@ -126,13 +126,14 @@ Proxy reverso para los servicios web.
 
 ### Jellyfin (media-streaming)
 
-Servidor de streaming multimedia. Solo en [anton](HARDWARE.md#anton) (tags `amd64-`).
+Servidor de streaming multimedia. Solo en [anton](HARDWARE.md#anton) (tags `amd64-`). Config detallada y decisiones en [`media/JELLYFIN.md`](media/JELLYFIN.md).
 
 - **Puertos:** `8096:8096`
-- **Volúmenes:** `$PATH_DATA/persistence/jellyfin/library`, `$PATH_DATA/media/tvseries`, `$PATH_DATA/media/movies`
-- **Hardware:** `/dev/dri/renderD128` (transcodificación GPU QSV/VA-API, H.264/MPEG2/VC1)
+- **Volúmenes:** `$PATH_DATA/persistence/jellyfin/library`, `$PATH_DATA/media/tvseries`, `$PATH_DATA/media/movies`, `/dev/shm` (transcode temp tmpfs — el default del contenedor son 64MB)
+- **Hardware:** `/dev/dri/renderD128` + driver `i965` (VA-API, H.264/MPEG2/VC1). **No QSV**: el ffmpeg bundled trae libva con iHD hardcodeado (gen8+) y no hace fallback; VA-API sí (ver `media/JELLYFIN.md`)
 - **Groups:** `video` (44) + `render` (gid 993 de anton) — necesarios para acceder a `renderD128`
-- **Config recomendada:** HW accel QSV/VA-API, HW encode on, HW decode H.264/MPEG2/VC1 (HEVC/VP9/AV1 off — gen7 no los soporta), transcode temp en `/dev/shm`, HDR tone mapping off
+- **Config aplicada:** HW accel VA-API, HW encode on, HW decode **off** (el pipeline decode-HW→`scale_vaapi` falla en gen7; el decode por software es barato en el i5), transcode temp `/dev/shm`, HDR tone mapping off, throttling on, HEVC/VP9/AV1 off
+- **Red:** acceso remoto bloqueado (`EnableRemoteAccess=false`) con `LocalNetworkSubnets=100.64.0.0/10` para que Tailscale siga funcionando
 
 ### Transmission (media-download)
 
