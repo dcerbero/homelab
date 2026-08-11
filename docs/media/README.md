@@ -32,7 +32,8 @@ Documentación de los servicios de streaming y descarga, que corren en [anton](.
 
 Todo lo siguiente vive **dentro de cada servicio** (`$PATH_DATA/persistence/<svc>/`), no en el repo. Se replica si hace falta con las guías de [`FORMATOS.md`](FORMATOS.md).
 
-- **Indexadores (Prowlarr, 7 activos):** 1337x, YTS, The Pirate Bay, LimeTorrents, Torrent9, World-torrent, EZTV. 1337x y EZTV usan el proxy **FlareSolverr** (tag `flaresolverr` en Prowlarr) por Cloudflare.
+- **Indexadores (Prowlarr, 8 activos):** 1337x, YTS, The Pirate Bay, LimeTorrents, Torrent9, World-torrent, EZTV, **TorrentDownload**. 1337x y EZTV usan el proxy **FlareSolverr** (tag `flaresolverr` en Prowlarr) por Cloudflare.
+- **Indexadores descartados (verificados):** Catorrent (tracker de juegos, sin categorías de películas), torrent-pirat (adulto, categoría XXX), MegaPeer (sin resultados). Comprobar siempre las **categorías** (`capabilities`) antes de añadir — el nombre no garantiza el contenido.
 - **Apps (Prowlarr → Sonarr/Radarr):** sync `fullSync` con credenciales de auth.
 - **Download clients:** Transmission en Sonarr y Radarr (`svcTransmission:9091`, creds de `ansible/.env`).
 - **Transmission `settings.json`** (re-aplicar si se pierde la persistencia): `download-dir=/media/downloads/complete`, `incomplete-dir=/media/downloads/incomplete`, `watch-dir=/media/watch`, `ratio-limit-enabled=true` + `ratio-limit=0` (remoción de torrents tras import), `idle-seeding-limit-enabled=true`.
