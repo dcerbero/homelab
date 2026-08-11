@@ -91,7 +91,10 @@ Ruta: `/server/persistence/jellyfin/library/encoding.xml` (config runtime, no ve
 | Campo | Valor | Por qué |
 |---|---|---|
 | `EnableRemoteAccess` | `false` | Sin acceso público a Jellyfin: solo LAN/Tailscale, sin port-forwarding ni proxy |
-| `LocalNetworkSubnets` | `100.64.0.0/10` | El rango de Tailscale. Sin esto, los clientes por Tailscale se bloquean (`RejectDueToRemoteAccessDisabled`) porque no caen en las LAN clásicas |
+| `LocalNetworkSubnets` | `100.64.0.0/10`, `172.16.0.0/12`, `10.0.0.0/8`, `192.168.0.0/16` | Tailscale + **red Docker (172.18.x, necesaria para que Seerr/Sonarr/etc. hablen con Jellyfin)** + LAN clásica. Cuando `LocalNetworkSubnets` no está vacío, Jellyfin **usa solo esos rangos** (no suma los defaults) |
+
+> [!IMPORTANT]
+> `LocalNetworkSubnets` **reemplaza** los subnets por defecto: si solo se pone `100.64.0.0/10` (como se hizo al principio), los contenedores de la red Docker (172.18.x) quedan bloqueados (`RejectDueToRemoteAccessDisabled` → 503) y Seerr/Sonarr no pueden conectar con Jellyfin. Por eso el valor incluye explícitamente `172.16.0.0/12`.
 
 > [!WARNING]
 > Si se desmarca "Permitir conexiones remotas" en el wizard con `LocalNetworkSubnets` vacío, **te quedas fuera por Tailscale** (el `/Startup/Complete` se bloquea y no puedes terminar el setup). Workaround mientras tanto: túnel SSH (`ssh -N -L 8096:localhost:8096 anton` + abrir `http://localhost:8096`), porque `127.0.0.1` siempre es local.

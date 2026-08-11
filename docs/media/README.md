@@ -39,6 +39,7 @@ Todo lo siguiente vive **dentro de cada servicio** (`$PATH_DATA/persistence/<svc
 - **Perfil de calidad:** "Homelab 1080p (H.264)" (renombrado el "Any") en Sonarr y Radarr — capa a ≤1080p, sin CAM/TS/BR-DISK/4K, con custom formats de [`FORMATOS.md`](FORMATOS.md) aplicados. En Radarr además CF de idioma (Español Latino +100, English +50).
 - **Idioma:** Sonarr language profile "Español (Latino) + English" (cutoff latino); Radarr vía custom formats de idioma.
 - **Auth:** login **Forms** en Prowlarr/Sonarr/Radarr (usuario `baldo`, contraseña `baldo<servicio>` — p. ej. `baldoradarr`). Guarda estas credenciales en tu gestor de contraseñas.
+- **Seerr (ex-Jellyseerr):** frontend de peticiones conectado a Jellyfin (auth por usuarios Jellyfin, admin `baldo`/`baldojellyfin`), Sonarr y Radarr — ambos con el perfil "Homelab 1080p (H.264)" y root folders `/media/tvseries` y `/media/movies`. UI en `http://anton:8087`.
 
 ## Flujo de descarga → biblioteca
 
