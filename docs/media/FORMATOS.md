@@ -66,8 +66,9 @@ Sonarr v4 (4.0.19 desplegado) soporta **Custom Formats** de forma nativa. Estrat
 **En el Quality Profile** (serie → Perfil de calidad): asigna los scores de los custom formats. Un release x264 1080p suma, uno x265 pierde → Sonarr elige automáticamente el H.264 cuando hay opciones, y solo cae al x265 si no hay alternativa (score positivo neto mínimo). Con esto el límite del perfil (p. ej. `1080p`) se mantiene, pero el códec se decide por score.
 
 **Requisitos del perfil (importantes, verificados en vivo):**
-- **Calidades permitidas:** además de HDTV/Bluray/Remux, deben estar permitidas las calidades **WEB** (`WEBRip-1080p`, `WEB-DL-1080p`, `WEBRip-720p`, `WEB-DL-720p`). Muchos releases de audio múltiple son WEB; si no se permiten, se rechazan.
+- **Calidades permitidas:** todas las de ≤1080p (WEB/WEBRip/WEB-DL, HDTV, Bluray, Remux), sin CAM/TS/4K/BR-DISK.
 - **`language: Any` en Radarr:** el perfil de Radarr debe tener `language = Any` (no `Original`). Con `Original`, Radarr exige el idioma original de cada película y **rechaza todos los dubs** (ej. una película noruega solo acepta noruego). Con `Any`, los custom formats de audio deciden (español > multi > single-language).
+- **Orden de calidades (audio-first):** Radarr compara por CALIDAD de video primero (hardcodeado en el comparador: `CompareQuality` antes que `CompareCustomFormatScore`). Para que el audio mande, las calidades WEB/WEBRip (donde vive el español) se ponen **arriba**: `WEBDL-1080p → WEBRip-1080p → Bluray-1080p → Remux-1080p → HDTV-1080p → ...`. Así un LATINO.WEBRip (índice 1) siempre gana sobre un REMUX inglés (índice 3) sin importar el score. **Tradeoff:** el inglés en WEB gana sobre inglés en Bluray — coherente con "audio > video".
 
 > [!TIP]
 > No hace falta borrar releases x265: basta el scoring negativo. Si en algún momento solo existe un release HEVC, Sonarr lo puede tomar igual (si su score neto sigue siendo aceptable) y queda documentado que será solo direct-play.
