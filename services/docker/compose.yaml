@@ -9,6 +9,7 @@ include:
   - sonarr/compose.yaml
   - radarr/compose.yaml
   - bazarr/compose.yaml
+  - seerr/compose.yaml
   - jellyfin/compose.yaml
   - cadvisor/compose.yaml
   - node-exporter/compose.yaml

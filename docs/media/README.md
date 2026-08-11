@@ -12,6 +12,7 @@ Documentación de los servicios de streaming y descarga, que corren en [anton](.
 | Transmission | `media-download` | — *(ver [`DOCKER.md`](../DOCKER.md#transmission-media-download))* | En producción |
 | FlareSolverr | `media-download` | — *(helper de Prowlarr para indexadores Cloudflare)* | En producción |
 | Bazarr | `media-download` | — *(subtítulos ES-LAT/EN para la biblioteca)* | En producción |
+| Seerr | `media-download` | — *(peticiones de contenido, ex-Jellyseerr)* | En producción |
 | Radarr | `media-download` | — *(ver [`DOCKER.md`](../DOCKER.md#radarr-media-download))* | En producción |
 
 ## Guías

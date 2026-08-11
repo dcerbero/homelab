@@ -170,7 +170,15 @@ Gestión de subtítulos para la biblioteca (Español Latino + English). Sonarr/R
 
 - **Puerto:** `8086:6767`
 - **Volúmenes:** `$PATH_DATA/persistence/bazarr`, `$PATH_DATA/media` (mount común — subs sidecar)
-- **Proveedor:** OpenSubtitles.com (API key personal, config runtime en Settings → Providers)
+- **Proveedores:** Subdl (API key personal) + gratuitos sin cuenta (ver [`media/README.md`](media/README.md#subtítulos-bazarr))
+
+### Seerr (media-download)
+
+Frontend de peticiones de contenido (ex-Jellyseerr). Conecta Jellyfin + Sonarr + Radarr: los usuarios piden películas/series y Seerr las envía al arr stack respetando el perfil "Homelab 1080p (H.264)".
+
+- **Puerto:** `8087:5055`
+- **Volúmenes:** `$PATH_DATA/persistence/seerr`
+- **Conexiones (config runtime):** Jellyfin (API key), Sonarr y Radarr (`svcSonarr:8989`, `svcRadarr:7878`)
 
 ### FlareSolverr (media-download)
 

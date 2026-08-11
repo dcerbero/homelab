@@ -14,7 +14,7 @@ ARCH_ALIASES = {
 }
 # Servicios amd64-only: usan tags amd64- y solo se despliegan en anton (x86_64).
 # En hosts arm64 (yoda, talos) no se despliegan, así que su preflight no debe validarlos.
-AMD64_ONLY_DIRS = {'jellyfin', 'sonarr', 'transmission', 'prowlarr', 'radarr', 'flaresolverr', 'bazarr', 'smartctl-exporter'}
+AMD64_ONLY_DIRS = {'jellyfin', 'sonarr', 'transmission', 'prowlarr', 'radarr', 'flaresolverr', 'bazarr', 'seerr', 'smartctl-exporter'}
 MISSING_PATTERNS = re.compile(r'no such manifest|manifest unknown|not found', re.IGNORECASE)
 AUTH_PATTERNS = re.compile(r'denied|unauthorized', re.IGNORECASE)
 RATE_LIMIT_PATTERNS = re.compile(r'429|too many requests|toomanyrequests|rate limit', re.IGNORECASE)

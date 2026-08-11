@@ -17,6 +17,8 @@
     - prowlarr
     - sonarr/data
     - radarr
+    - bazarr
+    - seerr
 
 - name: Start media services (streaming + download)
   shell: |
