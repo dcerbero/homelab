@@ -42,6 +42,8 @@
     mode: "0755"
   loop:
     - downloads
+    - downloads/complete
+    - downloads/incomplete
     - movies
     - tvseries
     - watch
