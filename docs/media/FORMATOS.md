@@ -62,8 +62,9 @@ Sonarr v4 (4.0.19 desplegado) soporta **Custom Formats** de forma nativa. Estrat
 **En el Quality Profile** (serie → Perfil de calidad): asigna los scores de los custom formats. Un release x264 1080p suma, uno x265 pierde → Sonarr elige automáticamente el H.264 cuando hay opciones, y solo cae al x265 si no hay alternativa (score positivo neto mínimo). Con esto el límite del perfil (p. ej. `1080p`) se mantiene, pero el códec se decide por score.
 
 **Requisitos del perfil (verificados en vivo):**
-- **`language: Any`** en Radarr — sin esto, exige el idioma original y rechaza los dubs.
-- **Calidades ≤1080p permitidas:** SDTV, DVD, Bluray-480p+, HDTV-720p/1080p, WEB/WEBRip/WEB-DL 720p/1080p, Bluray-1080p, Remux-1080p. **No permitidas:** CAM, TS, TELESYNC, DVD-R, BR-DISK, 4K/2160p (calidades basura o fuera del límite de hardware).
+- **`language: Spanish (Latino)` en Radarr** — filtro DURO: solo acepta releases en español latino. Sin esto, el auto-search agarra releases en inglés y el español queda bloqueado (condición de carrera en `QualityUpgradableSpecification`). Con el filtro de idioma, los releases no-español se rechazan de raíz en el `LanguageSpecification`.
+- En **Sonarr**, el language profile "Español (Latino)" con `cutoff: Spanish (Latino)`. Si el API no persiste (bug en v4.0.19), ajustar manualmente por serie.
+- **Calidades ≤1080p permitidas:** SDTV, DVD, Bluray-480p+, HDTV-720p/1080p, WEB/WEBRip/WEB-DL 720p/1080p, Bluray-1080p, Remux-1080p. **No permitidas:** CAM, TS, TELESYNC, DVD-R, BR-DISK, 4K/2160p.
 
 > [!TIP]
 > No hace falta borrar releases x265: basta el scoring negativo. Si en algún momento solo existe un release HEVC, Sonarr lo puede tomar igual (si su score neto sigue siendo aceptable) y queda documentado que será solo direct-play.
