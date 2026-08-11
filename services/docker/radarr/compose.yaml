@@ -10,8 +10,9 @@ services:
       - TZ=America/Bogota
     volumes:
       - "${PATH_DATA}/persistence/radarr:/config"
-      - "${PATH_DATA}/media/movies:/movies"
-      - "${PATH_DATA}/media/downloads:/downloads"
+      # Mount común de /media: hardlinks de import entre descargas y biblioteca
+      # (fallan con EXDEV en mounts separados; ver docs/media/README.md).
+      - "${PATH_DATA}/media:/media"
     ports:
       - 8085:7878
     restart: unless-stopped

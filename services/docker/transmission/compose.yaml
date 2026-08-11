@@ -10,8 +10,10 @@ services:
       - 51413:51413/udp
     volumes:
       - "${PATH_DATA}/persistence/transmission/config:/config"
-      - "${PATH_DATA}/media/downloads:/downloads"
-      - "${PATH_DATA}/media/watch:/watch"
+      # Mount común de /media: los hardlinks de import de Sonarr/Radarr fallan
+      # (EXDEV) entre mounts separados del mismo filesystem; con un solo mount
+      # compartido funcionan (ver docs/media/README.md).
+      - "${PATH_DATA}/media:/media"
     environment:
       - PUID=1000
       - PGID=1000

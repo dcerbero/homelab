@@ -10,8 +10,9 @@ services:
       - TZ=America/Bogota
     volumes:
       - "${PATH_DATA}/persistence/sonarr/data:/config"
-      - "${PATH_DATA}/media/tvseries:/tv"
-      - "${PATH_DATA}/media/downloads:/downloads"
+      # Mount común de /media: hardlinks de import entre descargas y biblioteca
+      # (fallan con EXDEV en mounts separados; ver docs/media/README.md).
+      - "${PATH_DATA}/media:/media"
     ports:
       - 8084:8989
     restart: unless-stopped
