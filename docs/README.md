@@ -28,7 +28,7 @@ Todo lo que necesitas saber sobre nuestro homelab, organizado por tema. Este es 
 | [`SETUP.md`](SETUP.md) | Configuración inicial de las máquinas (RPi y discos RAID1 de anton) |
 | [`ANSIBLE.md`](ANSIBLE.md) | Roles de Ansible, playbook, variables de entorno |
 | [`DOCKER.md`](DOCKER.md) | Servicios Docker Compose, perfiles, volúmenes, backup, actualización |
-| [`media/`](media/README.md) | Stack media (Jellyfin, Sonarr, Prowlarr, Transmission) — ver [`JELLYFIN.md`](media/JELLYFIN.md) |
+| [`media/`](media/README.md) | Stack media (Jellyfin, Sonarr, Prowlarr, Transmission) — config en [`JELLYFIN.md`](media/JELLYFIN.md), formato de archivos en [`FORMATOS.md`](media/FORMATOS.md) |
 | [`COMMANDS.md`](COMMANDS.md) | Comandos de uso diario, monitorización, health checks |
 | [`MONITORING.md`](MONITORING.md) | Stack de métricas (Prometheus/Grafana), estado y pendientes |
 | [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) | Problemas comunes y soluciones |

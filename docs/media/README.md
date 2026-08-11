@@ -12,6 +12,12 @@ Documentación de los servicios de streaming y descarga, que corren en [anton](.
 | Transmission | `media-download` | — *(ver [`DOCKER.md`](../DOCKER.md#transmission-media-download))* | En producción |
 | Radarr | — | — *(pendiente de añadir al stack)* | No desplegado |
 
+## Guías
+
+| Guía | Contenido |
+|---|---|
+| [`FORMATOS.md`](FORMATOS.md) | Formato de archivos recomendado para el stack (H.264 estricto, por hardware) |
+
 ## Notas transversales
 
 - **Transcodificación**: Jellyfin usa **VA-API** (no QSV) con decode por software + encode por hardware. Ver [`JELLYFIN.md`](JELLYFIN.md#la-decisión-central-va-api-no-qsv).
