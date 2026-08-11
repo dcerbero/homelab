@@ -76,8 +76,7 @@ Cómo viaja el contenido de la descarga hasta la biblioteca, y por qué no queda
 Sonarr v4 y Radarr v6 **no descargan subtítulos** (feature eliminada de la plataforma). La gestión de subtítulos la hace **Bazarr**, que se conecta a ambos y escribe los `.srt` **al lado del vídeo** (sidecar) en las bibliotecas.
 
 - **Idiomas:** English (`en`) + Spanish (Latino `ea`), perfil de idiomas "Español + English".
-- **Proveedores (gratuitos, sin cuenta):** subf2m, subs4free, wizdom, xsubs, tvsubtitles, napiprojekt, yifysubtitles, thesubdb. *(OpenSubtitles.com ahora es de pago — no se usa.)*
-- **Mejorar cobertura (opcional):** añadir **Subdl** (gratis, requiere cuenta + API key en subdl.com) en Settings → Providers.
+- **Proveedores:** Subdl (API key personal en `subdl.com`) + gratuitos sin cuenta (subf2m, subs4free, wizdom, xsubs, tvsubtitles, napiprojekt, yifysubtitles, thesubdb). *(OpenSubtitles.com ahora es de pago — no se usa.)*
 - **Flujo:** Bazarr sincroniza con Sonarr/Radarr → al importar contenido nuevo descarga los subtítulos de los idiomas del perfil → Jellyfin los lee automáticamente (mismo nombre base que el vídeo).
 - **Por qué Bazarr y no el plugin de Jellyfin:** los subs de Bazarr son **archivos reales en la biblioteca** (portables, incluidos en el backup de `/media`, consistentes en todos los clientes); los del plugin de Jellyfin viven en su caché interna y se re-buscan por reproducción. Coste hardware de Bazarr: despreciable (~200-300MB RAM en anton).
 
