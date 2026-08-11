@@ -39,6 +39,7 @@ Todo lo siguiente vive **dentro de cada servicio** (`$PATH_DATA/persistence/<svc
 - **Root folders:** Radarr `/media/movies`, Sonarr `/media/tvseries` (rutas del mount común `/media`).
 - **Perfil de calidad:** "Homelab 1080p (H.264)" (renombrado el "Any") en Sonarr y Radarr — capa a ≤1080p, sin CAM/TS/BR-DISK/4K, con custom formats de [`FORMATOS.md`](FORMATOS.md) aplicados. En Radarr además CF de idioma (Español Latino +100, English +50).
 - **Idioma:** Sonarr language profile "Español (Latino) + English" (cutoff latino); Radarr vía custom formats de idioma.
+- **Bazarr default profiles:** `movie_default_profile=1` y `serie_default_profile=1` — **obligatorio** para que el contenido nuevo reciba el perfil "Español + English" y Bazarr busque subs automáticamente. Si queda vacío, el contenido se sincroniza con `profileId: None` y no busca nada.
 - **Auth:** login **Forms** en Prowlarr/Sonarr/Radarr (usuario `baldo`, contraseña `baldo<servicio>` — p. ej. `baldoradarr`). Guarda estas credenciales en tu gestor de contraseñas.
 - **Seerr (ex-Jellyseerr):** frontend de peticiones conectado a Jellyfin (auth por usuarios Jellyfin, admin `baldo`/`baldojellyfin`), Sonarr y Radarr — ambos con el perfil "Homelab 1080p (H.264)" y root folders `/media/tvseries` y `/media/movies`. UI en `http://anton:8087`.
 
@@ -78,8 +79,9 @@ Cómo viaja el contenido de la descarga hasta la biblioteca, y por qué no queda
 
 Sonarr v4 y Radarr v6 **no descargan subtítulos** (feature eliminada de la plataforma). La gestión de subtítulos la hace **Bazarr**, que se conecta a ambos y escribe los `.srt` **al lado del vídeo** (sidecar) en las bibliotecas.
 
-- **Idiomas:** English (`en`) + Spanish (Latino `ea`), perfil de idiomas "Español + English".
+- **Idiomas:** English (`en`) + Spanish (Latino `ea`), perfil de idiomas "Español + English". **Default profiles** (`movie_default_profile`/`serie_default_profile` = 1) — sin ellos el contenido queda sin perfil y no busca subs.
 - **Proveedores:** Subdl (API key personal en `subdl.com`) + gratuitos sin cuenta (subf2m, subs4free, wizdom, xsubs, tvsubtitles, napiprojekt, yifysubtitles, thesubdb). *(OpenSubtitles.com ahora es de pago — no se usa.)*
+- **Disponibilidad por idioma:** el inglés se encuentra casi siempre (verificado: score 165 en Subdl); el **español (latino)** depende de que exista el sub para cada título — en contenido oscuro/poco mainstream puede no estar disponible (es disponibilidad, no config).
 - **Flujo:** Bazarr sincroniza con Sonarr/Radarr → al importar contenido nuevo descarga los subtítulos de los idiomas del perfil → Jellyfin los lee automáticamente (mismo nombre base que el vídeo).
 - **Por qué Bazarr y no el plugin de Jellyfin:** los subs de Bazarr son **archivos reales en la biblioteca** (portables, incluidos en el backup de `/media`, consistentes en todos los clientes); los del plugin de Jellyfin viven en su caché interna y se re-buscan por reproducción. Coste hardware de Bazarr: despreciable (~200-300MB RAM en anton).
 - **Sincronización:** A/V sincronizado por diseño (timestamps del contenedor, se conservan en transcode). Para los subs descargados, la garantía principal es el **emparejamiento por hash** (Subdl devuelve el sub exacto del rip). **SubSync OFF** (no cargar la CPU de anton en cada import); si un sub puntual sale desfasado: re-buscar otro en Bazarr o ajustar offset en el reproductor de Jellyfin.
