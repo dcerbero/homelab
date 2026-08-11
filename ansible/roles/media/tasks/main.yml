@@ -16,6 +16,7 @@
     - transmission/config
     - prowlarr
     - sonarr/data
+    - radarr
 
 - name: Start media services (streaming + download)
   shell: |

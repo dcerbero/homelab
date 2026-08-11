@@ -6,6 +6,7 @@ include:
   - transmission/compose.yaml
   - prowlarr/compose.yaml
   - sonarr/compose.yaml
+  - radarr/compose.yaml
   - jellyfin/compose.yaml
   - cadvisor/compose.yaml
   - node-exporter/compose.yaml

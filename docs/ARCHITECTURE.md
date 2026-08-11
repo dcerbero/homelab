@@ -109,11 +109,11 @@ Aquí va el resumen de cómo se mueve el tráfico entre los servicios, sin tecni
 | 53 (TCP/UDP) | Pi-hole DNS | Local |
 | 80 | nginx (Heimdall, OpenClaw) | Local |
 | 443 | nginx HTTPS | Local |
-| 8085 | Pi-hole Web admin | Local |
 | 8096 | Jellyfin | Local |
 | 8082 | Transmission Web UI | Local |
 | 8083 | Prowlarr | Local |
 | 8084 | Sonarr | Local |
+| 8085 | Pi-hole Web admin (yoda) · Radarr (anton) | Local |
 | 51413 (TCP/UDP) | Transmission Torrent | Local |
 | 9100 | node-exporter | Solo LAN o Tailscale |
 | 9101 | cAdvisor ([yoda](HARDWARE.md#yoda)) | Solo LAN o Tailscale |

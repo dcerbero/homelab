@@ -151,10 +151,17 @@ Gestión de series. Se integra con Transmission para descargas.
 
 ### Prowlarr (media-download)
 
-Indexador de torrents. Se integra con Sonarr.
+Indexador de torrents. Se integra con Sonarr y Radarr (apps de Prowlarr).
 
 - **Puerto:** `8083:9696`
 - **Volúmenes:** `$PATH_DATA/persistence/prowlarr`
+
+### Radarr (media-download)
+
+Gestión de películas. Se integra con Transmission para descargas. Formato de archivos recomendado en [`media/FORMATOS.md`](media/FORMATOS.md).
+
+- **Puerto:** `8085:7878`
+- **Volúmenes:** `$PATH_DATA/persistence/radarr`, `$PATH_DATA/media/movies`, `$PATH_DATA/media/downloads`
 
 ### OpenClaw (ia)
 

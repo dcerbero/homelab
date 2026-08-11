@@ -10,7 +10,7 @@ Documentación de los servicios de streaming y descarga, que corren en [anton](.
 | Sonarr | `media-download` | — *(ver [`DOCKER.md`](../DOCKER.md#sonarr-media-download))* | En producción |
 | Prowlarr | `media-download` | — *(ver [`DOCKER.md`](../DOCKER.md#prowlarr-media-download))* | En producción |
 | Transmission | `media-download` | — *(ver [`DOCKER.md`](../DOCKER.md#transmission-media-download))* | En producción |
-| Radarr | — | — *(pendiente de añadir al stack)* | No desplegado |
+| Radarr | `media-download` | — *(ver [`DOCKER.md`](../DOCKER.md#radarr-media-download))* | En producción |
 
 ## Guías
 
@@ -27,5 +27,6 @@ Documentación de los servicios de streaming y descarga, que corren en [anton](.
 
 ## Pendientes
 
-- Añadir Radarr al stack (compose + perfil + rol + tags de preflight).
+- Configurar la conexión Prowlarr ↔ Sonarr/Radarr y Radarr → Transmission (config runtime, dentro del servicio).
+- Aplicar los custom formats de [`FORMATOS.md`](FORMATOS.md) en Sonarr y Radarr.
 - Documentar Sonarr/Prowlarr/Transmission cuando tengan configuración que merezca registro propio.

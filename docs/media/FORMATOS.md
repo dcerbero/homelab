@@ -8,7 +8,7 @@ Guía de qué formato de archivos debe bajar y almacenar el stack media de [anto
 - [Por qué: el hardware manda](#por-qué-el-hardware-manda)
 - [Formato objetivo por archivo](#formato-objetivo-por-archivo)
 - [Configuración en Sonarr](#configuración-en-sonarr)
-- [Radarr (pendiente)](#radarr-pendiente)
+- [Radarr](#radarr)
 - [Prowlarr y Transmission](#prowlarr-y-transmission)
 - [Tradeoff: H.264 vs espacio](#tradeoff-h264-vs-espacio)
 - [Verificación](#verificación)
@@ -63,9 +63,9 @@ Sonarr v4 (4.0.19 desplegado) soporta **Custom Formats** de forma nativa. Estrat
 > [!TIP]
 > No hace falta borrar releases x265: basta el scoring negativo. Si en algún momento solo existe un release HEVC, Sonarr lo puede tomar igual (si su score neto sigue siendo aceptable) y queda documentado que será solo direct-play.
 
-## Radarr (pendiente)
+## Radarr
 
-Radarr **no está desplegado** (ver [`README.md`](README.md)). Cuando entre al stack, aplicar la **misma estrategia de custom formats y scores** que Sonarr. Esta sección se convierte en la referencia cuando toque.
+Radarr está **desplegado** (perfil `media-download`, puerto `8085`). Aplicar la **misma estrategia de custom formats y scores** que Sonarr (tabla de la sección anterior). Pendiente de configuración runtime: biblioteca `/movies`, download client Transmission y custom formats.
 
 ## Prowlarr y Transmission
 
