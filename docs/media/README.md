@@ -28,18 +28,23 @@ Documentación de los servicios de streaming y descarga, que corren en [anton](.
 - **Usuarios**: contenedores linuxserver.io con UID/GID 1000 (PUID/PGID).
 - **Imágenes arch-pinned**: los servicios media usan tags `amd64-` (solo anton, x86_64).
 
-## Configuración runtime aplicada (2026-08)
+## Configuración runtime aplicada
 
 Todo lo siguiente vive **dentro de cada servicio** (`$PATH_DATA/persistence/<svc>/`), no en el repo. Se replica si hace falta con las guías de [`FORMATOS.md`](FORMATOS.md).
 
-- **Indexadores (Prowlarr, 8 activos):** 1337x, YTS, The Pirate Bay, LimeTorrents, Torrent9, World-torrent, EZTV, **TorrentDownload**. 1337x y EZTV usan el proxy **FlareSolverr** (tag `flaresolverr` en Prowlarr) por Cloudflare.
-- **Indexadores descartados (verificados):** Catorrent (tracker de juegos, sin categorías de películas), torrent-pirat (adulto, categoría XXX), MegaPeer (sin resultados). Comprobar siempre las **categorías** (`capabilities`) antes de añadir — el nombre no garantiza el contenido.
+- **Indexadores (Prowlarr, 8 activos):** 1337x, YTS, The Pirate Bay, LimeTorrents, Torrent9, World-torrent, EZTV, **TorrentDownload**. Con tag `flaresolverr` (proxy FlareSolverr): 1337x, EZTV y **LimeTorrents**.
+- **Regla de FlareSolverr:** solo se añade el tag `flaresolverr` a indexers con **challenge Cloudflare activo** o fallo de anti-bot confirmado; el resto (YTS, TPB, Torrent9, World-torrent, TorrentDownload) responde 200 limpio y funciona con HTTP directo. Verificar siempre con: `curl -sD - https://<dominio> | grep -i cf-mitigated` (si responde `challenge`, necesita FS; un simple `server: cloudflare` no basta). Meter de más por FlareSolverr añade latencia (navegador headless por request) y puede disparar rate-limiting.
+- **Sync por categorías (Prowlarr → apps):** **Radarr** usa categorías de películas `[2000…2090]` **+ `8000 (Other)`** (el `8000` es obligatorio o LimeTorrents no se sincroniza). **Sonarr** usa TV `[5000…5090]` + anime `[5070]`. Efecto esperado: EZTV (solo TV) no aparece en Radarr, YTS (solo Movies) no aparece en Sonarr.
+- **LimeTorrents `sort=seeds`** (Prowlarr, indexer): sort por seeds (`sort=1`) para que releases válidos pero antiguos no queden fuera de la página 1 del Cardigann.
+- **Indexadores descartados:** Catorrent (tracker de juegos), torrent-pirat (adulto), MegaPeer (sin resultados). Comprobar siempre las **categorías** (`capabilities`) antes de añadir — el nombre no garantiza el contenido.
 - **Apps (Prowlarr → Sonarr/Radarr):** sync `fullSync` con credenciales de auth.
 - **Download clients:** Transmission en Sonarr y Radarr (`svcTransmission:9091`, creds de `ansible/.env`).
 - **Transmission `settings.json`** (re-aplicar si se pierde la persistencia): `download-dir=/media/downloads/complete`, `incomplete-dir=/media/downloads/incomplete`, `watch-dir=/media/watch`, `ratio-limit-enabled=true` + `ratio-limit=0` (remoción de torrents tras import), `idle-seeding-limit-enabled=true`.
 - **Root folders:** Radarr `/media/movies`, Sonarr `/media/tvseries` (rutas del mount común `/media`).
-- **Perfil de calidad:** "Homelab 1080p (H.264)" (renombrado el "Any") en Sonarr y Radarr — capa a ≤1080p, sin CAM/TS/BR-DISK/4K, con custom formats de [`FORMATOS.md`](FORMATOS.md) aplicados. Audio: `Español (Latino) Audio` +100 y `Dual Audio` +50 (español latino > inglés). En Radarr además CF de idioma (Español Latino +100, English +50).
-- **Idioma:** Sonarr language profile "Español (Latino) + English" (cutoff latino); Radarr vía custom formats de idioma.
+- **Perfil de calidad:** "Homelab 1080p (H.264)" en Sonarr y Radarr — capa a ≤1080p, sin CAM/TS/BR-DISK/4K, con custom formats de [`FORMATOS.md`](FORMATOS.md). **Radarr:** CF `Español (Latino) Audio` **+1000** (`LanguageSpecification`), `x264` +100, `x265` −100, `10bit` −100, `HDR` −50, `4K` −100, `Remux` −25; `language: Any`; `items` en **orden canónico** (peor→mejor); `cutoff` = Bluray-1080p; `upgradeAllowed = false`.
+- **Radarr `minFormatScore = 1000`:** el español latino es **obligatorio** — solo pasan releases con score ≥1000 (requiere el CF latino). Si no existe release latino, la película queda pendiente (no baja en otro idioma). El latino se exige por score y no por filtro de idioma del perfil, porque el comparador de Radarr ordena por calidad antes que por score.
+- **Límite de tamaño (Radarr):** `maximumSize = 20000` MB (`config/indexer`) — red de seguridad global; frena remux gigantes (>20GB) sin bloquear remux compactos.
+- **Idioma:** Radarr `language: Any` + CF + `minFormatScore=1000` (latino obligatorio); Sonarr language profile "Español (Latino) + English" (cutoff latino) + `minFormatScore=200`.
 - **Bazarr default profiles:** `movie_default_profile=1` y `serie_default_profile=1` — **obligatorio** para que el contenido nuevo reciba el perfil "Español + English" y Bazarr busque subs automáticamente. Si queda vacío, el contenido se sincroniza con `profileId: None` y no busca nada.
 - **Auth:** login **Forms** en Prowlarr/Sonarr/Radarr (usuario `baldo`, contraseña `baldo<servicio>` — p. ej. `baldoradarr`). Guarda estas credenciales en tu gestor de contraseñas.
 - **Seerr (ex-Jellyseerr):** frontend de peticiones conectado a Jellyfin (auth por usuarios Jellyfin, admin `baldo`/`baldojellyfin`), Sonarr y Radarr — ambos con el perfil "Homelab 1080p (H.264)" y root folders `/media/tvseries` y `/media/movies`. UI en `http://anton:8087`.
@@ -60,7 +65,7 @@ Cómo viaja el contenido de la descarga hasta la biblioteca, y por qué no queda
 5. Jellyfin detecta el archivo nuevo → aparece en la biblioteca
 ```
 
-**Hardlinks:** dos nombres apuntan al mismo *inode* (misma metadata + mismos bloques de datos en disco). Borrar uno no afecta al otro: solo decrementa el contador de referencias (`links`). Por eso "eliminar el torrent" no rompe el archivo de la biblioteca — verificado: `inode=22020106 links=2` → borrar la copia de downloads → `links=1`, contenido intacto.
+**Hardlinks:** dos nombres apuntan al mismo *inode* (misma metadata + mismos bloques de datos en disco). Borrar uno no afecta al otro: solo decrementa el contador de referencias (`links`). Por eso "eliminar el torrent" no rompe el archivo de la biblioteca.
 
 **Requisito para hardlinks:** mismo filesystem *y mismo mount* dentro de los contenedores. Por eso transmission/sonarr/radarr comparten un único mount `$PATH_DATA/media:/media` (los mounts separados fallan con `Cross-device link`/EXDEV). Si algún día descargas y biblioteca quedan en filesystems distintos, Sonarr/Radarr hacen copia+borrado (mismo resultado, pero copia en el import).
 
@@ -82,7 +87,7 @@ Sonarr v4 y Radarr v6 **no descargan subtítulos** (feature eliminada de la plat
 
 - **Idiomas:** English (`en`) + Spanish (Latino `ea`), perfil de idiomas "Español + English". **Default profiles** (`movie_default_profile`/`serie_default_profile` = 1) — sin ellos el contenido queda sin perfil y no busca subs.
 - **Proveedores:** Subdl (API key personal en `subdl.com`) + gratuitos sin cuenta (subf2m, subs4free, wizdom, xsubs, tvsubtitles, napiprojekt, yifysubtitles, thesubdb). *(OpenSubtitles.com ahora es de pago — no se usa.)*
-- **Disponibilidad por idioma:** el inglés se encuentra casi siempre (verificado: score 165 en Subdl); el **español (latino)** depende de que exista el sub para cada título — en contenido oscuro/poco mainstream puede no estar disponible (es disponibilidad, no config).
+- **Disponibilidad por idioma:** el inglés se encuentra casi siempre; el **español (latino)** depende de que exista el sub para cada título — en contenido oscuro/poco mainstream puede no estar disponible (es disponibilidad, no config).
 - **Flujo:** Bazarr sincroniza con Sonarr/Radarr → al importar contenido nuevo descarga los subtítulos de los idiomas del perfil → Jellyfin los lee automáticamente (mismo nombre base que el vídeo).
 - **Por qué Bazarr y no el plugin de Jellyfin:** los subs de Bazarr son **archivos reales en la biblioteca** (portables, incluidos en el backup de `/media`, consistentes en todos los clientes); los del plugin de Jellyfin viven en su caché interna y se re-buscan por reproducción. Coste hardware de Bazarr: despreciable (~200-300MB RAM en anton).
 - **Sincronización:** A/V sincronizado por diseño (timestamps del contenedor, se conservan en transcode). Para los subs descargados, la garantía principal es el **emparejamiento por hash** (Subdl devuelve el sub exacto del rip). **SubSync OFF** (no cargar la CPU de anton en cada import); si un sub puntual sale desfasado: re-buscar otro en Bazarr o ajustar offset en el reproductor de Jellyfin.

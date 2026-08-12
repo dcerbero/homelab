@@ -15,12 +15,12 @@ Guía de qué formato de archivos debe bajar y almacenar el stack media de [anto
 
 ## Regla de oro
 
-> **H.264 estricto + español latino.** La iGPU de anton (Intel HD 2500, gen7) solo hace H.264. El audio debe ser **español latino** — si el título dice `latino`, `español latino`, `es-lat` o `doblaje`, se prefiere por +200 puntos sin importar el resto.
+> **H.264 estricto + español latino obligatorio.** La iGPU de anton (Intel HD 2500, gen7) solo hace H.264. El audio debe ser **español latino**, y eso es un **requisito duro** en ambas apps: el perfil exige un score mínimo de Custom Formats que solo alcanzan los releases con audio latino. Si no existe release latino, **no se agarra nada** — la película queda pendiente en vez de bajar una copia en otro idioma.
 
 Reglas derivadas (en orden):
 1. Si un archivo no lo reproduce el dispositivo **directo**, Jellyfin tiene que transcodificarlo → y anton solo transcodifica bien H.264.
 2. El stack debe **bajar H.264 1080p SDR** y rechazar el resto.
-3. **Audio: español latino (+200).** Sin más reglas — si existe release con marcador latino/español, se agarra.
+3. **Audio: español latino obligatorio** (vía `minFormatScore`, ver [Sonarr](#configuración-en-sonarr) y [Radarr](#radarr)). Los CFs negativos (x265 −100, 10bit −100, HDR −50, 4K −100, Remux −25) refuerzan el rechazo por hardware y por peso.
 
 ## Por qué: el hardware manda
 
@@ -40,38 +40,41 @@ Reglas derivadas (en orden):
 | Resolución | hasta **1080p** | 4K/2160p | 4K casi siempre HEVC y muy pesado |
 | Rango | **SDR** | HDR10, HLG, DV | tonemapping off → HDR lavado en SDR |
 | Contenedor | MKV / MP4 | — | indistinto para Jellyfin |
+| Tamaño | **2–6 GB** (1080p x264); 1–2 GB (720p) | Remux >20 GB, remux 4K | el **límite global `maximumSize` = 20 GB** en Radarr (`config/indexer`) frena los monstruos sin bloquear remux compactos. Sweet spot del stack: 2–6 GB |
 | Audio | AAC, AC3, EAC3 (o el original) · **preferir dual ES-LAT + EN** | TrueHD, DTS-HD MA, Atmos | passthrough problemático en muchos clientes y sin beneficio en esta casa. Audio preferido: español latino → inglés |
 | Subtítulos | texto embebido (SRT/ASS) | solo PGS/VobSub | los de imagen se queman por CPU en un transcode |
 
 ## Configuración en Sonarr
 
-Sonarr v4 (4.0.19 desplegado) soporta **Custom Formats** de forma nativa. Estrategia de scoring:
+Sonarr v4 soporta **Custom Formats** de forma nativa. Estrategia de scoring.
 
-**Custom formats a crear** (Settings → Custom Formats):
+**Custom formats configurados** (Settings → Custom Formats):
 
 | Custom format | Condición | Score |
 |---|---|---|
+| `Language: Español (Latino)` | `LanguageSpecification` (idioma Spanish Latino) | +200 |
+| `Español (Latino) Audio` | `Release Title` contiene `latino\|español latino\|es-lat\|doblaje` | +200 |
 | `x264` | `Release Title` contiene `x264` | +100 |
 | `x265` | `Release Title` contiene `x265` / códec `HEVC` | −100 |
 | `10bit` | `Release Title` contiene `10bit` | −100 |
-| `HDR` | `Release Title` contiene `HDR|HDR10|DV|Dolby` | −50 |
+| `HDR` | `Release Title` contiene `HDR\|HDR10\|DV\|Dolby` | −50 |
 | `4K` | Resolución ≥ 2160p | −100 |
-| `Remux` | `Release Title` contiene `Remux` | −25 (peso/espacio) |
-| `Español (Latino) Audio` | `Release Title` contiene `latino\|español latino\|es-lat\|doblaje` | **+200** |
+| `Remux` | `Release Title` contiene `Remux` | −25 |
 
-**En el Quality Profile** (serie → Perfil de calidad): asigna los scores de los custom formats. Un release x264 1080p suma, uno x265 pierde → Sonarr elige automáticamente el H.264 cuando hay opciones, y solo cae al x265 si no hay alternativa (score positivo neto mínimo). Con esto el límite del perfil (p. ej. `1080p`) se mantiene, pero el códec se decide por score.
-
-**Requisitos del perfil (verificados en vivo):**
-- **`language: Spanish (Latino)` en Radarr** — filtro DURO: solo acepta releases en español latino. Sin esto, el auto-search agarra releases en inglés y el español queda bloqueado (condición de carrera en `QualityUpgradableSpecification`). Con el filtro de idioma, los releases no-español se rechazan de raíz en el `LanguageSpecification`.
-- En **Sonarr**, el language profile "Español (Latino)" con `cutoff: Spanish (Latino)`. Si el API no persiste (bug en v4.0.19), ajustar manualmente por serie.
-- **Calidades ≤1080p permitidas:** SDTV, DVD, Bluray-480p+, HDTV-720p/1080p, WEB/WEBRip/WEB-DL 720p/1080p, Bluray-1080p, Remux-1080p. **No permitidas:** CAM, TS, TELESYNC, DVD-R, BR-DISK, 4K/2160p.
-
-> [!TIP]
-> No hace falta borrar releases x265: basta el scoring negativo. Si en algún momento solo existe un release HEVC, Sonarr lo puede tomar igual (si su score neto sigue siendo aceptable) y queda documentado que será solo direct-play.
+**Quality Profile "Homelab 1080p (H.264)"** (series): `minFormatScore = 200` y `upgradeAllowed = false`. Solo pasan releases con score ≥200, que exige el latino (los CFs de idioma suman +200/+200; un release en otro idioma se queda en ≤+100 por x264 y no alcanza). El language profile es "Español (Latino) + English" con cutoff latino.
 
 ## Radarr
 
-La estrategia de custom formats y scores de la sección anterior **ya está aplicada** (2026-08): perfil "Homelab 1080p (H.264)" en ambas apps con `Español (Latino) Audio` (+200) como **única regla de audio**. `language: Any`, sin calidades basura (CAM/TS/DVD-R), sin CFs de idioma adicionales. En Sonarr, el language profile "Español (Latino) + English" filtra por idioma.
+Perfil "Homelab 1080p (H.264)" (mismo nombre que en Sonarr), con reglas propias de Radarr v6:
+
+- **Custom formats reales:** `Español (Latino) Audio` **+1000** (implementación `LanguageSpecification`, idioma Spanish Latino id 37), `x264` +100, `x265` −100, `10bit` −100, `HDR` −50, `4K` −100, `Remux` −25. No hay CF "Dual Audio".
+- **Idioma:** `language: Any` + **`minFormatScore = 1000`** → el español latino es **obligatorio**: solo pasan releases con el CF +1000. El latino se exige por score, **no** por filtro de idioma del perfil: el comparador de Radarr ordena por calidad antes que por score, así que sin `minFormatScore` un BluRay-1080p inglés (score 100) le ganaría a un `1080p (Esp.Latino)` que parsea como HDTV-1080p (score 1000).
+- **Orden de `items`:** el array `items` del perfil debe estar en **orden canónico** (peor→mejor: `Unknown, WORKPRINT, CAM, …, SDTV, DVD, DVD-R, …, Bluray-1080p, Remux-1080p, …, Remux-2160p`), porque Radarr usa el índice del array como prioridad de calidad (índice alto = mejor). Un array invertido hace agarrar la peor calidad primero. `cutoff` = Bluray-1080p (id de calidad 7).
+- **Calidades ≤1080p permitidas:** SDTV, DVD, Bluray-480p+, HDTV-720p/1080p, WEB/WEBRip/WEB-DL 720p/1080p, Bluray-1080p, Remux-1080p. **No permitidas:** CAM, TS, TELESYNC, DVD-R, BR-DISK, 4K/2160p.
+- **Tamaño:** límite global `maximumSize = 20000` MB (`config/indexer`) como red de seguridad — frena remux gigantes (>20GB) sin bloquear remux compactos.
+
+> [!TIP]
+> No hace falta borrar releases x265: basta el scoring negativo (se rechazan solos por score).
 
 ## Prowlarr y Transmission
 
@@ -82,17 +85,21 @@ La estrategia de custom formats y scores de la sección anterior **ya está apli
 
 H.264 1080p ocupa **~2-3x** más que HEVC 1080p a calidad comparable. El RAID1 es de 916GB con discos de 2009 — el espacio es un recurso real.
 
-**Decisión (2026-08):** compatibilidad total de transcode > espacio. Se penaliza HEVC.
+**Decisión:** compatibilidad total de transcode > espacio. Se penaliza HEVC.
 
 **Vía de escape si el disco aprieta:** relajar a "HEVC tolerado" (score −25 en vez de −100) y garantizar que los clientes de la casa reproduzcan HEVC directo (la mayoría de TVs modernas lo hacen). El transcode de esos archivos seguirá siendo imposible en anton, pero se verían directo. No cambiar la config de Jellyfin, solo la del arr.
 
 ## Verificación
 
-Tras configurar Sonarr, comprobar que lo que baja es H.264:
+Comprobar que lo que baja es H.264 y que la pista de audio latino existe:
 
 ```bash
 # En anton, sobre un archivo recién importado
-docker exec jellyfin /usr/lib/jellyfin-ffmpeg/ffprobe -hide_banner /data/tvshows/<serie>/<archivo> \
+docker exec jellyfin /usr/lib/jellyfin-ffmpeg/ffprobe -hide_banner /data/movies/<película>/<archivo> \
   -show_entries stream=codec_name,profile,width,height,pix_fmt -of compact
 # Esperado: codec_name=h264, pix_fmt sin 10bit, ≤1080p
+
+# Pistas de audio (debe existir una en español latino: TAG:language=spa y título "Latino"/"Español")
+docker exec jellyfin /usr/lib/jellyfin-ffmpeg/ffprobe -hide_banner /data/movies/<película>/<archivo> \
+  -show_entries stream=codec_type,codec_name:stream_tags=language,title -of default=noprint_wrappers=1
 ```

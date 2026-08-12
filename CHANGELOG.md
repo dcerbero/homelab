@@ -4,6 +4,14 @@ Todos los cambios relevantes de este proyecto se documentan en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2026.08.7] - 2026-08-11
+
+### Corregido
+- Radarr: profile de calidad "Homelab 1080p (H.264)" con el array `items` en orden **invertido** (1080p en índice 0, DVD/SDTV al final). Radarr usa el índice del array como prioridad de calidad, así que agarraba la **peor** calidad disponible (verificado: Shrek bajó un `DvDrip[Eng]` 480p habiendo WEB-DL 1080p latino). Se reordenó a canónico (peor→mejor, `Unknown`…`Remux-1080p`) y se fijó `cutoff` = Bluray-1080p. Detalle y motivo en `docs/media/FORMATOS.md` y `docs/media/README.md`.
+
+### Cambiado
+- Radarr: `minFormatScore = 1000` en el profile "Homelab 1080p (H.264)". El español latino pasa de *preferencia* a **requisito duro**: solo se aceptan releases con el CF `Español (Latino) Audio` (+1000). Motivo: el comparador de Radarr ordena por calidad antes que por score, y un BluRay-1080p inglés (score 100) le ganaba a un `1080p (Esp.Latino)` que parsea como HDTV-1080p (score 1000). Con el requisito duro, las búsquedas grabán releases latino (Moana `1080p BluRay Audio Latino`, Shrek `WEB-DL ENG LATINO`); sin release latino, la película queda pendiente en vez de bajar inglés.
+
 ## [2026.08.6] - 2026-08-10
 
 ### Cambiado
