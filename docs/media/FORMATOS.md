@@ -61,7 +61,7 @@ Sonarr v4 soporta **Custom Formats** de forma nativa. Estrategia de scoring.
 | `4K` | Resolución ≥ 2160p | −100 |
 | `Remux` | `Release Title` contiene `Remux` | −25 |
 
-**Quality Profile "Homelab 1080p (H.264)"** (series): `minFormatScore = 200` y `upgradeAllowed = false`. Solo pasan releases con score ≥200, que exige el latino (los CFs de idioma suman +200/+200; un release en otro idioma se queda en ≤+100 por x264 y no alcanza). El language profile es "Español (Latino) + English" con cutoff latino.
+**Quality Profile "Homelab 1080p (H.264)"** (series): `minFormatScore = 200`, `upgradeAllowed = false`, `items` en **orden canónico** (peor→mejor) y `cutoff` = Bluray-1080p (id de calidad 7). Solo pasan releases con score ≥200, que exige el latino (los CFs de idioma suman +200/+200; un release en otro idioma se queda en ≤+100 por x264 y no alcanza). Sonarr v4 **no aplica *language profiles*** (están deprecados y no filtran por idioma): el idioma se controla con los CFs de idioma + `minFormatScore`.
 
 ## Radarr
 
@@ -69,7 +69,7 @@ Perfil "Homelab 1080p (H.264)" (mismo nombre que en Sonarr), con reglas propias 
 
 - **Custom formats reales:** `Español (Latino) Audio` **+1000** (implementación `LanguageSpecification`, idioma Spanish Latino id 37), `x264` +100, `x265` −100, `10bit` −100, `HDR` −50, `4K` −100, `Remux` −25. No hay CF "Dual Audio".
 - **Idioma:** `language: Any` + **`minFormatScore = 1000`** → el español latino es **obligatorio**: solo pasan releases con el CF +1000. El latino se exige por score, **no** por filtro de idioma del perfil: el comparador de Radarr ordena por calidad antes que por score, así que sin `minFormatScore` un BluRay-1080p inglés (score 100) le ganaría a un `1080p (Esp.Latino)` que parsea como HDTV-1080p (score 1000).
-- **Orden de `items`:** el array `items` del perfil debe estar en **orden canónico** (peor→mejor: `Unknown, WORKPRINT, CAM, …, SDTV, DVD, DVD-R, …, Bluray-1080p, Remux-1080p, …, Remux-2160p`), porque Radarr usa el índice del array como prioridad de calidad (índice alto = mejor). Un array invertido hace agarrar la peor calidad primero. `cutoff` = Bluray-1080p (id de calidad 7).
+- **Orden de `items`:** el array `items` del perfil debe estar en **orden canónico** (peor→mejor: `Unknown, WORKPRINT, CAM, …, SDTV, DVD, DVD-R, …, Bluray-1080p, Remux-1080p, …, Remux-2160p`), porque Radarr usa el índice del array como prioridad de calidad (índice alto = mejor). Un array invertido hace agarrar la peor calidad primero. `cutoff` = Bluray-1080p (id de calidad 7). El mismo requisito de orden canónico aplica al perfil de **Sonarr** (con su propia schema de calidades).
 - **Calidades ≤1080p permitidas:** SDTV, DVD, Bluray-480p+, HDTV-720p/1080p, WEB/WEBRip/WEB-DL 720p/1080p, Bluray-1080p, Remux-1080p. **No permitidas:** CAM, TS, TELESYNC, DVD-R, BR-DISK, 4K/2160p.
 - **Tamaño:** límite global `maximumSize = 20000` MB (`config/indexer`) como red de seguridad — frena remux gigantes (>20GB) sin bloquear remux compactos.
 

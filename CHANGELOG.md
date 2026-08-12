@@ -4,6 +4,14 @@ Todos los cambios relevantes de este proyecto se documentan en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2026.08.8] - 2026-08-11
+
+### Corregido
+- Sonarr: profile de calidad "Homelab 1080p (H.264)" con el array `items` **invertido** (mismo bug que Radarr): Radarr/Sonarr usan el índice del array como prioridad de calidad, así que agarraba la **peor** calidad primero. Reordenado a canónico (schema de Sonarr) y `cutoff` corregido de SDTV (1) a **Bluray-1080p** (id de calidad 7). Se conserva `minFormatScore = 200` (latino obligatorio).
+
+### Documentación
+- Corregida la doc que afirmaba un *language profile* "Español (Latino) + English" en Sonarr: en v4 los language profiles están **deprecados** y no filtran por idioma; el latino se controla con los CFs de idioma (`Language: Español (Latino)` / `Español (Latino) Audio`, +200) + `minFormatScore = 200`. Verificado contra la API.
+
 ## [2026.08.7] - 2026-08-11
 
 ### Corregido
