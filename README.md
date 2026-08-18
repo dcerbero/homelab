@@ -1,6 +1,6 @@
 # ⚡ Homelab
 
-[![Lint](https://github.com/dcerbero/homelab/actions/workflows/lint.yml/badge.svg)](https://github.com/dcerbero/homelab/actions/workflows/lint.yml)
+[![Lint](https://img.shields.io/github/actions/workflow/status/dcerbero/homelab/lint.yml?branch=main&label=lint)](https://github.com/dcerbero/homelab/actions/workflows/lint.yml)
 
 Bienvenido a mi pequeña red doméstica: dos equipos locales que trabajan en casa y una VM en la nube que vigila las espaldas, todo aprovisionado con Ansible y desplegado en contenedores Docker.
 
