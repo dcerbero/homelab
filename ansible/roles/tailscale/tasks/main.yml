@@ -12,7 +12,7 @@
     mode: "0644"
 
 - name: Ensure python3-apt for deb822_repository
-  apt:
+  ansible.builtin.apt:
     name: python3-apt
     state: present
 
@@ -31,35 +31,35 @@
     signed_by: /etc/apt/keyrings/tailscale.asc
     state: present
 
-- name: Update apt cache 
-  apt:
+- name: Update apt cache
+  ansible.builtin.apt:
     update_cache: yes
 
 - name: Install Tailscale
-  apt:
+  ansible.builtin.apt:
     name: tailscale
     state: present
 
 - name: Start Tailscale service
-  systemd:
+  ansible.builtin.systemd:
     name: tailscaled
     state: started
     enabled: yes
 
 - name: Authenticate Tailscale with auth key
-  shell: tailscale up --authkey={{ tailscale_auth_key }} \
-    --hostname={{ TAILSCALE_HOSTNAME }}
+  ansible.builtin.command: tailscale up --authkey={{ tailscale_auth_key }} --hostname={{ TAILSCALE_HOSTNAME }}
   vars:
     tailscale_auth_key: "{{ vars['TAILSCALE_AUTH_KEY_' ~ (TAILSCALE_HOSTNAME | upper)] | default(TAILSCALE_AUTH_KEY | default('')) }}"
-  ignore_errors: true
+  changed_when: false
+  failed_when: false
 
 - name: Get Tailscale IP
-  shell: tailscale ip -4
+  ansible.builtin.command: tailscale ip -4
   register: tailscale_ip
   changed_when: false
 
 - name: Display Tailscale information
-  debug:
+  ansible.builtin.debug:
     msg: |
       ✅ Tailscale configured successfully
       IP: {{ tailscale_ip.stdout }}

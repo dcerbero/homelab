@@ -1,6 +1,6 @@
 ---
 - name: Install i965-va-driver (VA-API driver para QSV en gen7; se monta en el contenedor Jellyfin)
-  apt:
+  ansible.builtin.apt:
     name: i965-va-driver
     state: present
 
@@ -21,7 +21,7 @@
     - seerr
 
 - name: Start media services (streaming + download)
-  shell: |
+  ansible.builtin.shell: |
     cd {{ ansible_facts['env']['HOME'] }}/services/homelab/services/docker
     PATH_DATA={{ PATH_DATA }} docker compose --profile media-streaming --profile media-download up -d --remove-orphans
   environment:

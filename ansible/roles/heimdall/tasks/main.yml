@@ -8,7 +8,7 @@
     mode: "0755"
 
 - name: Start heimdall service
-  shell: |
+  ansible.builtin.shell: |
     cd {{ ansible_facts['env']['HOME'] }}/services/homelab/services/docker
     PATH_DATA={{ PATH_DATA }} docker compose --profile dashboard up -d
   register: heimdall_result

@@ -1,11 +1,11 @@
 ---
 # Instalar Docker desde el repositorio oficial con detección de arquitectura
 - name: Update apt cache
-  apt:
+  ansible.builtin.apt:
     update_cache: yes
 
 - name: Install prerequisites
-  apt:
+  ansible.builtin.apt:
     name:
       - ca-certificates
       - curl
@@ -13,7 +13,7 @@
     state: present
 
 - name: Ensure python3-apt for deb822_repository
-  apt:
+  ansible.builtin.apt:
     name: python3-apt
     state: present
 
@@ -30,7 +30,7 @@
     mode: "0644"
 
 - name: Get system architecture
-  set_fact:
+  ansible.builtin.set_fact:
     docker_arch: "{{ docker_arch_mapping[ansible_facts['architecture']] }}"
 
 - name: Remove legacy Docker apt list file
@@ -50,45 +50,45 @@
     state: present
 
 - name: Update apt cache after adding Docker repo
-  apt:
+  ansible.builtin.apt:
     update_cache: yes
 
 - name: Install Docker packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ docker_packages }}"
     state: present
   notify: Restart Docker
 
 - name: Create docker group
-  group:
+  ansible.builtin.group:
     name: "{{ docker_group }}"
     state: present
 
 - name: Add current user to docker group
-  user:
+  ansible.builtin.user:
     name: "{{ docker_user }}"
     groups: "{{ docker_group }}"
     append: yes
   notify: Restart Docker
 
 - name: Enable Docker service
-  systemd:
+  ansible.builtin.systemd:
     name: docker.service
     enabled: yes
     state: started
 
 - name: Enable containerd service
-  systemd:
+  ansible.builtin.systemd:
     name: containerd.service
     enabled: yes
 
 - name: Verify Docker installation
-  command: docker --version
+  ansible.builtin.command: docker --version
   register: docker_version
   changed_when: false
 
 - name: Display Docker version and architecture
-  debug:
+  ansible.builtin.debug:
     msg: |
       ✅ Docker installed successfully
       Version: {{ docker_version.stdout }}

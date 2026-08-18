@@ -19,7 +19,7 @@
 - name: Registrar resultado de la purga de paquetes huerfanos
   ansible.builtin.debug:
     msg: "Resultado de la limpieza:\n{{ apt_cleanup_result.stdout }}"
-  when: apt_cleanup_result.changed
+  when: apt_cleanup_result.changed  # noqa: no-handler
 
 - name: Create PATH_DATA base directory
   ansible.builtin.file:

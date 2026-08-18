@@ -1,0 +1,9 @@
+* text=auto
+
+# Normalizar extensiones YAML ante GitHub linguist
+*.yml linguist-language=YAML
+*.yaml linguist-language=YAML
+
+# Assets upstream de Heimdall (fuera del análisis de lenguaje)
+services/docker/heimdall/config/icons/*.svg linguist-vendored
+services/docker/heimdall/config/icons/*.png linguist-vendored

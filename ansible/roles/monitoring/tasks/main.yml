@@ -29,7 +29,7 @@
     remote_src: true
 
 - name: Start monitoring services (prometheus, grafana, node-exporter, cadvisor)
-  shell: |
+  ansible.builtin.shell: |
     cd {{ ansible_facts['env']['HOME'] }}/services/homelab/services/docker
     PATH_DATA={{ PATH_DATA }} docker compose --profile monitoring --profile metrics up -d --remove-orphans 2>&1
   environment:
@@ -38,9 +38,9 @@
   changed_when: monitoring_result.stdout is search("Created|Started|Recreated")
 
 - name: Restart Grafana to apply provisioning config (dashboards.yml, datasources.yml)
-  command: docker restart grafana
+  ansible.builtin.command: docker restart grafana
   changed_when: false
 
 - name: Reload prometheus configuration (SIGHUP; bind mount :ro no recrea el contenedor)
-  command: docker exec prometheus kill -HUP 1
+  ansible.builtin.command: docker exec prometheus kill -HUP 1
   changed_when: false

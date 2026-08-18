@@ -1,6 +1,6 @@
 ---
 - name: Start cadvisor service
-  shell: |
+  ansible.builtin.shell: |
     cd {{ ansible_facts['env']['HOME'] }}/services/homelab/services/docker
     PATH_DATA={{ PATH_DATA }} docker compose --profile monitoring up -d --remove-orphans
   register: cadvisor_result
