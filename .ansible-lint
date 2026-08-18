@@ -4,3 +4,9 @@ exclude_paths:
   - config/
   - docs/
   - services/
+
+# Variables estilo env (PATH_DATA, TAILSCALE_HOSTNAME) compartidas con docker compose
+var_naming_pattern: '^[a-z_][a-z0-9_]*$|^[A-Z][A-Z0-9_]*$'
+
+skip_list:
+  - role-name  # roles locales con guion (system-setup, systemd-resolved), no publicados en Galaxy
