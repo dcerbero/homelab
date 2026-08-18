@@ -4,6 +4,16 @@ Todos los cambios relevantes de este proyecto se documentan en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2026.08.9] - 2026-08-18
+
+### Corregido
+- Torrents colgados (swarm muerto): limpiados los 4 torrents que nunca descargaban en Transmission (Fast & Furious 2001, Lion King 2019, Brother Bear, Interestelar — 0% o clavados a mitad) y de la cola de Radarr para reintentar.
+- Transmission `settings.json`: habilitado **uTP** (`utp-enabled=true`, `preferred_transports=["tcp","utp"]`) — amplía los peers alcanzables, sobre todo seeders tras NAT — y corregido drift `idle-seeding-limit-enabled=false → true` (alineado con la doc).
+- `minimumSeeders=2` por indexador en Sonarr y Radarr (campo `fields.minimumSeeders` del Torznab) — evita agarrar releases con seeds falsos/inflados que nunca descargan. Pendiente de re-aplicar en las 2 entradas de 1337x cuando Prowlarr lo recupere (estaba deshabilitado 24h por fallos Cloudflare).
+
+### Documentación
+- Sync completo de toda la documentación con el repo y el estado runtime real (verificado por SSH/API el 2026-08-18): `README.md`, `AGENTS.md`, `ARCHITECTURE.md` (anton ahora en producción con todo el stack media), `DOCKER.md` (perfil media-download completo, volúmenes `/media`, healthchecks nuevos), `COMMANDS.md`/`MONITORING.md` (8 targets de Prometheus), `ANSIBLE.md` (tabla de roles de anton), `media/README.md` (categorías por indexador, `minimumSeeders`, uTP, "torrents que nunca inician") y `TROUBLESHOOTING.md` (entrada de swarms muertos).
+
 ## [2026.08.8] - 2026-08-11
 
 ### Corregido

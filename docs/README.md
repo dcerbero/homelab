@@ -15,9 +15,9 @@ Todo lo que necesitas saber sobre nuestro homelab, organizado por tema. Este es 
 | Proxy | nginx |
 | Dashboard | Heimdall |
 | Streaming | Jellyfin |
-| Descargas | Sonarr + Prowlarr + Transmission |
+| Descargas | Sonarr + Radarr + Prowlarr + Transmission + Bazarr + Seerr |
 | IA | OpenClaw → OpenRouter API |
-| Monitorización | Prometheus + Grafana + cAdvisor + node-exporter |
+| Monitorización | Prometheus + Grafana + cAdvisor + node-exporter + smartctl-exporter |
 
 ## Documentación
 

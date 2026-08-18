@@ -1,6 +1,6 @@
 # 📊 Monitoreo — Prometheus + Grafana
 
-Todo lo que pasa en el homelab termina en un dashboard: las métricas de ambas máquinas viajan por Tailscale hasta el monitor central, donde se ven de un vistazo. Así sabemos si todo respira bien o si algo empieza a cojear.
+Todo lo que pasa en el homelab termina en un dashboard: las métricas de las tres máquinas viajan por Tailscale hasta el monitor central, donde se ven de un vistazo. Así sabemos si todo respira bien o si algo empieza a cojear.
 
 ## Índice
 
@@ -15,9 +15,9 @@ Todo lo que pasa en el homelab termina en un dashboard: las métricas de ambas m
 
 - [x] **Paso 1 — [talos](HARDWARE.md#talos)**: stack completo (Prometheus, Grafana, node-exporter, cAdvisor) desplegado y funcional.
 - [x] **Paso 2 — [yoda](HARDWARE.md#yoda)**: cAdvisor expuesto (`9101:8080`) y node-exporter (`9100`) desplegados y verificados.
-- [x] **Paso 3 — [talos](HARDWARE.md#talos)**: targets de yoda añadidos a `prometheus.yml`; **5 targets up**; dashboard unificado con agrupación por instancia.
+- [x] **Paso 3 — [talos](HARDWARE.md#talos)**: targets de yoda añadidos a `prometheus.yml`; dashboard unificado con agrupación por instancia.
 - [x] **Paso 4 — Docs finales**: `COMMANDS.md`, `ARCHITECTURE.md`, `README.md`, `SECURITY.md`.
-- [x] **Paso 5 — [anton](HARDWARE.md#anton)**: node-exporter (`9100`), cAdvisor (`9101`) y **smartctl-exporter** (`9633`, SMART de los discos del RAID) desplegados; targets `anton` en `prometheus.yml`.
+- [x] **Paso 5 — [anton](HARDWARE.md#anton)**: node-exporter (`9100`), cAdvisor (`9101`) y **smartctl-exporter** (`9633`, SMART de los discos del RAID) desplegados; targets `anton` en `prometheus.yml`. Estado actual: **8 targets up** (self + node-exporter/cAdvisor de talos, yoda y anton + smartctl de anton).
 
 ## Arquitectura
 

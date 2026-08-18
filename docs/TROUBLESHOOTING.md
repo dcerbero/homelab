@@ -11,6 +11,7 @@ Si algo se rompe, aquí está lo que ya nos ha pasado y cómo se arregla. No es 
 - [DNS no resuelve desde dispositivos](#dns-no-resuelve-desde-dispositivos)
 - [Tag de imagen inexistente o sin arquitectura](#tag-de-imagen-inexistente-o-sin-arquitectura)
 - [Rate limit de Docker Hub en el preflight](#rate-limit-de-docker-hub-en-el-preflight)
+- [Torrents que nunca inician (swarm muerto)](#torrents-que-nunca-inician-swarm-muerto)
 
 ## Conflictos de Puertos
 
@@ -105,3 +106,13 @@ bash run.sh yoda --tags preflight
 # o autenticar el daemon con una cuenta de Docker Hub (sin límite anónimo)
 docker login
 ```
+
+## Torrents que nunca inician (swarm muerto)
+
+**Síntoma:** Sonarr/Radarr agarran un release que en la búsqueda mostraba seeds, pero en Transmission queda a 0% (o se clava a mitad) con `peersConnected: 0` y no progresa nunca.
+
+**Causa:** el swarm real está muerto — los contadores de seeds de trackers/indexadores públicos son inflados o falsos (p. ej. `opentrackr` reporta miles de seeds para torrents con casi ningún peer alcanzable). No es un problema de red: verificar siempre con una prueba contra un torrent sano antes de culpar al firewall/ISP.
+
+**Mitigaciones ya activadas:** `minimumSeeders=2` por indexador en Sonarr/Radarr y uTP habilitado en Transmission. `TorrentDownload` es el indexador que más colgados genera (releases legacy y magnets sin trackers); se mantiene por su volumen latino, pero si se vuelve recurrente conviene desactivarlo.
+
+**Limpieza:** borrar el torrent en Transmission (torrent + datos) y quitar el item de la cola de Sonarr/Radarr (`removeFromClient=true`) — al volver a "missing", la app re-busca el mejor release. Detalle completo en [`media/README.md`](media/README.md#torrents-que-nunca-inician-swarm-muerto).

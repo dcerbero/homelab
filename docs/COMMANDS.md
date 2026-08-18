@@ -65,7 +65,7 @@ docker system prune -a --volumes
 
 ## Monitorización (Prometheus + Grafana)
 
-El stack vive en **[talos](HARDWARE.md#talos)** (Prometheus, Grafana, node-exporter, cAdvisor). En **[yoda](HARDWARE.md#yoda)** solo corren los exporters (cAdvisor `9101`, node-exporter `9100`).
+El stack vive en **[talos](HARDWARE.md#talos)** (Prometheus, Grafana, node-exporter, cAdvisor). En **[yoda](HARDWARE.md#yoda)** y **[anton](HARDWARE.md#anton)** solo corren los exporters (cAdvisor `9101`, node-exporter `9100`; anton además smartctl-exporter `9633`).
 
 ```bash
 # Acceso a Grafana (usuario admin, password en GRAFANA_ADMIN_PASSWORD)
@@ -80,15 +80,18 @@ docker compose --all-profiles logs -f svcGrafana
 docker compose --all-profiles logs -f svcNodeExporter
 docker compose --all-profiles logs -f svccAdvisor
 
-# Ver targets de Prometheus (en talos; 5 targets: self, talos + yoda)
+# Ver targets de Prometheus (en talos; 8 targets: self + node-exporter/cAdvisor de talos, yoda, anton + smartctl de anton)
 docker exec prometheus wget -qO- http://localhost:9090/api/v1/targets
 
 # Recargar config de Prometheus sin reiniciar (Ansible ya lo hace en el rol)
 docker exec prometheus kill -HUP 1
 
-# Verificar los exporters de yoda desde talos (vía Tailscale)
+# Verificar los exporters de yoda y anton desde talos (vía Tailscale)
 curl http://yoda:9101/metrics   # cAdvisor de yoda
 curl http://yoda:9100/metrics   # node-exporter de yoda
+curl http://anton:9101/metrics  # cAdvisor de anton
+curl http://anton:9100/metrics  # node-exporter de anton
+curl http://anton:9633/metrics  # smartctl-exporter de anton (SMART del RAID)
 ```
 
 ## Health Checks por Servicio

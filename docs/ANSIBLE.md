@@ -49,6 +49,18 @@ bash run.sh
 | `pihole` | `pihole`, `dns`, `talos` | Pi-hole secundario (failover DNS) |
 | `monitoring` | `monitoring`, `metrics`, `talos` | Stack de métricas centralizado: Prometheus, Grafana, node-exporter y cAdvisor. Tras el `compose up` recarga la config de Prometheus (`docker exec prometheus kill -HUP 1`) |
 
+### [anton](HARDWARE.md#anton) (Equipo x86_64)
+
+| Rol | Tags | Descripción |
+|---|---|---|
+| `system-setup` | `system-setup`, `system`, `anton` | Paquetes del SO, esqueleto `$PATH_DATA` |
+| `docker` | `docker`, `containers`, `anton` | Instalación de Docker Engine + Compose |
+| `preflight` | `preflight`, `containers`, `anton` + unión de tags de roles compose | Verifica existencia de los tags (no exige arquitectura; los servicios media usan tags `amd64-`) |
+| `cadvisor` | `cadvisor`, `monitoring`, `anton` | cAdvisor y node-exporter (perfil `monitoring`) |
+| `smartctl` | `smartctl`, `monitoring`, `anton` | smartctl-exporter (perfil `smart`, SMART del RAID) |
+| `tailscale` | `tailscale`, `vpn`, `anton` | Instalación y autenticación de Tailscale VPN |
+| `media` | `media`, `media-streaming`, `media-download`, `anton` | Stack media: instala `i965-va-driver` y despliega los perfiles `media-streaming` (Jellyfin) y `media-download` (Transmission, Prowlarr, FlareSolverr, Sonarr, Radarr, Bazarr, Seerr) |
+
 ## Preflight (validación de imágenes)
 
 Rol `preflight` que corre **antes** de desplegar cualquier servicio (tras `docker`, antes de `pihole`). Evita el fallo del `compose up` a mitad de play cuando un tag no existe — nos pasó con el incidente de `nginx:1.30.3-bookworm` del 2026-08-05, que dejaba el contenedor stale. Desde entonces, mejor comprobar antes que arrepentirse.
@@ -63,7 +75,7 @@ Si alguna imagen falla, el play aborta listando los tags problemáticos antes de
 
 El rol `preflight` declara como tags propias la unión de las tags de los roles de servicio que despliegan compose (`pihole`, `dns`, `cadvisor`, `monitoring`, `ia`, `dashboard`, `proxy`, `metrics`…). Así se activa también en runs etiquetados que tocan compose y se salta en los que no (p. ej. `--tags system-setup`, `--tags docker`, `--tags tailscale`).
 
-**Regla de mantenimiento:** al añadir un rol de servicio que despliegue compose, hay que añadir sus tags a la lista del rol `preflight` en `playbook.yml` (ambos plays), o un `--tags <nuevo>` reabriría el hueco en silencio. Efecto colateral conocido: `--skip-tags <tag_compartida>` también se salta preflight.
+**Regla de mantenimiento:** al añadir un rol de servicio que despliegue compose, hay que añadir sus tags a la lista del rol `preflight` en `playbook.yml` (los 3 plays), o un `--tags <nuevo>` reabriría el hueco en silencio. Efecto colateral conocido: `--skip-tags <tag_compartida>` también se salta preflight.
 
 > [!WARNING]
 > Es fácil olvidarlo, pero esta regla evita que un `--tags` nuevo salte la validación sin que nos demos cuenta.
@@ -81,7 +93,7 @@ Tres plays independientes:
 
 1. **[`yoda`](HARDWARE.md#yoda)** — RPi4 local: todos los roles
 2. **[`talos`](HARDWARE.md#talos)** — Oracle Cloud VM: Pi-hole failover + stack de monitoreo (system-setup, docker, pihole, monitoring)
-3. **[`anton`](HARDWARE.md#anton)** — Equipo x86_64: base + monitoreo + media (system-setup, docker, preflight, cadvisor, smartctl, tailscale, media) con tags `…, anton`. El rol `media` despliega los perfiles `media-streaming` (Jellyfin) y `media-download` (Transmission, Prowlarr, Sonarr).
+3. **[`anton`](HARDWARE.md#anton)** — Equipo x86_64: base + monitoreo + media (system-setup, docker, preflight, cadvisor, smartctl, tailscale, media) con tags `…, anton`. El rol `media` despliega los perfiles `media-streaming` (Jellyfin) y `media-download` (Transmission, Prowlarr, FlareSolverr, Sonarr, Radarr, Bazarr, Seerr).
 
 La definición exacta de roles y tags está en [`ansible/playbook.yml`](../ansible/playbook.yml).
 
@@ -102,7 +114,7 @@ inventory/
 │   └── anton.yml                 # PATH_DATA, TAILSCALE_HOSTNAME
 ```
 
-> El Equipo x86_64 ([anton](HARDWARE.md#anton)) ya tiene entrada en el inventario (`inventory/anton.yml` + `host_vars/anton.yml` con `PATH_DATA=/server`); se completa su play al provisionar el resto de roles.
+> El Equipo x86_64 ([anton](HARDWARE.md#anton)) tiene su propia entrada en el inventario (`inventory/anton.yml` + `host_vars/anton.yml` con `PATH_DATA=/server`) y su play completo en producción (base, monitoreo y stack media).
 
 ### SSH
 

@@ -25,16 +25,20 @@ services/docker/
 ├── nginx/compose.yaml        ← Perfil: infra
 ├── nginx/config/conf.d/default.conf  ← Config del proxy
 ├── jellyfin/compose.yaml     ← Perfil: media-streaming
-├── prowlarr/compose.yaml     ← Perfil: media-download
-├── sonarr/compose.yaml       ← Perfil: media-download
 ├── transmission/compose.yaml ← Perfil: media-download
+├── prowlarr/compose.yaml     ← Perfil: media-download
+├── flaresolverr/compose.yaml ← Perfil: media-download
+├── sonarr/compose.yaml       ← Perfil: media-download
+├── radarr/compose.yaml       ← Perfil: media-download
+├── bazarr/compose.yaml       ← Perfil: media-download
+├── seerr/compose.yaml        ← Perfil: media-download
 ├── cadvisor/compose.yaml     ← Perfil: monitoring
 ├── node-exporter/compose.yaml← Perfil: monitoring
 ├── smartctl-exporter/compose.yaml ← Perfil: smart (SMART de discos, solo anton)
 ├── prometheus/compose.yaml   ← Perfil: metrics
 ├── prometheus/config/prometheus.yml  ← Config de scrape
 ├── grafana/compose.yaml      ← Perfil: metrics
-└── grafana/config/           ← Provisioning (datasource + dashboards)
+└── grafana/config/           ← Provisioning (datasource + dashboards, seed en `grafana/seed/`)
 ```
 
 ## Perfiles
@@ -46,7 +50,7 @@ services/docker/
 | `ia` | OpenClaw | Interfaz de IA local (OpenRouter API) |
 | `infra` | nginx | Proxy reverso |
 | `media-streaming` | Jellyfin | Streaming multimedia (rol `media`, [anton](HARDWARE.md#anton)) |
-| `media-download` | Transmission, Prowlarr, Sonarr | Descarga y gestión (rol `media`, [anton](HARDWARE.md#anton)) |
+| `media-download` | Transmission, Prowlarr, Sonarr, Radarr, Bazarr, Seerr, FlareSolverr | Descarga y gestión (rol `media`, [anton](HARDWARE.md#anton)) |
 | `monitoring` | cAdvisor, node-exporter | Exporters de métricas (todas las máquinas) |
 | `smart` | smartctl-exporter | Salud SMART de discos (solo [anton](HARDWARE.md#anton)) |
 | `metrics` | Prometheus, Grafana | Backend y dashboards (solo [talos](HARDWARE.md#talos)) |
@@ -77,6 +81,10 @@ Todos los servicios exponen estado `healthy`/`unhealthy` en `docker ps` y en cAd
 | Transmission | compose | `curl -fsS http://localhost:9091/transmission/web/` |
 | Prowlarr | compose | `curl -fsS http://localhost:9696/ping` |
 | Sonarr | compose | `curl -fsS http://localhost:8989/ping` |
+| Radarr | compose | `curl -fsS http://localhost:7878/ping` |
+| Bazarr | compose | `curl -fsS http://localhost:6767/` |
+| Seerr | compose | `wget --spider http://localhost:5055/api/v1/settings/public` |
+| FlareSolverr | compose | `curl -fsS http://localhost:8191/` |
 | Jellyfin | compose | `curl -fsS http://localhost:8096/health` |
 | cAdvisor | embebido en la imagen | `wget .../healthz` |
 | node-exporter | compose | `wget http://localhost:9100/metrics` |
@@ -140,7 +148,7 @@ Servidor de streaming multimedia. Solo en [anton](HARDWARE.md#anton) (tags `amd6
 Cliente Torrent.
 
 - **Puertos:** `8082:9091` (Web UI), `51413` (Torrent TCP/UDP)
-- **Volúmenes:** `$PATH_DATA/persistence/transmission/config`, `$PATH_DATA/media/downloads`, `$PATH_DATA/media/watch`
+- **Volúmenes:** `$PATH_DATA/persistence/transmission/config`, `$PATH_DATA/media` (mount común `/media` — hardlinks de import con Sonarr/Radarr)
 - **Healthcheck:** autentica con `USER`/`PASS` (env del contenedor, con `$$` para escapar la interpolación de Compose) — el Web UI devuelve 401 sin credenciales (RPC auth activado)
 
 ### Sonarr (media-download)
@@ -148,7 +156,7 @@ Cliente Torrent.
 Gestión de series. Se integra con Transmission para descargas.
 
 - **Puerto:** `8084:8989`
-- **Volúmenes:** `$PATH_DATA/persistence/sonarr/data`, `$PATH_DATA/media/tvseries`, `$PATH_DATA/media/downloads`
+- **Volúmenes:** `$PATH_DATA/persistence/sonarr/data`, `$PATH_DATA/media` (mount común `/media` — hardlinks de import)
 
 ### Prowlarr (media-download)
 
@@ -162,7 +170,7 @@ Indexador de torrents. Se integra con Sonarr y Radarr (apps de Prowlarr).
 Gestión de películas. Se integra con Transmission para descargas. Formato de archivos recomendado en [`media/FORMATOS.md`](media/FORMATOS.md).
 
 - **Puerto:** `8085:7878`
-- **Volúmenes:** `$PATH_DATA/persistence/radarr`, `$PATH_DATA/media/movies`, `$PATH_DATA/media/downloads`
+- **Volúmenes:** `$PATH_DATA/persistence/radarr`, `$PATH_DATA/media` (mount común `/media` — hardlinks de import)
 
 ### Bazarr (media-download)
 
@@ -199,7 +207,7 @@ Interfaz de IA local. Usa la **API de OpenRouter** para inferencia.
 
 Métricas de uso de recursos de todos los contenedores.
 
-- **Puerto:** `9101:8080` en [yoda](HARDWARE.md#yoda) (acceso de scraping vía Tailscale); en [talos](HARDWARE.md#talos) sin bind al host (scrape interno por nombre de servicio)
+- **Puerto:** `9101:8080` en todas las máquinas (el scrape de [talos](HARDWARE.md#talos) usa `svccAdvisor:8080` interno; en [yoda](HARDWARE.md#yoda)/[anton](HARDWARE.md#anton) se scrapea vía Tailscale)
 - **Volúmenes:** monta `/`, `/var/run`, `/sys`, `/var/lib/docker`, `/dev/disk` (solo lectura)
 - **Intervalos:** housekeeping 10s, max housekeeping 15s, global 1m
 
@@ -214,13 +222,13 @@ Métricas del host (CPU, RAM, disco, red, temperatura) para Prometheus.
 
 ### Prometheus (metrics — solo [talos](HARDWARE.md#talos))
 
-Backend de métricas. Scrapea a los exporters de ambas máquinas.
+Backend de métricas. Scrapea a los exporters de las tres máquinas.
 
 - **Puerto:** sin bind al host (interno)
 - **Config:** directorio `services/docker/prometheus/config/` (montado `:ro`; `--config.file=/etc/prometheus/config/prometheus.yml`) — se monta el directorio, no el archivo, para que el reload SIGHUP del rol lea los cambios que aplica `git pull` (el mount de archivo único se queda con el inode viejo)
 - **Volúmenes:** `$PATH_DATA/persistence/prometheus` (TSDB)
 - **Retención:** 15 días
-- **Targets:** self, node-exporter y cAdvisor de [talos](HARDWARE.md#talos) (internos) + [yoda](HARDWARE.md#yoda) vía Tailscale (`yoda:9100`, `yoda:9101`). El label `instance` se renombra vía `relabel_configs` a `talos`/`yoda` para el dashboard.
+- **Targets:** self, node-exporter y cAdvisor de [talos](HARDWARE.md#talos) (internos) + [yoda](HARDWARE.md#yoda) y [anton](HARDWARE.md#anton) vía Tailscale (`yoda:9100`, `yoda:9101`, `anton:9100`, `anton:9101`) + smartctl de anton (`anton:9633`). El label `instance` se renombra vía `relabel_configs` a `talos`/`yoda`/`anton` para el dashboard.
 - **Recarga de config:** el rol `monitoring` ejecuta `docker exec prometheus kill -HUP 1` (SIGHUP) tras cada deploy
 
 ### Grafana (metrics — solo [talos](HARDWARE.md#talos))

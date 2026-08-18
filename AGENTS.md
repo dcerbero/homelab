@@ -16,18 +16,18 @@ Infraestructura híbrida con 3 máquinas aprovisionadas por Ansible y servicios 
 
 | Máquina | Rol | Arch |
 |---|---|---|
-| `yoda` | Raspberry Pi 4 (local): Pi-hole, Heimdall, nginx, OpenClaw, cAdvisor, media | arm64 |
+| `yoda` | Raspberry Pi 4 (local): Pi-hole, Heimdall, nginx, OpenClaw, cAdvisor | arm64 |
 | `talos` | Oracle Cloud VM: Pi-hole failover + monitoreo (Prometheus, Grafana) | arm64 |
-| `anton` | Equipo x86_64 — pendiente de provisionar | amd64 |
+| `anton` | Equipo x86_64 (local): servidor media — Jellyfin + arr stack | amd64 |
 
 Dos subsistemas con ciclo de vida propio:
-1. **Provisión Ansible** (`ansible/`) — setup bare-metal, Docker, Tailscale y despliegue inicial (`playbook.yml` con 2 plays, `run.sh`, `inventory/`, 10 roles).
+1. **Provisión Ansible** (`ansible/`) — setup bare-metal, Docker, Tailscale y despliegue inicial (`playbook.yml` con 3 plays, `run.sh`, `inventory/`, 13 roles).
 2. **Perfiles Docker Compose** (`services/docker/`) — gestión del día a día (`compose.yaml` + uno por servicio).
 
 ```text
 homelab/
-├── ansible/          # playbook.yml (2 plays), run.sh, inventory/ (host_vars), 10 roles
-├── services/docker/  # compose.yaml + compose.yaml por servicio (8 perfiles)
+├── ansible/          # playbook.yml (3 plays), run.sh, inventory/ (host_vars), 13 roles
+├── services/docker/  # compose.yaml + compose.yaml por servicio (9 perfiles)
 ├── config/           # scripts auxiliares
 └── docs/             # documentación detallada (índice en docs/README.md)
 ```
@@ -48,11 +48,11 @@ homelab/
 | `smart` | smartctl-exporter | `smartctl` | anton |
 | `metrics` | Prometheus, Grafana | `monitoring` | talos |
 | `media-streaming` | Jellyfin | `media` | anton |
-| `media-download` | Transmission, Prowlarr, Sonarr | `media` | anton |
+| `media-download` | Transmission, Prowlarr, Sonarr, Radarr, Bazarr, Seerr, FlareSolverr | `media` | anton |
 
 ## Hechos clave
 
-- **nginx es la única entrada HTTP** (puerto 80) — reverse-proxy a Heimdall (`/`), Pi-hole (`/pihole`, `/admin/`) y OpenClaw (`/openclaw`). El resto de servicios publica sus puertos solo a LAN/Tailscale (grafana 3000, jellyfin 8096, pihole-web 8085, prowlarr 8083, sonarr 8084, transmission 8082/51413, cadvisor 9101, node-exporter 9100).
+- **nginx es la única entrada HTTP** (puerto 80) — reverse-proxy a Heimdall (`/`), Pi-hole (`/pihole`, `/admin/`) y OpenClaw (`/openclaw`). El resto de servicios publica sus puertos solo a LAN/Tailscale (grafana 3000, jellyfin 8096, pihole-web 8085, radarr 8085, prowlarr 8083, sonarr 8084, transmission 8082/51413, bazarr 8086, seerr 8087, cadvisor 9101, node-exporter 9100, smartctl 9633).
 - **OpenClaw → OpenRouter API** para inferencia; sin puertos expuestos, solo detrás de nginx.
 - **Config en el repo, datos en `$PATH_DATA`** — configs versionadas con montajes `:ro` (nginx `conf.d`, grafana provisioning, prometheus config); estado runtime en `$PATH_DATA`: `persistence/<svc>/` (durable) y `media/` (`downloads`, `movies`, `tvseries`, `watch`). `PATH_DATA` se define por máquina en `host_vars/<host>.yml`.
 - **Pi-hole failover** — secundario en talos. Mismas adlists y gravity independiente, sin sync (estado runtime, no versionado). Los nameservers de Tailscale DNS (MagicDNS) se configuran en la consola de Tailscale, no en el repo.
@@ -62,7 +62,7 @@ homelab/
 
 - **Ansible**: roles con `become: true`. Orden estricto en [yoda](docs/HARDWARE.md#yoda): `system-setup → docker → preflight → systemd-resolved → pihole → tailscale → cadvisor → openclaw → heimdall → nginx`; en [talos](docs/HARDWARE.md#talos): `system-setup → docker → preflight → systemd-resolved → pihole → monitoring`; en [anton](docs/HARDWARE.md#anton): `system-setup → docker → preflight → cadvisor → smartctl → tailscale → media`.
 - **Sync del repo**: cada play sincroniza `~/services/homelab` en sus `pre_tasks` (tags `always`) — el repo del host == `origin/main` antes de cualquier deploy, incluso con `--tags <rol>`. `system-setup` ya no lo hace.
-- **Preflight**: valida tags de imágenes (`preflight.py`) y declara como tags propias la unión de las tags de los roles de servicio que despliegan compose. Al añadir un rol de servicio nuevo, añade sus tags al rol `preflight` en `playbook.yml` (ambos plays), o un `--tags <nuevo>` se saltaría la validación en silencio. `preflight_require_arch: true` solo en yoda (exige variante arm64).
+- **Preflight**: valida tags de imágenes (`preflight.py`) y declara como tags propias la unión de las tags de los roles de servicio que despliegan compose. Al añadir un rol de servicio nuevo, añade sus tags al rol `preflight` en `playbook.yml` (los 3 plays), o un `--tags <nuevo>` se saltaría la validación en silencio. `preflight_require_arch: true` solo en yoda (exige variante arm64).
 - **Compose**: nombre de servicio con prefijo `svc` (`svcPihole`); `container_name` sin prefijo (`pihole`, `openclaw`, `nginx_proxy`, `prometheus`, ...) — los roles usan `docker exec <container_name>`.
 - **UID/GID 1000** para contenedores linuxserver.io (PUID/PGID). Excepciones: Grafana `472:0`, Prometheus `1000:1000`.
 - **Transcodificación HW**: `/dev/dri/renderD128` solo en Jellyfin.

@@ -20,12 +20,13 @@ graph TD
     subgraph WAN [ ]
         direction LR
         ISP[🌐 Internet / ISP]
-        
+
         subgraph OCI_VM [☁️ talos — Oracle Cloud VM]
             OciPiHole[🛡️ Pi-hole failover]
             Prometheus[📈 Prometheus]
             Grafana[📊 Grafana]
             OciNodeExp[🖥️ node-exporter]
+            OciCAdvisor[📊 cAdvisor]
         end
     end
 
@@ -34,17 +35,28 @@ graph TD
     subgraph LAN [Red Local]
         Router[🖧 Router]
         subgraph Pi [🍓 yoda — Raspberry Pi 4]
-            subgraph Docker [🐋 Docker Engine]
-                OpenClaw[🤖 OpenClaw]
+            subgraph DockerYoda [🐋 Docker Engine]
                 PiHole[🛡️ Pi-hole DNS]
-                cAdvisor[📊 cAdvisor]
-                NodeExp[🖥️ node-exporter]
                 Heimdall[📋 Heimdall]
-                Jellyfin[🎬 Jellyfin]
                 Nginx[🌐 nginx Proxy]
+                OpenClaw[🤖 OpenClaw]
+                YodaCAdvisor[📊 cAdvisor]
+                YodaNodeExp[🖥️ node-exporter]
+            end
+        end
+        subgraph Media [🎬 anton — Equipo x86_64]
+            subgraph DockerAnton [🐋 Docker Engine]
+                Jellyfin[🎬 Jellyfin]
                 Transmission[⬇️ Transmission]
-                Sonarr[📺 Sonarr]
                 Prowlarr[🔍 Prowlarr]
+                FlareSolverr[🧩 FlareSolverr]
+                Sonarr[📺 Sonarr]
+                Radarr[🎞️ Radarr]
+                Bazarr[💬 Bazarr]
+                Seerr[📨 Seerr]
+                AntCAdvisor[📊 cAdvisor]
+                AntNodeExp[🖥️ node-exporter]
+                Smartctl[💾 smartctl-exporter]
             end
         end
     end
@@ -54,67 +66,90 @@ graph TD
 
     ISP === Router
     Router --- Pi
+    Router --- Media
     Router --- LocalDevices
 
     Pi -.-> Tailscale
+    Media -.-> Tailscale
     OCI_VM -.-> Tailscale
     RemoteNode -.-> Tailscale
-    
+
     LocalDevices ==>|DNS| PiHole
     RemoteNode -.->|DNS| Tailscale
     Tailscale -.->|DNS| PiHole
 
-    Prometheus -.->|scrape /metrics| NodeExp
-    Prometheus -.->|scrape /metrics| cAdvisor
+    Prometheus -.->|scrape /metrics| OciNodeExp
+    Prometheus -.->|scrape /metrics| OciCAdvisor
+    Prometheus -.->|scrape /metrics| YodaNodeExp
+    Prometheus -.->|scrape /metrics| YodaCAdvisor
+    Prometheus -.->|scrape /metrics| AntNodeExp
+    Prometheus -.->|scrape /metrics| AntCAdvisor
+    Prometheus -.->|scrape /metrics| Smartctl
+
+    Seerr -.->|peticiones| Sonarr
+    Seerr -.->|peticiones| Radarr
+    Sonarr -.->|grab| Transmission
+    Radarr -.->|grab| Transmission
+    Sonarr -.->|search| Prowlarr
+    Radarr -.->|search| Prowlarr
+    Prowlarr -.->|Cloudflare| FlareSolverr
+    Bazarr -.->|subtítulos| Jellyfin
 
     class WAN,ISP,OCI_VM wan;
-    class Router,Pi,LocalDevices,RemoteNode node;
+    class Router,Pi,Media,LocalDevices,RemoteNode node;
     class Tailscale vpn;
-    class Docker,OpenClaw,PiHole,cAdvisor,OciPiHole,Heimdall,Jellyfin,Nginx,Transmission,Sonarr,Prowlarr,NodeExp,Prometheus,Grafana,OciNodeExp highlight;
-
-    linkStyle 6,7 stroke:#10b981,stroke-width:3px;
+    class DockerYoda,DockerAnton,PiHole,Heimdall,Nginx,OpenClaw,OciPiHole,Jellyfin,Transmission,Prowlarr,Sonarr,Radarr,Bazarr,Seerr,FlareSolverr,YodaCAdvisor,YodaNodeExp,AntCAdvisor,AntNodeExp,Smartctl,Prometheus,Grafana,OciNodeExp,OciCAdvisor highlight;
 ```
-
-> [!NOTE]
-> La máquina [`anton`](HARDWARE.md#anton) (Equipo x86_64, `<ip-anton>`, pendiente de provisionar) no aparece en el diagrama: aún no tiene servicios desplegados. Se integrará cuando esté listo.
 
 ## Flujos de Red
 
-Aquí va el resumen de cómo se mueve el tráfico entre los servicios, sin tecnicismos de más.
+Resumen de cómo se mueve el tráfico entre los servicios.
 
 ### DNS (Verde)
-- Todos los dispositivos locales resuelven DNS contra Pi-hole
-- Dispositivos remotos via Tailscale → Pi-hole
-- Pi-hole upstream: Quad9 (9.9.9.9) y Cloudflare Family (1.1.1.2)
+- Todos los dispositivos locales resuelven DNS contra **Pi-hole de [yoda](HARDWARE.md#yoda)** (primario); [talos](HARDWARE.md#talos) es el **failover**.
+- Dispositivos remotos via Tailscale → Pi-hole.
+- Pi-hole upstream: Quad9 (9.9.9.9) y Cloudflare Family (1.1.1.2).
+
+### HTTP / Web
+- **nginx** ([yoda](HARDWARE.md#yoda)) es la única entrada HTTP (puerto 80): Heimdall (`/`), Pi-hole (`/pihole`, `/admin/`) y OpenClaw (`/openclaw`).
+- El resto de servicios publica sus puertos solo a **LAN/Tailscale** (ver [Puertos Expuestos](#puertos-expuestos)).
 
 ### IA
-- **Inferencia:** OpenClaw → OpenRouter API (salida directa)
-- Procesamiento local, modelos remotos
+- **Inferencia:** OpenClaw → OpenRouter API (salida directa). Sin puertos expuestos, solo detrás de nginx.
 
-### VPN (Discontinuo)
-- Tailscale mesh VPN conecta: [yoda](HARDWARE.md#yoda), [talos](HARDWARE.md#talos), dispositivos remotos
-- Subnet routing para acceso a red local desde fuera
+### Media (descarga → biblioteca)
+- **Seerr** recibe las peticiones → las envía a **Sonarr/Radarr**.
+- Sonarr/Radarr buscan en los indexadores de **Prowlarr** (FlareSolverr solo para los protegidos por Cloudflare), eligen release y lo envían a **Transmission**.
+- Al completar, Sonarr/Radarr importan con hardlink a la biblioteca; **Jellyfin** la sirve; **Bazarr** descarga los subtítulos. Detalle en [`media/README.md`](media/README.md).
+
+### VPN
+- Tailscale mesh VPN conecta: [yoda](HARDWARE.md#yoda), [anton](HARDWARE.md#anton), [talos](HARDWARE.md#talos) y dispositivos remotos.
 
 ### Métricas (Monitoreo)
-- Prometheus ([talos](HARDWARE.md#talos)) scrapea los exporters de **ambas** máquinas vía Tailscale
-- [talos](HARDWARE.md#talos): node-exporter (`svcNodeExporter:9100`) y cAdvisor (`svccAdvisor:8080`) internos
-- [yoda](HARDWARE.md#yoda): node-exporter (`yoda:9100`) y cAdvisor (`yoda:9101`)
-- Grafana ([talos](HARDWARE.md#talos)) expone el dashboard único, accesible solo por Tailscale
+- Prometheus ([talos](HARDWARE.md#talos)) scrapea los exporters de las **tres** máquinas:
+  - [talos](HARDWARE.md#talos): node-exporter (`svcNodeExporter:9100`) y cAdvisor (`svccAdvisor:8080`) internos.
+  - [yoda](HARDWARE.md#yoda): node-exporter (`yoda:9100`) y cAdvisor (`yoda:9101`).
+  - [anton](HARDWARE.md#anton): node-exporter (`anton:9100`), cAdvisor (`anton:9101`) y smartctl-exporter (`anton:9633`, SMART del RAID).
+- Grafana ([talos](HARDWARE.md#talos)) expone el dashboard único, accesible solo por Tailscale. Detalle en [`MONITORING.md`](MONITORING.md).
 
 ## Puertos Expuestos
 
-| Puerto | Servicio | Acceso |
-|---|---|---|
-| 22 | SSH | Solo LAN o Tailscale |
-| 53 (TCP/UDP) | Pi-hole DNS | Local |
-| 80 | nginx (Heimdall, OpenClaw) | Local |
-| 443 | nginx HTTPS | Local |
-| 8096 | Jellyfin | Local |
-| 8082 | Transmission Web UI | Local |
-| 8083 | Prowlarr | Local |
-| 8084 | Sonarr | Local |
-| 8085 | Pi-hole Web admin (yoda) · Radarr (anton) | Local |
-| 51413 (TCP/UDP) | Transmission Torrent | Local |
-| 9100 | node-exporter | Solo LAN o Tailscale |
-| 9101 | cAdvisor ([yoda](HARDWARE.md#yoda)) | Solo LAN o Tailscale |
-| 3000 | Grafana ([talos](HARDWARE.md#talos)) | Solo Tailscale |
+| Puerto | Servicio | Máquina | Acceso |
+|---|---|---|---|
+| 22 | SSH | todas | Solo LAN o Tailscale |
+| 53 (TCP/UDP) | Pi-hole DNS | [yoda](HARDWARE.md#yoda), [talos](HARDWARE.md#talos) | Local |
+| 80 | nginx (Heimdall, Pi-hole, OpenClaw) | [yoda](HARDWARE.md#yoda) | Local |
+| 443 | nginx HTTPS | [yoda](HARDWARE.md#yoda) | Local |
+| 3000 | Grafana | [talos](HARDWARE.md#talos) | Solo Tailscale |
+| 8082 | Transmission Web UI | [anton](HARDWARE.md#anton) | LAN/Tailscale |
+| 8083 | Prowlarr | [anton](HARDWARE.md#anton) | LAN/Tailscale |
+| 8084 | Sonarr | [anton](HARDWARE.md#anton) | LAN/Tailscale |
+| 8085 | Pi-hole Web admin | [yoda](HARDWARE.md#yoda), [talos](HARDWARE.md#talos) | LAN/Tailscale |
+| 8085 | Radarr | [anton](HARDWARE.md#anton) | LAN/Tailscale |
+| 8086 | Bazarr | [anton](HARDWARE.md#anton) | LAN/Tailscale |
+| 8087 | Seerr | [anton](HARDWARE.md#anton) | LAN/Tailscale |
+| 8096 | Jellyfin | [anton](HARDWARE.md#anton) | LAN/Tailscale |
+| 51413 (TCP/UDP) | Transmission Torrent | [anton](HARDWARE.md#anton) | LAN/Tailscale |
+| 9100 | node-exporter | todas | Solo LAN o Tailscale |
+| 9101 | cAdvisor | todas | Solo LAN o Tailscale |
+| 9633 | smartctl-exporter | [anton](HARDWARE.md#anton) | Solo LAN o Tailscale |
