@@ -26,8 +26,8 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1.5g
-          cpus: "1.5"
+          memory: 2g
+          cpus: "2.0"
     healthcheck:
       # Sonda al puerto del dashboard: la imagen no publica un endpoint de salud propio.
       test: ["CMD-SHELL", "python3 -c \"import socket; socket.create_connection(('127.0.0.1', 9119), 3)\""]

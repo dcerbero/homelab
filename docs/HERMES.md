@@ -118,7 +118,7 @@ La imagen está pinneada (`nousresearch/hermes-agent:v0.23.4`). Actualizar = cam
 
 - Sin `docker.sock`: no crea, borra ni inspecciona contenedores.
 - Sin repo montado: no despliega.
-- `memory: 1.5g`: si se desboca, el cgroup mata a Hermes — no a yoda.
+- `memory: 2g`: si se desboca, el cgroup mata a Hermes — no a yoda.
 - Dashboard con basic auth obligatorio y sólo en LAN/Tailscale.
 
 Riesgo aceptado: el dashboard es HTTP en claro dentro de la LAN. Ver [`SECURITY.md`](SECURITY.md#hermes-agent).

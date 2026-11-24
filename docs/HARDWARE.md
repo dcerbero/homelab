@@ -32,7 +32,7 @@ Equipo x86_64 destinado a media. Es el servidor armado de Gilfoyle en *Silicon V
 Raspberry Pi 4. El maestro Jedi pequeño, sabio y veterano que guía a todos sin moverse de su sitio: así es la Pi, el corazón del homelab que da DNS a toda la red (Pi-hole) y mantiene los servicios esenciales siempre encendidos.
 
 > [!NOTE]
-> Desde 2026-11-24 también corre **Hermes Agent** (perfil `ai`, puerto `9119`, límite `1.5 GB`). Comparte 3.7 GiB con el DNS primario: si el consumo de la Pi aprieta, es el primer servicio que se apaga (`docker compose --profile ai stop`).
+> Desde 2026-11-24 también corre **Hermes Agent** (perfil `ai`, puerto `9119`, límite `2 GB`). Comparte 3.7 GiB con el DNS primario: si el consumo de la Pi aprieta, es el primer servicio que se apaga (`docker compose --profile ai stop`).
 
 ### talos
 Oracle Cloud VM. En la mitología griega, el autómata de bronce que patrullaba las costas de Creta sin descanso, vigilando que nada se le escapara. Igual que él, esta VM vigila desde fuera y cubre las espaldas con el **failover de Pi-hole**. El stack de monitoreo que antes vivía aquí quedó en pausa (ver [`MONITORING.md`](MONITORING.md)).
