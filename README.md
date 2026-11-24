@@ -28,7 +28,7 @@ Nuestras tres máquinas tienen nombre y apellido —Raspberry Pi 4 [yoda](docs/H
 | Streaming | Jellyfin |
 | Descargas | Sonarr + Radarr + Prowlarr + Transmission + Bazarr + Seerr |
 | IA | OpenClaw → OpenRouter API |
-| Monitorización | Prometheus + Grafana + cAdvisor + node-exporter + smartctl-exporter |
+| Monitorización | cAdvisor + node-exporter + smartctl-exporter (exporters; Prometheus/Grafana en pausa) |
 
 ## Documentación
 
@@ -42,8 +42,8 @@ Toda la documentación está en [`docs/`](docs/README.md):
 | [`docs/media/`](docs/media/README.md) | Stack media (Jellyfin, Sonarr, Prowlarr, Transmission) — config en [`JELLYFIN.md`](docs/media/JELLYFIN.md), formato de archivos en [`FORMATOS.md`](docs/media/FORMATOS.md) |
 | [`docs/ANSIBLE.md`](docs/ANSIBLE.md) | Roles de Ansible, playbook, variables |
 | [`docs/DOCKER.md`](docs/DOCKER.md) | Servicios Docker, perfiles, backup, actualización |
-| [`docs/COMMANDS.md`](docs/COMMANDS.md) | Comandos de uso diario, monitorización |
-| [`docs/MONITORING.md`](docs/MONITORING.md) | Stack de métricas (Prometheus/Grafana), estado |
+| [`docs/COMMANDS.md`](docs/COMMANDS.md) | Comandos de uso diario, métricas |
+| [`docs/MONITORING.md`](docs/MONITORING.md) | Stack de métricas (Prometheus/Grafana): en pausa |
 | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) | Problemas comunes y soluciones |
 | [`docs/SECURITY.md`](docs/SECURITY.md) | Hardening SSH, Tailscale, firewall |
 

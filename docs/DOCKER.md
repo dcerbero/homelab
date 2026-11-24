@@ -1,6 +1,6 @@
 # 🐋 Docker Compose — Servicios
 
-Todos los servicios se despliegan con Docker Compose usando perfiles independientes. Cada servicio vive en su propia carpeta con su `compose.yaml`, y el archivo principal los incluye a todos — así un servicio se puede arrancar solo o con todo el stack. La máquina destino depende del perfil: DNS/dashboard/IA/infra en [yoda](HARDWARE.md#yoda), media en [anton](HARDWARE.md#anton), métricas en [talos](HARDWARE.md#talos).
+Todos los servicios se despliegan con Docker Compose usando perfiles independientes. Cada servicio vive en su propia carpeta con su `compose.yaml`, y el archivo principal los incluye a todos — así un servicio se puede arrancar solo o con todo el stack. La máquina destino depende del perfil: DNS/dashboard/IA/infra en [yoda](HARDWARE.md#yoda), media en [anton](HARDWARE.md#anton). El perfil `metrics` (Prometheus/Grafana) está **en pausa**: no tiene máquina asignada.
 
 ## Índice
 
@@ -51,9 +51,9 @@ services/docker/
 | `infra` | nginx | Proxy reverso |
 | `media-streaming` | Jellyfin | Streaming multimedia (rol `media`, [anton](HARDWARE.md#anton)) |
 | `media-download` | Transmission, Prowlarr, Sonarr, Radarr, Bazarr, Seerr, FlareSolverr | Descarga y gestión (rol `media`, [anton](HARDWARE.md#anton)) |
-| `monitoring` | cAdvisor, node-exporter | Exporters de métricas (todas las máquinas) |
+| `monitoring` | cAdvisor, node-exporter | Exporters de métricas (yoda y anton) |
 | `smart` | smartctl-exporter | Salud SMART de discos (solo [anton](HARDWARE.md#anton)) |
-| `metrics` | Prometheus, Grafana | Backend y dashboards (solo [talos](HARDWARE.md#talos)) |
+| `metrics` | Prometheus, Grafana | Backend y dashboards — **en pausa, sin máquina asignada** |
 
 ## Despliegue
 
@@ -93,6 +93,8 @@ Todos los servicios exponen estado `healthy`/`unhealthy` en `docker ps` y en cAd
 
 > [!NOTE]
 > Pi-hole, OpenClaw y cAdvisor traen su `HEALTHCHECK` definido en la imagen: no se define en el compose, porque definir uno lo sobreescribiría. El healthcheck no reinicia contenedores `unhealthy` (el `restart` solo actúa si el proceso muere); su valor es reporte de estado.
+>
+> Prometheus y Grafana siguen en esta tabla porque sus `compose.yaml` viven en el repo, pero **no están desplegados** (stack de métricas en pausa, ver [`MONITORING.md`](MONITORING.md)).
 
 ## Variables de Entorno
 
@@ -207,38 +209,40 @@ Interfaz de IA local. Usa la **API de OpenRouter** para inferencia.
 
 Métricas de uso de recursos de todos los contenedores.
 
-- **Puerto:** `9101:8080` en todas las máquinas (el scrape de [talos](HARDWARE.md#talos) usa `svccAdvisor:8080` interno; en [yoda](HARDWARE.md#yoda)/[anton](HARDWARE.md#anton) se scrapea vía Tailscale)
+- **Puerto:** `9101:8080` en [yoda](HARDWARE.md#yoda) y [anton](HARDWARE.md#anton) (se consulta vía Tailscale)
 - **Volúmenes:** monta `/`, `/var/run`, `/sys`, `/var/lib/docker`, `/dev/disk` (solo lectura)
 - **Intervalos:** housekeeping 10s, max housekeeping 15s, global 1m
+- **Nota:** desde que el stack de métricas se pausó, ningún Prometheus lo scrapea; el contenedor sigue corriendo como exporter disponible
 
 ### node-exporter (monitoring)
 
-Métricas del host (CPU, RAM, disco, red, temperatura) para Prometheus.
+Métricas del host (CPU, RAM, disco, red, temperatura).
 
 - **Puerto:** `9100:9100`
 - **Volúmenes:** monta `/proc`, `/sys`, `/` (solo lectura)
 - **Colectores:** por defecto (incluye `node_hwmon` para temperatura del RPi)
 - **Despliegue:** en [yoda](HARDWARE.md#yoda) no tiene rol propio; lo levanta el rol `cadvisor` vía el perfil `monitoring` (`docker compose --profile monitoring up`)
+- **Nota:** igual que cAdvisor, hoy no tiene consumidor porque Prometheus no está desplegado
 
-### Prometheus (metrics — solo [talos](HARDWARE.md#talos))
+### Prometheus (metrics — en pausa)
 
-Backend de métricas. Scrapea a los exporters de las tres máquinas.
+Backend de métricas. **No está desplegado**: vivía en [talos](HARDWARE.md#talos) y su rol salió del play de esa VM; el código y la config siguen en el repo para reubicarlo.
 
 - **Puerto:** sin bind al host (interno)
 - **Config:** directorio `services/docker/prometheus/config/` (montado `:ro`; `--config.file=/etc/prometheus/config/prometheus.yml`) — se monta el directorio, no el archivo, para que el reload SIGHUP del rol lea los cambios que aplica `git pull` (el mount de archivo único se queda con el inode viejo)
 - **Volúmenes:** `$PATH_DATA/persistence/prometheus` (TSDB)
 - **Retención:** 15 días
-- **Targets:** self, node-exporter y cAdvisor de [talos](HARDWARE.md#talos) (internos) + [yoda](HARDWARE.md#yoda) y [anton](HARDWARE.md#anton) vía Tailscale (`yoda:9100`, `yoda:9101`, `anton:9100`, `anton:9101`) + smartctl de anton (`anton:9633`). El label `instance` se renombra vía `relabel_configs` a `talos`/`yoda`/`anton` para el dashboard.
+- **Targets (config actual, obsoleta para un nuevo host):** self, node-exporter y cAdvisor de [talos](HARDWARE.md#talos) (internos, ya inexistentes) + [yoda](HARDWARE.md#yoda) y [anton](HARDWARE.md#anton) vía Tailscale (`yoda:9100`, `yoda:9101`, `anton:9100`, `anton:9101`) + smartctl de anton (`anton:9633`). El label `instance` se renombra vía `relabel_configs` a `talos`/`yoda`/`anton` para el dashboard. **Al reactivar en otra máquina hay que reescribir los targets de talos** (o eliminarlos si talos deja de exportar métricas).
 - **Recarga de config:** el rol `monitoring` ejecuta `docker exec prometheus kill -HUP 1` (SIGHUP) tras cada deploy
 
-### Grafana (metrics — solo [talos](HARDWARE.md#talos))
+### Grafana (metrics — en pausa)
 
-Dashboards y visualización. Acceso por Tailscale (`http://<ip-talos>:3000`).
+Dashboards y visualización. **No está desplegado** desde que se retiró el stack de talos; se reactivará junto con Prometheus. Cuando corría, el acceso era por Tailscale (`http://<ip-host>:3000`).
 
 - **Puerto:** `3000:3000`
 - **Admin:** usuario `admin`, password en `GRAFANA_ADMIN_PASSWORD` (secreto de `ansible/.env`)
 - **Provisioning:** datasource + provider en `services/docker/grafana/config/provisioning/` (montado `:ro`)
-- **Dashboards:** gestionados desde el repo (`seed/homelab.json` es la fuente de verdad; el rol `monitoring` lo copia a `$PATH_DATA/persistence/grafana/dashboards/` con `force: yes` y reinicia el contenedor en cada deploy para aplicar el provisioning). No editables desde la UI (`allowUiUpdates: false` en el provisioning): cualquier cambio se hace en el seed y se despliega con `git pull` + `run.sh talos`.
+- **Dashboards:** gestionados desde el repo (`seed/homelab.json` es la fuente de verdad; el rol `monitoring` lo copia a `$PATH_DATA/persistence/grafana/dashboards/` con `force: yes` y reinicia el contenedor en cada deploy para aplicar el provisioning). No editables desde la UI (`allowUiUpdates: false` en el provisioning): cualquier cambio se hace en el seed y se despliega con `git pull` + `run.sh <host>`.
 - **Volúmenes:** `$PATH_DATA/persistence/grafana`
 
 ## Almacenamiento Persistente
@@ -255,8 +259,8 @@ $PATH_DATA/
 │   ├── prowlarr/
 │   ├── sonarr/data
 │   ├── transmission/config
-│   ├── prometheus/            (TSDB)
-│   └── grafana/
+│   ├── prometheus/            (TSDB; restos del stack en pausa)
+│   └── grafana/               (restos del stack en pausa)
 │       ├── (estado de Grafana)
 │       └── dashboards/        (editables desde la UI)
 └── media/                  (biblioteca compartida entre servicios)

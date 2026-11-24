@@ -1,6 +1,6 @@
 # 🤖 Ansible — Aprovisionamiento
 
-Ansible es nuestro equipo de montaje: en una sola pasada deja cada máquina con el sistema operativo, Docker, Tailscale y los servicios listos para funcionar. Automatiza la configuración de la infraestructura: Raspberry Pi 4 ([yoda](HARDWARE.md#yoda)) + Oracle Cloud VM ([talos](HARDWARE.md#talos), Pi-hole failover DNS). El Equipo x86_64 ([anton](HARDWARE.md#anton)) tiene play e inventario propios: base del sistema, monitoreo y el stack media (Jellyfin + arr).
+Ansible es nuestro equipo de montaje: en una sola pasada deja cada máquina con el sistema operativo, Docker, Tailscale y los servicios listos para funcionar. Automatiza la configuración de la infraestructura: Raspberry Pi 4 ([yoda](HARDWARE.md#yoda)) + Oracle Cloud VM ([talos](HARDWARE.md#talos), Pi-hole failover DNS). El Equipo x86_64 ([anton](HARDWARE.md#anton)) tiene play e inventario propios: base del sistema, exporters de métricas y el stack media (Jellyfin + arr). El stack de Prometheus/Grafana está **en pausa**: su rol sigue en el repo pero ningún play lo invoca.
 
 ## Índice
 
@@ -47,7 +47,9 @@ bash run.sh
 | `preflight` | `preflight`, `containers`, `talos` + unión de tags de roles compose | Verifica existencia de los tags (solo existencia; no exige arquitectura) |
 | `systemd-resolved` | `systemd-resolved`, `dns`, `system`, `talos` | Desactiva el stub listener de systemd-resolved (libera el puerto 53 para Pi-hole) |
 | `pihole` | `pihole`, `dns`, `talos` | Pi-hole secundario (failover DNS) |
-| `monitoring` | `monitoring`, `metrics`, `talos` | Stack de métricas centralizado: Prometheus, Grafana, node-exporter y cAdvisor. Tras el `compose up` recarga la config de Prometheus (`docker exec prometheus kill -HUP 1`) |
+
+> [!NOTE]
+> [talos](HARDWARE.md#talos) solo despliega Pi-hole (más los prerrequisitos `system-setup`, `docker`, `preflight` y `systemd-resolved`). **Tailscale está instalado a mano en esa VM y no lo gestiona Ansible**, por eso el rol `tailscale` no está en su play. El rol `monitoring` sigue en el repo, pero **ningún play lo invoca**: el stack de métricas quedó en pausa (ver [`MONITORING.md`](MONITORING.md)).
 
 ### [anton](HARDWARE.md#anton) (Equipo x86_64)
 
@@ -73,7 +75,7 @@ Qué hace ([`files/preflight.py`](../ansible/roles/preflight/files/preflight.py)
 
 Si alguna imagen falla, el play aborta listando los tags problemáticos antes de tocar contenedores. En [talos](HARDWARE.md#talos) solo se valida existencia (la arquitectura se resuelve en runtime con el fact `ansible_machine`, pero talos no exige `preflight_require_arch` porque no despliega los servicios media con tags `arm64v8-`).
 
-El rol `preflight` declara como tags propias la unión de las tags de los roles de servicio que despliegan compose (`pihole`, `dns`, `cadvisor`, `monitoring`, `ia`, `dashboard`, `proxy`, `metrics`…). Así se activa también en runs etiquetados que tocan compose y se salta en los que no (p. ej. `--tags system-setup`, `--tags docker`, `--tags tailscale`).
+El rol `preflight` declara como tags propias la unión de las tags de los roles de servicio que despliegan compose (`pihole`, `dns`, `cadvisor`, `monitoring`, `ia`, `dashboard`, `proxy`…). Así se activa también en runs etiquetados que tocan compose y se salta en los que no (p. ej. `--tags system-setup`, `--tags docker`, `--tags tailscale`). Nota: el script escanea **todos** los compose del repo, así que también valida las imágenes de `metrics` aunque el perfil no se despliegue en ninguna máquina.
 
 **Regla de mantenimiento:** al añadir un rol de servicio que despliegue compose, hay que añadir sus tags a la lista del rol `preflight` en `playbook.yml` (los 3 plays), o un `--tags <nuevo>` reabriría el hueco en silencio. Efecto colateral conocido: `--skip-tags <tag_compartida>` también se salta preflight.
 
@@ -92,8 +94,8 @@ bash run.sh yoda --tags preflight
 Tres plays independientes:
 
 1. **[`yoda`](HARDWARE.md#yoda)** — RPi4 local: todos los roles
-2. **[`talos`](HARDWARE.md#talos)** — Oracle Cloud VM: Pi-hole failover + stack de monitoreo (system-setup, docker, pihole, monitoring)
-3. **[`anton`](HARDWARE.md#anton)** — Equipo x86_64: base + monitoreo + media (system-setup, docker, preflight, cadvisor, smartctl, tailscale, media) con tags `…, anton`. El rol `media` despliega los perfiles `media-streaming` (Jellyfin) y `media-download` (Transmission, Prowlarr, FlareSolverr, Sonarr, Radarr, Bazarr, Seerr).
+2. **[`talos`](HARDWARE.md#talos)** — Oracle Cloud VM: Pi-hole failover (system-setup, docker, preflight, systemd-resolved, pihole)
+3. **[`anton`](HARDWARE.md#anton)** — Equipo x86_64: base + exporters de métricas + media (system-setup, docker, preflight, cadvisor, smartctl, tailscale, media) con tags `…, anton`. El rol `media` despliega los perfiles `media-streaming` (Jellyfin) y `media-download` (Transmission, Prowlarr, FlareSolverr, Sonarr, Radarr, Bazarr, Seerr).
 
 La definición exacta de roles y tags está en [`ansible/playbook.yml`](../ansible/playbook.yml).
 
@@ -114,7 +116,7 @@ inventory/
 │   └── anton.yml                 # PATH_DATA, TAILSCALE_HOSTNAME
 ```
 
-> El Equipo x86_64 ([anton](HARDWARE.md#anton)) tiene su propia entrada en el inventario (`inventory/anton.yml` + `host_vars/anton.yml` con `PATH_DATA=/server`) y su play completo en producción (base, monitoreo y stack media).
+> El Equipo x86_64 ([anton](HARDWARE.md#anton)) tiene su propia entrada en el inventario (`inventory/anton.yml` + `host_vars/anton.yml` con `PATH_DATA=/server`) y su play completo en producción (base, exporters de métricas y stack media).
 
 ### SSH
 
@@ -148,7 +150,7 @@ TAILSCALE_AUTH_KEY=tskey-auth-xxxxx
 |---|---|
 | `PIHOLE_PASS` | Contraseña de la interfaz web de Pi-hole |
 | `TAILSCALE_AUTH_KEY` | Clave de autenticación desde [Tailscale Admin](https://login.tailscale.com/admin/settings/keys) |
-| `GRAFANA_ADMIN_PASSWORD` | Contraseña del usuario admin de Grafana (stack de métricas en [talos](HARDWARE.md#talos)) |
+| `GRAFANA_ADMIN_PASSWORD` | Contraseña del usuario admin de Grafana. **Sin uso mientras el stack de métricas esté en pausa**; se mantiene para cuando se reubique el rol `monitoring` |
 
 Solo secretos viven en `.env` (gitignorado). Las variables de máquina (`PATH_DATA`, `TAILSCALE_HOSTNAME`) viven en `inventory/host_vars/<host>.yml`.
 

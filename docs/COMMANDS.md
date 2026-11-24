@@ -10,7 +10,7 @@ Las recetas que uso cuando hay que meter mano a mano: ver el estado, revisar log
 - [Docker Compose](#docker-compose)
 - [Red](#red)
 - [Sistema](#sistema)
-- [Monitorización (Prometheus + Grafana)](#monitorización-prometheus--grafana)
+- [Métricas (exporters)](#métricas-exporters)
 - [Health Checks por Servicio](#health-checks-por-servicio)
 
 ## Docker Compose
@@ -63,36 +63,28 @@ docker system df
 docker system prune -a --volumes
 ```
 
-## Monitorización (Prometheus + Grafana)
+## Métricas (exporters)
 
-El stack vive en **[talos](HARDWARE.md#talos)** (Prometheus, Grafana, node-exporter, cAdvisor). En **[yoda](HARDWARE.md#yoda)** y **[anton](HARDWARE.md#anton)** solo corren los exporters (cAdvisor `9101`, node-exporter `9100`; anton además smartctl-exporter `9633`).
+El stack **Prometheus + Grafana está en pausa** (sin desplegar desde que talos dejó de alojarlo). Solo siguen corriendo los exporters: cAdvisor `9101` y node-exporter `9100` en [yoda](HARDWARE.md#yoda) y [anton](HARDWARE.md#anton), más smartctl-exporter `9633` en anton. Nadie los scrapea, pero siguen disponibles para cuando se reactive el stack. Detalle en [`MONITORING.md`](MONITORING.md).
 
 ```bash
-# Acceso a Grafana (usuario admin, password en GRAFANA_ADMIN_PASSWORD)
-# http://<ip-talos>:3000
-
-# Estado de los contenedores de monitoreo (en cada máquina)
+# Estado de los contenedores de métricas (en cada máquina)
 docker compose --all-profiles ps
 
-# Logs de un servicio de monitoreo (en talos)
-docker compose --all-profiles logs -f svcPrometheus
-docker compose --all-profiles logs -f svcGrafana
+# Logs de un exporter (en yoda o anton)
 docker compose --all-profiles logs -f svcNodeExporter
 docker compose --all-profiles logs -f svccAdvisor
+docker compose --all-profiles logs -f svcSmartctlExporter   # solo anton
 
-# Ver targets de Prometheus (en talos; 8 targets: self + node-exporter/cAdvisor de talos, yoda, anton + smartctl de anton)
-docker exec prometheus wget -qO- http://localhost:9090/api/v1/targets
-
-# Recargar config de Prometheus sin reiniciar (Ansible ya lo hace en el rol)
-docker exec prometheus kill -HUP 1
-
-# Verificar los exporters de yoda y anton desde talos (vía Tailscale)
+# Verificar los exporters por Tailscale
 curl http://yoda:9101/metrics   # cAdvisor de yoda
 curl http://yoda:9100/metrics   # node-exporter de yoda
 curl http://anton:9101/metrics  # cAdvisor de anton
 curl http://anton:9100/metrics  # node-exporter de anton
 curl http://anton:9633/metrics  # smartctl-exporter de anton (SMART del RAID)
 ```
+
+Comandos de Prometheus/Grafana (`docker exec prometheus kill -HUP 1`, dashboard en `:3000`) quedan documentados en [`MONITORING.md`](MONITORING.md) para cuando el stack vuelva a desplegarse.
 
 ## Health Checks por Servicio
 

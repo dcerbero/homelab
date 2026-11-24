@@ -4,6 +4,18 @@ Todos los cambios relevantes de este proyecto se documentan en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2026.11.0] - 2026-11-23
+
+### Cambiado
+- **talos queda solo con Pi-hole**: se quitó el rol `monitoring` de su play de Ansible (y sus tags `monitoring`/`metrics` del rol `preflight` de ese play). La VM deja de alojar Prometheus, Grafana, node-exporter y cAdvisor; Tailscale sigue instalado a mano, fuera de Ansible.
+- **Stack de métricas en pausa**: el rol `monitoring`, `services/docker/{prometheus,grafana}` y el perfil `metrics` siguen en el repo, sin invocación. Los exporters de yoda y anton siguen corriendo sin consumidor. Reactivar exige reasignar el rol y reescribir los targets de talos en `prometheus.yml`.
+
+### Actualizado
+- Pi-hole `2026.07.2` → `2026.11.0` (multi-arch, arm64 verificado). Incluye FTL 6.9/Core 6.6 con parches de RCE (`advancedOpts`, `dnsmasq_lines`), 17 advisories de 2026.10.0 y Alpine 3.24.3.
+
+### Documentación
+- Sync de `AGENTS.md`, `README.md`, `docs/README.md`, `HARDWARE.md`, `ARCHITECTURE.md` (diagrama y puertos sin Grafana ni stack de métricas en talos), `ANSIBLE.md` (roles de talos, preflight, `GRAFANA_ADMIN_PASSWORD` sin uso), `DOCKER.md` (perfil `metrics` en pausa), `COMMANDS.md` (sección de exporters) y reescritura de `MONITORING.md` con estado, consecuencias y pasos de reactivación.
+
 ## [2026.08.9] - 2026-08-18
 
 ### Corregido
