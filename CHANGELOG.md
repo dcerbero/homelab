@@ -6,6 +6,9 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.
 
 ## [2026.11.0] - 2026-11-23
 
+### Corregido
+- **Hostname de talos**: la VM seguía llamándose `ollama-server-2` en el SO. OCI fija el campo `hostname` del metadata en el lanzamiento (de solo lectura; el `displayName` no propaga), así que se dejó `preserve_hostname: true` en `/etc/cloud/cloud.cfg.d/99-preserve-hostname.cfg`, `hostnamectl set-hostname talos` y `/etc/hosts` alineado. Verificado sin reiniciar: `hostname`, `hostname -f`, `sudo` sin warnings, Pi-hole healthy.
+
 ### Cambiado
 - **talos queda solo con Pi-hole**: se quitó el rol `monitoring` de su play de Ansible (y sus tags `monitoring`/`metrics` del rol `preflight` de ese play). La VM deja de alojar Prometheus, Grafana, node-exporter y cAdvisor; Tailscale sigue instalado a mano, fuera de Ansible.
 - **Stack de métricas en pausa**: el rol `monitoring`, `services/docker/{prometheus,grafana}` y el perfil `metrics` siguen en el repo, sin invocación. Los exporters de yoda y anton siguen corriendo sin consumidor. Reactivar exige reasignar el rol y reescribir los targets de talos en `prometheus.yml`.
