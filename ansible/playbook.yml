@@ -95,13 +95,11 @@
     - role: docker
       tags: [docker, containers, talos]
     - role: preflight
-      tags: [preflight, containers, talos, pihole, dns, monitoring, metrics]
+      tags: [preflight, containers, talos, pihole, dns]
     - role: systemd-resolved
       tags: [systemd-resolved, dns, system, talos]
     - role: pihole
       tags: [pihole, dns, talos]
-    - role: monitoring
-      tags: [monitoring, metrics, talos]
 
 - name: Setup anton
   hosts: anton
