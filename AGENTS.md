@@ -26,8 +26,8 @@ Dos subsistemas con ciclo de vida propio:
 
 ```text
 homelab/
-├── ansible/          # playbook.yml (3 plays), run.sh, inventory/ (host_vars), 12 roles
-├── services/docker/  # compose.yaml + compose.yaml por servicio (8 perfiles)
+├── ansible/          # playbook.yml (3 plays), run.sh, inventory/ (host_vars), 13 roles
+├── services/docker/  # compose.yaml + compose.yaml por servicio (9 perfiles)
 └── docs/             # documentación detallada (índice en docs/README.md)
 ```
 
@@ -42,6 +42,7 @@ homelab/
 | `dns` | Pi-hole | `pihole` | yoda + talos |
 | `dashboard` | Heimdall | `heimdall` | yoda |
 | `infra` | nginx | `nginx` | yoda |
+| `ai` | Hermes Agent | `hermes` | yoda |
 | `monitoring` | cAdvisor, node-exporter | `cadvisor` (yoda, anton) | yoda (anton apagado) |
 | `smart` | smartctl-exporter | `smartctl` | anton (apagado) |
 | `metrics` | Prometheus, Grafana | **sin rol que lo despliegue** (en pausa) | — |
@@ -51,7 +52,7 @@ homelab/
 ## Hechos clave
 
 - **nginx es la única entrada HTTP** (puerto 80) — reverse-proxy a Heimdall (`/`) y Pi-hole (`/pihole`, `/admin/`). El resto de servicios publica sus puertos solo a LAN/Tailscale (jellyfin 8096, pihole-web 8085, radarr 8085, prowlarr 8083, sonarr 8084, transmission 8082/51413, bazarr 8086, seerr 8087, cadvisor 9101, node-exporter 9100, smartctl 9633).
-- **Sin servicio de IA** — OpenClaw (y su workspace `config/scripts/agente`) se eliminó del repo el 2026-11-24.
+- **Servicio de IA: Hermes Agent (perfil `ai`, yoda)** — contenedor `hermes` (imagen `nousresearch/hermes-agent` pinneada), datos en `$PATH_DATA/persistence/hermes`, dashboard en `9119` con basic auth obligatorio (la imagen falla cerrado si el bind no es loopback y no hay proveedor de auth). Modelo vía `opencode-go` (`OPENCODE_GO_API_KEY`). **No monta `docker.sock`**: no crea ni borra contenedores, y eso es deliberado — el socket es root equivalente. La configuración se siembra desde `services/docker/hermes/config/config.yaml` con `force: false` (nunca pisa cambios de runtime): el dashboard y `hermes config set` son la fuente de verdad una vez desplegado. El anterior OpenClaw (y su workspace `config/scripts/agente`) se eliminó del repo el 2026-11-24.
 - **anton apagado (temporal)** — desde 2026-11-24 no corre nada en esa máquina: stack media, exporters y smartctl caen con ella. Su IP `192.168.0.3` pasó a [yoda](docs/HARDWARE.md#yoda); anton queda sin IP. El código se conserva: al volver, `bash run.sh anton` restablece el estado.
 - **Config en el repo, datos en `$PATH_DATA`** — configs versionadas con montajes `:ro` (nginx `conf.d`, grafana provisioning, prometheus config); estado runtime en `$PATH_DATA`: `persistence/<svc>/` (durable) y `media/` (`downloads`, `movies`, `tvseries`, `watch`). `PATH_DATA` se define por máquina en `host_vars/<host>.yml`.
 - **Pi-hole failover** — secundario en talos. Mismas adlists y gravity independiente, sin sync (estado runtime, no versionado). Los nameservers de Tailscale DNS (MagicDNS) se configuran en la consola de Tailscale, no en el repo.
@@ -61,14 +62,14 @@ homelab/
 
 ## Convenciones
 
-- **Ansible**: roles con `become: true`. Orden estricto en [yoda](docs/HARDWARE.md#yoda): `system-setup → docker → preflight → systemd-resolved → pihole → tailscale → cadvisor → heimdall → nginx`; en [talos](docs/HARDWARE.md#talos): `system-setup → docker → preflight → systemd-resolved → pihole` (Tailscale está instalado a mano, **no** lo gestiona Ansible); en [anton](docs/HARDWARE.md#anton): `system-setup → docker → preflight → cadvisor → smartctl → tailscale → media`.
+- **Ansible**: roles con `become: true`. Orden estricto en [yoda](docs/HARDWARE.md#yoda): `system-setup → docker → preflight → systemd-resolved → pihole → tailscale → cadvisor → heimdall → nginx → hermes`; en [talos](docs/HARDWARE.md#talos): `system-setup → docker → preflight → systemd-resolved → pihole` (Tailscale está instalado a mano, **no** lo gestiona Ansible); en [anton](docs/HARDWARE.md#anton): `system-setup → docker → preflight → cadvisor → smartctl → tailscale → media`.
 - **Sync del repo**: cada play sincroniza `~/services/homelab` en sus `pre_tasks` (tags `always`) — el repo del host == `origin/main` antes de cualquier deploy, incluso con `--tags <rol>`. `system-setup` ya no lo hace.
 - **Preflight**: valida tags de imágenes (`preflight.py`) y declara como tags propias la unión de las tags de los roles de servicio que despliegan compose. Al añadir un rol de servicio nuevo, añade sus tags al rol `preflight` en `playbook.yml` (los 3 plays), o un `--tags <nuevo>` se saltaría la validación en silencio. `preflight_require_arch: true` solo en yoda (exige variante arm64).
 - **Compose**: nombre de servicio con prefijo `svc` (`svcPihole`); `container_name` sin prefijo (`pihole`, `nginx_proxy`, `prometheus`, ...) — los roles usan `docker exec <container_name>`.
 - **UID/GID 1000** para contenedores linuxserver.io (PUID/PGID). Excepciones: Grafana `472:0`, Prometheus `1000:1000`.
 - **Transcodificación HW**: `/dev/dri/renderD128` solo en Jellyfin.
 - **Imágenes arch-pinned**: los servicios media usan tags `amd64-` (corren solo en anton, x86_64); el rol `preflight` valida su existencia. En yoda/talos (arm64) no se despliegan.
-- **Secretos** en `ansible/.env` (gitignored, ver `.env.example`): `TAILSCALE_AUTH_KEY`, `PIHOLE_PASS`, `GRAFANA_ADMIN_PASSWORD` (este último sin uso mientras `monitoring` esté en pausa; `run.sh` lo sigue pasando si existe).
+- **Secretos** en `ansible/.env` (gitignored, ver `.env.example`): `TAILSCALE_AUTH_KEY`, `PIHOLE_PASS`, `GRAFANA_ADMIN_PASSWORD` (este último sin uso mientras `monitoring` esté en pausa; `run.sh` lo sigue pasando si existe), `OPENCODE_GO_API_KEY` y `HERMES_DASHBOARD_{USER,PASSWORD,SECRET}` (dashboard de Hermes; el `SECRET` firma sesiones — generarlo con `openssl rand -hex 32`).
 - **Prefijos de PR**: `feat/`, `fix/`, `refactor/`, `docs/`.
 
 ## Operaciones Comunes

@@ -33,6 +33,8 @@ services/docker/
 ├── seerr/compose.yaml        ← Perfil: media-download
 ├── cadvisor/compose.yaml     ← Perfil: monitoring
 ├── node-exporter/compose.yaml← Perfil: monitoring
+├── hermes/compose.yaml       ← Perfil: ai (Hermes Agent)
+├── hermes/config/config.yaml ← Seed del modelo (se copia solo si no existe)
 ├── smartctl-exporter/compose.yaml ← Perfil: smart (SMART de discos, solo anton)
 ├── prometheus/compose.yaml   ← Perfil: metrics
 ├── prometheus/config/prometheus.yml  ← Config de scrape
@@ -47,6 +49,7 @@ services/docker/
 | `dns` | Pi-hole | DNS y bloqueo de anuncios |
 | `dashboard` | Heimdall | Panel de control |
 | `infra` | nginx | Proxy reverso |
+| `ai` | Hermes Agent | Agente de IA con dashboard web ([yoda](HARDWARE.md#yoda)) |
 | `media-streaming` | Jellyfin | Streaming multimedia (rol `media`, [anton](HARDWARE.md#anton)) |
 | `media-download` | Transmission, Prowlarr, Sonarr, Radarr, Bazarr, Seerr, FlareSolverr | Descarga y gestión (rol `media`, [anton](HARDWARE.md#anton)) |
 | `monitoring` | cAdvisor, node-exporter | Exporters de métricas (yoda y anton) |
@@ -85,6 +88,7 @@ Todos los servicios exponen estado `healthy`/`unhealthy` en `docker ps` y en cAd
 | Jellyfin | compose | `curl -fsS http://localhost:8096/health` |
 | cAdvisor | embebido en la imagen | `wget .../healthz` |
 | node-exporter | compose | `wget http://localhost:9100/metrics` |
+| Hermes Agent | compose | socket a `127.0.0.1:9119` (la imagen no publica endpoint de salud propio) |
 | Prometheus | compose | `wget http://localhost:9090/-/healthy` |
 | Grafana | compose | `curl -fsS http://localhost:3000/api/health` |
 
@@ -99,6 +103,15 @@ Todos los servicios exponen estado `healthy`/`unhealthy` en `docker ps` y en cAd
 
 ```env
 PATH_DATA=<ruta_datos_persistentes>
+```
+
+Al arrancar el perfil `ai` a mano hay que exportar además las variables de Hermes (Ansible las pasa desde `ansible/.env`):
+
+```env
+OPENCODE_GO_API_KEY=<key de OpenCode Go>
+HERMES_DASHBOARD_USER=<usuario>
+HERMES_DASHBOARD_PASSWORD=<password>
+HERMES_DASHBOARD_SECRET=<openssl rand -hex 32>
 ```
 
 ## Servicios
@@ -130,6 +143,19 @@ Proxy reverso para los servicios web.
 - **Config:** `services/docker/nginx/config/conf.d/` (montada `:ro` desde el repo)
 - Por defecto redirige todo a Heimdall
 - El rol Ansible hace `compose up` (recrea el contenedor cuando cambia imagen o mounts) y luego un `nginx -s reload` (aplica cambios de contenido en `conf.d/` sin recrear)
+
+### Hermes Agent (ai)
+
+Agente de IA conversacional (Nous Research) con dashboard web propio.
+
+- **Puertos:** `9119:9119` — dashboard web
+- **Volúmenes:** `$PATH_DATA/persistence/hermes` → `/opt/data` (config, sesiones, memoria, skills, logs)
+- **Modelo:** `opencode-go` (`model: opencode-go/<modelo>` en `config.yaml`); key en `OPENCODE_GO_API_KEY`
+- **Auth:** basic auth obligatorio (`HERMES_DASHBOARD_BASIC_AUTH_*`). La imagen falla cerrado en bind no-loopback sin proveedor de auth
+- **Sin `docker.sock`:** el agente no crea ni borra contenedores a propósito — el socket es root equivalente en el host
+- **Límites:** `memory: 1.5g`, `cpus: 1.5` (yoda comparte RAM con Pi-hole)
+- **Config:** seed en `services/docker/hermes/config/config.yaml` (copiado con `force: false`); una vez desplegado manda el runtime vía dashboard o `hermes config set`
+- Operación (modelos, logs, upgrade de tag) en [`HERMES.md`](HERMES.md)
 
 ### Jellyfin (media-streaming)
 

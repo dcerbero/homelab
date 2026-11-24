@@ -1,0 +1,35 @@
+---
+- name: Ensure hermes data directory exists (uid 1000, igual que el resto)
+  ansible.builtin.file:
+    path: "{{ PATH_DATA }}/persistence/hermes"
+    state: directory
+    owner: "1000"
+    group: "1000"
+    mode: "0755"
+
+- name: Seed hermes config.yaml (no sobreescribe cambios hechos en runtime)
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../services/docker/hermes/config/config.yaml"
+    dest: "{{ PATH_DATA }}/persistence/hermes/config.yaml"
+    owner: "1000"
+    group: "1000"
+    mode: "0644"
+    force: false
+
+- name: Start hermes service
+  ansible.builtin.shell: |
+    cd {{ ansible_facts['env']['HOME'] }}/services/homelab/services/docker
+    PATH_DATA={{ PATH_DATA }} docker compose --profile ai up -d --remove-orphans
+  environment:
+    OPENCODE_GO_API_KEY: "{{ OPENCODE_GO_API_KEY }}"
+    HERMES_DASHBOARD_USER: "{{ HERMES_DASHBOARD_USER }}"
+    HERMES_DASHBOARD_PASSWORD: "{{ HERMES_DASHBOARD_PASSWORD }}"
+    HERMES_DASHBOARD_SECRET: "{{ HERMES_DASHBOARD_SECRET }}"
+  register: hermes_result
+  changed_when: hermes_result.stdout is search("Created|Started|Recreated")
+
+- name: Wait for hermes dashboard port
+  ansible.builtin.wait_for:
+    host: 127.0.0.1
+    port: 9119
+    timeout: 120

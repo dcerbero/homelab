@@ -1,0 +1,10 @@
+# Seed de configuración de Hermes Agent.
+#
+# El rol `hermes` lo copia a $PATH_DATA/persistence/hermes/config.yaml SOLO si no
+# existe (`force: false`): el repo define el punto de partida y el runtime manda
+# después, porque el dashboard y `hermes config set` reescriben este archivo.
+# Cambiar el modelo en un Hermes ya desplegado requiere `hermes config set model`.
+#
+# Formato: <proveedor>/<modelo>. `opencode-go` usa namespace plano
+# (deepseek-v4.1-flash, no vendor/modelo) y se autentica con OPENCODE_GO_API_KEY.
+model: opencode-go/deepseek-v4.1-flash
