@@ -153,7 +153,7 @@ Agente de IA conversacional (Nous Research) con dashboard web propio.
 - **Modelo:** `opencode-go` (`model: opencode-go/<modelo>` en `config.yaml`); key en `OPENCODE_GO_API_KEY`
 - **Auth:** basic auth obligatorio (`HERMES_DASHBOARD_BASIC_AUTH_*`). La imagen falla cerrado en bind no-loopback sin proveedor de auth
 - **Sin `docker.sock`:** el agente no crea ni borra contenedores a propósito — el socket es root equivalente en el host
-- **Límites:** `memory: 1.5g`, `cpus: 1.5` (yoda comparte RAM con Pi-hole)
+- **Límites:** `memory: 2g`, `cpus: 2.0` (yoda comparte RAM con Pi-hole)
 - **Config:** seed en `services/docker/hermes/config/config.yaml` (copiado con `force: false`); una vez desplegado manda el runtime vía dashboard o `hermes config set`
 - Operación (modelos, logs, upgrade de tag) en [`HERMES.md`](HERMES.md)
 
