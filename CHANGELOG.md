@@ -7,7 +7,7 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.
 ## [2026.11.0] - 2026-11-23
 
 ### Corregido
-- **Hostname de talos**: la VM seguía llamándose `ollama-server-2` en el SO. OCI fija el campo `hostname` del metadata en el lanzamiento (de solo lectura; el `displayName` no propaga), así que se dejó `preserve_hostname: true` en `/etc/cloud/cloud.cfg.d/99-preserve-hostname.cfg`, `hostnamectl set-hostname talos` y `/etc/hosts` alineado. Verificado sin reiniciar: `hostname`, `hostname -f`, `sudo` sin warnings, Pi-hole healthy.
+- **Hostname de talos**: la VM seguía llamándose `ollama-server-2` en el SO. OCI fija el campo `hostname` del metadata en el lanzamiento (de solo lectura; el `displayName` no propaga), así que se dejó `preserve_hostname: true` en `/etc/cloud/cloud.cfg.d/99-preserve-hostname.cfg`, `hostnamectl set-hostname talos` y `/etc/hosts` alineado. Tras el reboot, el `manage_etc_hosts: localhost` del drop-in de OCI reañadía `127.0.1.1 ollama-server-2` en cada arranque; se anuló con `manage_etc_hosts: false` en el mismo drop-in y se validó ejecutando el módulo `update_etc_hosts` en caliente. Verificado: `hostname`, `hostname -f`, `getent hosts talos`, `sudo` sin warnings y Pi-hole healthy tras reiniciar.
 
 ### Cambiado
 - **talos queda solo con Pi-hole**: se quitó el rol `monitoring` de su play de Ansible (y sus tags `monitoring`/`metrics` del rol `preflight` de ese play). La VM deja de alojar Prometheus, Grafana, node-exporter y cAdvisor; Tailscale sigue instalado a mano, fuera de Ansible.
