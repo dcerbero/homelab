@@ -17,7 +17,7 @@ Todo lo que necesitas saber sobre nuestro homelab, organizado por tema. Este es 
 | Streaming | Jellyfin |
 | Descargas | Sonarr + Radarr + Prowlarr + Transmission + Bazarr + Seerr |
 | IA | OpenClaw → OpenRouter API |
-| Monitorización | Prometheus + Grafana + cAdvisor + node-exporter + smartctl-exporter |
+| Monitorización | cAdvisor + node-exporter + smartctl-exporter (exporters; Prometheus/Grafana en pausa) |
 
 ## Documentación
 
@@ -29,7 +29,7 @@ Todo lo que necesitas saber sobre nuestro homelab, organizado por tema. Este es 
 | [`ANSIBLE.md`](ANSIBLE.md) | Roles de Ansible, playbook, variables de entorno |
 | [`DOCKER.md`](DOCKER.md) | Servicios Docker Compose, perfiles, volúmenes, backup, actualización |
 | [`media/`](media/README.md) | Stack media (Jellyfin, Sonarr, Prowlarr, Transmission) — config en [`JELLYFIN.md`](media/JELLYFIN.md), formato de archivos en [`FORMATOS.md`](media/FORMATOS.md) |
-| [`COMMANDS.md`](COMMANDS.md) | Comandos de uso diario, monitorización, health checks |
-| [`MONITORING.md`](MONITORING.md) | Stack de métricas (Prometheus/Grafana), estado y pendientes |
+| [`COMMANDS.md`](COMMANDS.md) | Comandos de uso diario, métricas, health checks |
+| [`MONITORING.md`](MONITORING.md) | Stack de métricas (Prometheus/Grafana): en pausa y cómo reactivarlo |
 | [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) | Problemas comunes y soluciones |
 | [`SECURITY.md`](SECURITY.md) | Hardening SSH, Tailscale ACLs, firewall |
