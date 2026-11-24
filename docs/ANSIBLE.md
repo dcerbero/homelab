@@ -34,7 +34,6 @@ bash run.sh
 | `pihole` | `pihole`, `dns` | Despliegue del contenedor Pi-hole con Docker Compose |
 | `tailscale` | `tailscale`, `vpn` | Instalación y autenticación de Tailscale VPN |
 | `cadvisor` | `cadvisor`, `monitoring` | Despliegue de cAdvisor y node-exporter (perfil `monitoring`) |
-| `openclaw` | `openclaw`, `ia` | Despliegue del contenedor OpenClaw (IA) |
 | `heimdall` | `heimdall`, `dashboard` | Despliegue del panel de control Heimdall |
 | `nginx` | `nginx`, `proxy` | Despliegue del proxy reverso nginx (recrea en drift de imagen/mount, recarga para cambios de `conf.d`) |
 
@@ -75,7 +74,7 @@ Qué hace ([`files/preflight.py`](../ansible/roles/preflight/files/preflight.py)
 
 Si alguna imagen falla, el play aborta listando los tags problemáticos antes de tocar contenedores. En [talos](HARDWARE.md#talos) solo se valida existencia (la arquitectura se resuelve en runtime con el fact `ansible_machine`, pero talos no exige `preflight_require_arch` porque no despliega los servicios media con tags `arm64v8-`).
 
-El rol `preflight` declara como tags propias la unión de las tags de los roles de servicio que despliegan compose (`pihole`, `dns`, `cadvisor`, `monitoring`, `ia`, `dashboard`, `proxy`…). Así se activa también en runs etiquetados que tocan compose y se salta en los que no (p. ej. `--tags system-setup`, `--tags docker`, `--tags tailscale`). Nota: el script escanea **todos** los compose del repo, así que también valida las imágenes de `metrics` aunque el perfil no se despliegue en ninguna máquina.
+El rol `preflight` declara como tags propias la unión de las tags de los roles de servicio que despliegan compose (`pihole`, `dns`, `cadvisor`, `monitoring`, `dashboard`, `proxy`…). Así se activa también en runs etiquetados que tocan compose y se salta en los que no (p. ej. `--tags system-setup`, `--tags docker`, `--tags tailscale`). Nota: el script escanea **todos** los compose del repo, así que también valida las imágenes de `metrics` aunque el perfil no se despliegue en ninguna máquina.
 
 **Regla de mantenimiento:** al añadir un rol de servicio que despliegue compose, hay que añadir sus tags a la lista del rol `preflight` en `playbook.yml` (los 3 plays), o un `--tags <nuevo>` reabriría el hueco en silencio. Efecto colateral conocido: `--skip-tags <tag_compartida>` también se salta preflight.
 
@@ -171,9 +170,6 @@ bash run.sh talos
 # Solo un rol específico en una máquina
 bash run.sh yoda --tags pihole,dns
 bash run.sh talos --tags docker
-
-# Stack IA completo en yoda
-bash run.sh yoda --tags ia
 
 # Todo talos (aprovecha las tags talos)
 bash run.sh talos --tags talos

@@ -16,7 +16,6 @@ Todo lo que necesitas saber sobre nuestro homelab, organizado por tema. Este es 
 | Dashboard | Heimdall |
 | Streaming | Jellyfin |
 | Descargas | Sonarr + Radarr + Prowlarr + Transmission + Bazarr + Seerr |
-| IA | OpenClaw → OpenRouter API |
 | Monitorización | cAdvisor + node-exporter + smartctl-exporter (exporters; Prometheus/Grafana en pausa) |
 
 ## Documentación

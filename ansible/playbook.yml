@@ -39,7 +39,7 @@
     - role: docker
       tags: [docker, containers]
     - role: preflight
-      tags: [preflight, containers, pihole, dns, cadvisor, monitoring, openclaw, ia, heimdall, dashboard, nginx, proxy]
+      tags: [preflight, containers, pihole, dns, cadvisor, monitoring, heimdall, dashboard, nginx, proxy]
     - role: systemd-resolved
       tags: [systemd-resolved, dns, system]
     - role: pihole
@@ -48,8 +48,6 @@
       tags: [tailscale, vpn]
     - role: cadvisor
       tags: [cadvisor, monitoring]
-    - role: openclaw
-      tags: [openclaw, ia]
     - role: heimdall
       tags: [heimdall, dashboard]
     - role: nginx

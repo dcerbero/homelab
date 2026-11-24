@@ -2,7 +2,6 @@ include:
   - heimdall/compose.yaml
   - pihole/compose.yaml
   - nginx/compose.yaml
-  - openclaw/compose.yaml
   - transmission/compose.yaml
   - prowlarr/compose.yaml
   - flaresolverr/compose.yaml

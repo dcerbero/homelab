@@ -4,6 +4,15 @@ Todos los cambios relevantes de este proyecto se documentan en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2026.11.1] - 2026-11-24
+
+### Eliminado
+- **OpenClaw completo del repo**: rol `ansible/roles/openclaw`, `services/docker/openclaw`, su línea en el `include` de `compose.yaml`, el rol y los tags `openclaw`/`ia` del play de yoda (incluido `preflight`), la ruta `/openclaw` de nginx, el tile `openclaw-yoda` de Heimdall con su icono y el workspace `config/scripts/agente` (`costos.sh` + 5 jobs). El directorio `config/` queda vacío y se elimina.
+- **Tiles muertos de talos en Heimdall**: `cadvisor-talos` y `grafana-talos` (el monitoreo salió de esa VM), más el icono `grafana.svg` y sus remapeos legacy en `seed_tiles.py`.
+
+### Documentación
+- `AGENTS.md` (12 roles, 8 perfiles, sin perfil `ia`, orden de roles de yoda, sin servicio de IA), `README.md`, `docs/README.md`, `HARDWARE.md`, `ARCHITECTURE.md` (diagrama, flujo IA, ruta HTTP y tabla de puertos), `ANSIBLE.md` (tabla de roles, tags de preflight, ejemplo `--tags ia`), `DOCKER.md` (estructura, perfiles, healthchecks, sección y volúmenes de OpenClaw) y `MONITORING.md`.
+
 ## [2026.11.0] - 2026-11-23
 
 ### Corregido

@@ -35,7 +35,6 @@ graph TD
                 PiHole[🛡️ Pi-hole DNS]
                 Heimdall[📋 Heimdall]
                 Nginx[🌐 nginx Proxy]
-                OpenClaw[🤖 OpenClaw]
                 YodaCAdvisor[📊 cAdvisor]
                 YodaNodeExp[🖥️ node-exporter]
             end
@@ -86,7 +85,7 @@ graph TD
     class WAN,ISP,OCI_VM wan;
     class Router,Pi,Media,LocalDevices,RemoteNode node;
     class Tailscale vpn;
-    class DockerYoda,DockerAnton,PiHole,Heimdall,Nginx,OpenClaw,OciPiHole,Jellyfin,Transmission,Prowlarr,Sonarr,Radarr,Bazarr,Seerr,FlareSolverr,YodaCAdvisor,YodaNodeExp,AntCAdvisor,AntNodeExp,Smartctl highlight;
+    class DockerYoda,DockerAnton,PiHole,Heimdall,Nginx,OciPiHole,Jellyfin,Transmission,Prowlarr,Sonarr,Radarr,Bazarr,Seerr,FlareSolverr,YodaCAdvisor,YodaNodeExp,AntCAdvisor,AntNodeExp,Smartctl highlight;
 ```
 
 ## Flujos de Red
@@ -99,11 +98,8 @@ Resumen de cómo se mueve el tráfico entre los servicios.
 - Pi-hole upstream: Quad9 (9.9.9.9) y Cloudflare Family (1.1.1.2).
 
 ### HTTP / Web
-- **nginx** ([yoda](HARDWARE.md#yoda)) es la única entrada HTTP (puerto 80): Heimdall (`/`), Pi-hole (`/pihole`, `/admin/`) y OpenClaw (`/openclaw`).
+- **nginx** ([yoda](HARDWARE.md#yoda)) es la única entrada HTTP (puerto 80): Heimdall (`/`) y Pi-hole (`/pihole`, `/admin/`).
 - El resto de servicios publica sus puertos solo a **LAN/Tailscale** (ver [Puertos Expuestos](#puertos-expuestos)).
-
-### IA
-- **Inferencia:** OpenClaw → OpenRouter API (salida directa). Sin puertos expuestos, solo detrás de nginx.
 
 ### Media (descarga → biblioteca)
 - **Seerr** recibe las peticiones → las envía a **Sonarr/Radarr**.
@@ -124,7 +120,7 @@ Resumen de cómo se mueve el tráfico entre los servicios.
 |---|---|---|---|
 | 22 | SSH | todas | Solo LAN o Tailscale |
 | 53 (TCP/UDP) | Pi-hole DNS | [yoda](HARDWARE.md#yoda), [talos](HARDWARE.md#talos) | Local |
-| 80 | nginx (Heimdall, Pi-hole, OpenClaw) | [yoda](HARDWARE.md#yoda) | Local |
+| 80 | nginx (Heimdall, Pi-hole) | [yoda](HARDWARE.md#yoda) | Local |
 | 443 | nginx HTTPS | [yoda](HARDWARE.md#yoda) | Local |
 | 8082 | Transmission Web UI | [anton](HARDWARE.md#anton) | LAN/Tailscale |
 | 8083 | Prowlarr | [anton](HARDWARE.md#anton) | LAN/Tailscale |

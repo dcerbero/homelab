@@ -1,6 +1,6 @@
 # 🐋 Docker Compose — Servicios
 
-Todos los servicios se despliegan con Docker Compose usando perfiles independientes. Cada servicio vive en su propia carpeta con su `compose.yaml`, y el archivo principal los incluye a todos — así un servicio se puede arrancar solo o con todo el stack. La máquina destino depende del perfil: DNS/dashboard/IA/infra en [yoda](HARDWARE.md#yoda), media en [anton](HARDWARE.md#anton). El perfil `metrics` (Prometheus/Grafana) está **en pausa**: no tiene máquina asignada.
+Todos los servicios se despliegan con Docker Compose usando perfiles independientes. Cada servicio vive en su propia carpeta con su `compose.yaml`, y el archivo principal los incluye a todos — así un servicio se puede arrancar solo o con todo el stack. La máquina destino depende del perfil: DNS/dashboard/infra en [yoda](HARDWARE.md#yoda), media en [anton](HARDWARE.md#anton). El perfil `metrics` (Prometheus/Grafana) está **en pausa**: no tiene máquina asignada.
 
 ## Índice
 
@@ -21,7 +21,6 @@ services/docker/
 ├── compose.yaml              ← Archivo principal con includes
 ├── heimdall/compose.yaml     ← Perfil: dashboard
 ├── pihole/compose.yaml       ← Perfil: dns
-├── openclaw/compose.yaml     ← Perfil: ia
 ├── nginx/compose.yaml        ← Perfil: infra
 ├── nginx/config/conf.d/default.conf  ← Config del proxy
 ├── jellyfin/compose.yaml     ← Perfil: media-streaming
@@ -47,7 +46,6 @@ services/docker/
 |---|---|---|
 | `dns` | Pi-hole | DNS y bloqueo de anuncios |
 | `dashboard` | Heimdall | Panel de control |
-| `ia` | OpenClaw | Interfaz de IA local (OpenRouter API) |
 | `infra` | nginx | Proxy reverso |
 | `media-streaming` | Jellyfin | Streaming multimedia (rol `media`, [anton](HARDWARE.md#anton)) |
 | `media-download` | Transmission, Prowlarr, Sonarr, Radarr, Bazarr, Seerr, FlareSolverr | Descarga y gestión (rol `media`, [anton](HARDWARE.md#anton)) |
@@ -77,7 +75,6 @@ Todos los servicios exponen estado `healthy`/`unhealthy` en `docker ps` y en cAd
 | Pi-hole | embebido en la imagen | `dig pi.hole @127.0.0.1` |
 | nginx | compose | `curl -sS http://localhost/` (sin `-f`: 502 por backend caído ≠ unhealthy) |
 | Heimdall | compose | `curl -fsS http://localhost/` |
-| OpenClaw | embebido en la imagen | `node dist/docker-healthcheck.js` |
 | Transmission | compose | `curl -fsS http://localhost:9091/transmission/web/` |
 | Prowlarr | compose | `curl -fsS http://localhost:9696/ping` |
 | Sonarr | compose | `curl -fsS http://localhost:8989/ping` |
@@ -92,7 +89,7 @@ Todos los servicios exponen estado `healthy`/`unhealthy` en `docker ps` y en cAd
 | Grafana | compose | `curl -fsS http://localhost:3000/api/health` |
 
 > [!NOTE]
-> Pi-hole, OpenClaw y cAdvisor traen su `HEALTHCHECK` definido en la imagen: no se define en el compose, porque definir uno lo sobreescribiría. El healthcheck no reinicia contenedores `unhealthy` (el `restart` solo actúa si el proceso muere); su valor es reporte de estado.
+> Pi-hole y cAdvisor traen su `HEALTHCHECK` definido en la imagen: no se define en el compose, porque definir uno lo sobreescribiría. El healthcheck no reinicia contenedores `unhealthy` (el `restart` solo actúa si el proceso muere); su valor es reporte de estado.
 >
 > Prometheus y Grafana siguen en esta tabla porque sus `compose.yaml` viven en el repo, pero **no están desplegados** (stack de métricas en pausa, ver [`MONITORING.md`](MONITORING.md)).
 
@@ -198,13 +195,6 @@ Helper de Prowlarr para indexadores con protección Cloudflare (1337x, EZTV). Co
 - **Volúmenes:** ninguno (stateless)
 - **Uso:** Prowlarr → Settings → Indexers → FlareSolverr URL → `http://svcFlareSolverr:8191`
 
-### OpenClaw (ia)
-
-Interfaz de IA local. Usa la **API de OpenRouter** para inferencia.
-
-- **Puerto:** Solo interno (detrás de nginx proxy)
-- **Volúmenes:** `$PATH_DATA/persistence/openclaw`
-
 ### cAdvisor (monitoring)
 
 Métricas de uso de recursos de todos los contenedores.
@@ -251,7 +241,6 @@ Dashboards y visualización. **No está desplegado** desde que se retiró el sta
 $PATH_DATA/
 ├── persistence/            (estado durable de cada servicio)
 │   ├── heimdall/config
-│   ├── openclaw
 │   ├── jellyfin/library
 │   ├── pihole/
 │   │   ├── etc-pihole-v2
@@ -275,7 +264,7 @@ $PATH_DATA/
 Ansible garantiza la creación y propiedad de los directorios de datos (no se depende del auto-create de Docker, que los crearía como `root` y rompería los permisos):
 
 - `system-setup` crea el esqueleto `$PATH_DATA/persistence` y el árbol `$PATH_DATA/media/*`
-- Cada rol de servicio asegura su propio directorio de persistencia (`heimdall`, `openclaw`, `pihole`)
+- Cada rol de servicio asegura su propio directorio de persistencia (`heimdall`, `pihole`)
 - Todos con owner/group `1000:1000` (uid del primer usuario del sistema), que es el uid que usan las imágenes linuxserver.io vía `PUID`/`PGID`
 
 > [!NOTE]

@@ -19,15 +19,14 @@ Nuestras tres máquinas tienen nombre y apellido —Raspberry Pi 4 [yoda](docs/H
 | Componente | Tecnología |
 |---|---|
 | Servidores | [yoda](docs/HARDWARE.md#yoda) (Raspberry Pi 4) + [talos](docs/HARDWARE.md#talos) (Oracle Cloud VM) + [anton](docs/HARDWARE.md#anton) (Equipo x86_64) |
-| Orquestación | Ansible (13 roles, 3 plays) |
-| Contenedores | Docker + Docker Compose (9 perfiles) |
+| Orquestación | Ansible (12 roles, 3 plays) |
+| Contenedores | Docker + Docker Compose (8 perfiles) |
 | DNS | Pi-hole (activo + failover) |
 | VPN | Tailscale |
 | Proxy | nginx |
 | Dashboard | Heimdall |
 | Streaming | Jellyfin |
 | Descargas | Sonarr + Radarr + Prowlarr + Transmission + Bazarr + Seerr |
-| IA | OpenClaw → OpenRouter API |
 | Monitorización | cAdvisor + node-exporter + smartctl-exporter (exporters; Prometheus/Grafana en pausa) |
 
 ## Documentación
