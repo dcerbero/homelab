@@ -1,5 +1,6 @@
 include:
   - heimdall/compose.yaml
+  - hermes/compose.yaml
   - pihole/compose.yaml
   - nginx/compose.yaml
   - transmission/compose.yaml

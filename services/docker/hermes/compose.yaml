@@ -1,0 +1,37 @@
+services:
+  svcHermes:
+    image: nousresearch/hermes-agent:v0.23.4
+    container_name: hermes
+    profiles:
+      - ai
+    command: ["gateway", "run"]
+    environment:
+      # La imagen remapea su usuario interno a este UID/GID (por defecto 10000).
+      - HERMES_UID=1000
+      - HERMES_GID=1000
+      - TZ=America/Bogota
+      # Dashboard web: con bind no-loopback el auth gate es obligatorio (falla cerrado).
+      - HERMES_DASHBOARD=1
+      - HERMES_DASHBOARD_BASIC_AUTH_USERNAME=${HERMES_DASHBOARD_USER}
+      - HERMES_DASHBOARD_BASIC_AUTH_PASSWORD=${HERMES_DASHBOARD_PASSWORD}
+      - HERMES_DASHBOARD_BASIC_AUTH_SECRET=${HERMES_DASHBOARD_SECRET}
+      # Proveedor de modelo (opencode-go); la key se lee del entorno, no de un archivo.
+      - OPENCODE_GO_API_KEY=${OPENCODE_GO_API_KEY}
+    volumes:
+      # Único estado mutable: config, sesiones, memoria, skills y logs.
+      - "${PATH_DATA}/persistence/hermes:/opt/data"
+    ports:
+      - "9119:9119"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1.5g
+          cpus: "1.5"
+    healthcheck:
+      # Sonda al puerto del dashboard: la imagen no publica un endpoint de salud propio.
+      test: ["CMD-SHELL", "python3 -c \"import socket; socket.create_connection(('127.0.0.1', 9119), 3)\""]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s

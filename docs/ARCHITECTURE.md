@@ -37,6 +37,7 @@ graph TD
                 Nginx[🌐 nginx Proxy]
                 YodaCAdvisor[📊 cAdvisor]
                 YodaNodeExp[🖥️ node-exporter]
+                Hermes[🤖 Hermes Agent]
             end
         end
         subgraph Media [🎬 anton — Equipo x86_64 (apagado)]
@@ -85,7 +86,7 @@ graph TD
     class WAN,ISP,OCI_VM wan;
     class Router,Pi,Media,LocalDevices,RemoteNode node;
     class Tailscale vpn;
-    class DockerYoda,DockerAnton,PiHole,Heimdall,Nginx,OciPiHole,Jellyfin,Transmission,Prowlarr,Sonarr,Radarr,Bazarr,Seerr,FlareSolverr,YodaCAdvisor,YodaNodeExp,AntCAdvisor,AntNodeExp,Smartctl highlight;
+    class DockerYoda,DockerAnton,PiHole,Heimdall,Nginx,OciPiHole,Jellyfin,Transmission,Prowlarr,Sonarr,Radarr,Bazarr,Seerr,FlareSolverr,YodaCAdvisor,YodaNodeExp,AntCAdvisor,AntNodeExp,Smartctl,Hermes highlight;
 ```
 
 > [!NOTE]
@@ -103,6 +104,10 @@ Resumen de cómo se mueve el tráfico entre los servicios.
 ### HTTP / Web
 - **nginx** ([yoda](HARDWARE.md#yoda)) es la única entrada HTTP (puerto 80): Heimdall (`/`) y Pi-hole (`/pihole`, `/admin/`).
 - El resto de servicios publica sus puertos solo a **LAN/Tailscale** (ver [Puertos Expuestos](#puertos-expuestos)).
+
+### IA (Hermes Agent)
+- **Hermes** ([yoda](HARDWARE.md#yoda), puerto `9119`) no entra por nginx: se consume directo desde la LAN/Tailscale con basic auth.
+- Sale a Internet hacia la API del proveedor de modelo (`opencode-go`). **No** tiene acceso al daemon de Docker ni al repo: no crea contenedores ni despliega nada.
 
 ### Media (descarga → biblioteca)
 > Todo este flujo está **detenido** mientras [anton](HARDWARE.md#anton) siga apagado.
@@ -138,6 +143,7 @@ Resumen de cómo se mueve el tráfico entre los servicios.
 | 51413 (TCP/UDP) | Transmission Torrent | [anton](HARDWARE.md#anton) | LAN/Tailscale |
 | 9100 | node-exporter | [yoda](HARDWARE.md#yoda), [anton](HARDWARE.md#anton) | Solo LAN o Tailscale |
 | 9101 | cAdvisor | [yoda](HARDWARE.md#yoda), [anton](HARDWARE.md#anton) | Solo LAN o Tailscale |
+| 9119 | Hermes Agent (dashboard) | [yoda](HARDWARE.md#yoda) | Solo LAN o Tailscale (basic auth) |
 | 9633 | smartctl-exporter | [anton](HARDWARE.md#anton) | Solo LAN o Tailscale |
 
 > [!NOTE]

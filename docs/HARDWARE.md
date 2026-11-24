@@ -15,7 +15,7 @@ Cada máquina de esta casa tiene un nombre, un papel y una historia. Aquí está
 | Máquina | Alias SSH | SO | Arquitectura | CPU | RAM | Almacenamiento | GPU / transcode | Consumo energético | Rol |
 |---|---|---|---|---|---|---|---|---|---|
 | [**anton**](#anton) | `anton` | Ubuntu 24.04.4 LTS | x86_64 | Intel Core i5-3470S (4c/4t @ 2.9GHz, Ivy Bridge) | 7.7 GiB + 4 GiB swap | sda Seagate ST1000LM035 (OS+Docker, **descartable**) · **sdb+sdc WD10EADS-00P → RAID1** (mdadm, 916G, `/server` = persistence+media) | Intel HD 2500 (`/dev/dri/renderD128`) — QSV H.264, sin HEVC | ~30–40W *(estimado)* | Servidor media (Jellyfin + arr stack) — **apagado desde 2026-11-24** |
-| [**yoda**](#yoda) | `yoda` | Ubuntu 24.04.4 LTS | aarch64 | Raspberry Pi 4 Model B Rev 1.2 (BCM2711 Cortex-A72, 4c) | 3.7 GiB (4GB, parte reservada a GPU) | KINGSTON SA400S37240G 240GB SSD | VideoCore VI (Broadcom) — sin QSV | ~3–7W (documentado) | Pi-hole, Heimdall, nginx, cAdvisor |
+| [**yoda**](#yoda) | `yoda` | Ubuntu 24.04.4 LTS | aarch64 | Raspberry Pi 4 Model B Rev 1.2 (BCM2711 Cortex-A72, 4c) | 3.7 GiB (4GB, parte reservada a GPU) | KINGSTON SA400S37240G 240GB SSD | VideoCore VI (Broadcom) — sin QSV | ~3–7W (documentado) | Pi-hole, Heimdall, nginx, cAdvisor, Hermes Agent |
 | [**talos**](#talos) | `talos` | Ubuntu 24.04.4 LTS | aarch64 | Ampere A1 Flex (ARM Neoverse-N1, 4c) | 23 GiB | BlockVolume OCI 150G | n/a (cloud) | n/a (nube, 0W local) | VM OCI: Pi-hole failover (DNS) |
 
 ## Origen de los nombres
@@ -30,6 +30,9 @@ Equipo x86_64 destinado a media. Es el servidor armado de Gilfoyle en *Silicon V
 
 ### yoda
 Raspberry Pi 4. El maestro Jedi pequeño, sabio y veterano que guía a todos sin moverse de su sitio: así es la Pi, el corazón del homelab que da DNS a toda la red (Pi-hole) y mantiene los servicios esenciales siempre encendidos.
+
+> [!NOTE]
+> Desde 2026-11-24 también corre **Hermes Agent** (perfil `ai`, puerto `9119`, límite `1.5 GB`). Comparte 3.7 GiB con el DNS primario: si el consumo de la Pi aprieta, es el primer servicio que se apaga (`docker compose --profile ai stop`).
 
 ### talos
 Oracle Cloud VM. En la mitología griega, el autómata de bronce que patrullaba las costas de Creta sin descanso, vigilando que nada se le escapara. Igual que él, esta VM vigila desde fuera y cubre las espaldas con el **failover de Pi-hole**. El stack de monitoreo que antes vivía aquí quedó en pausa (ver [`MONITORING.md`](MONITORING.md)).

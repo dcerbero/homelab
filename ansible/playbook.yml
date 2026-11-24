@@ -39,7 +39,7 @@
     - role: docker
       tags: [docker, containers]
     - role: preflight
-      tags: [preflight, containers, pihole, dns, cadvisor, monitoring, heimdall, dashboard, nginx, proxy]
+      tags: [preflight, containers, pihole, dns, cadvisor, monitoring, heimdall, dashboard, nginx, proxy, hermes, ai]
     - role: systemd-resolved
       tags: [systemd-resolved, dns, system]
     - role: pihole
@@ -52,6 +52,8 @@
       tags: [heimdall, dashboard]
     - role: nginx
       tags: [nginx, proxy]
+    - role: hermes
+      tags: [hermes, ai]
 
 - name: Setup talos
   hosts: talos

@@ -56,6 +56,19 @@ sudo tailscale up --advertise-routes=<tu_subred>
 
 Luego habilitar la ruta en [Tailscale Admin → Subnets](https://login.tailscale.com/admin/machines).
 
+## Hermes Agent
+
+Hermes es el único servicio del stack que procesa texto no confiable (páginas web, mensajes) y actúa sobre él. Su diseño limita el daño por construcción:
+
+- **Sin `docker.sock`.** El contenedor no puede crear, borrar ni inspeccionar contenedores. El socket de Docker es **root equivalente** en el host ([doc oficial](https://docs.docker.com/engine/security/protect-access/)): si algún día se monta, esta sección deja de ser válida.
+- **Sin acceso al repo ni al host.** Sólo escribe en `$PATH_DATA/persistence/hermes`.
+- **Dashboard en `9119` con basic auth obligatorio.** La imagen falla cerrado si el bind no es loopback y no hay proveedor de auth; `HERMES_DASHBOARD_INSECURE` ya es un no-op. No se publica a Internet: sólo LAN/Tailscale.
+- **Límite de memoria de 1.5 GB** para que no pueda asfixiar a Pi-hole en yoda.
+
+Riesgo residual aceptado: el puerto `9119` es **HTTP en claro**. El password del dashboard viaja legible dentro de la LAN. Si eso importa, ponerlo detrás de TLS (certificado propio en nginx) o acceder sólo por Tailscale.
+
+Nota sobre prompt injection: el agente no distingue una instrucción tuya de un texto malicioso en una web. Por eso no tiene root ni socket: en el peor caso, lo que puede tocar es su propio volumen y sus conversaciones.
+
 ## Firewall
 
 ### UFW (si se prefiere)
