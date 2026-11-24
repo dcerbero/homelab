@@ -4,6 +4,13 @@ Todos los cambios relevantes de este proyecto se documentan en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2026.11.2] - 2026-11-24
+
+### Documentación
+- **anton apagado (temporal)**: se documenta el estado en `README.md`, `AGENTS.md`, `docs/README.md`, `HARDWARE.md`, `ARCHITECTURE.md` (diagrama con el subgrafo marcado como apagado, flujo media detenido, puertos y exporters), `ANSIBLE.md` (play de anton), `DOCKER.md`, `COMMANDS.md`, `MONITORING.md` y `docs/media/{README,JELLYFIN}.md`. El código del stack media se conserva.
+- **IP de yoda**: pasa a `192.168.0.3` (la que tenía anton). Registrado en `docs/ANSIBLE.md` (nota de IPs) y `docs/SETUP.md`; anton queda sin IP.
+- Revisión completa de enlaces y referencias tras la eliminación de OpenClaw y el apagado de anton.
+
 ## [2026.11.1] - 2026-11-24
 
 ### Eliminado

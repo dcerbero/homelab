@@ -18,7 +18,7 @@ Nuestras tres máquinas tienen nombre y apellido —Raspberry Pi 4 [yoda](docs/H
 
 | Componente | Tecnología |
 |---|---|
-| Servidores | [yoda](docs/HARDWARE.md#yoda) (Raspberry Pi 4) + [talos](docs/HARDWARE.md#talos) (Oracle Cloud VM) + [anton](docs/HARDWARE.md#anton) (Equipo x86_64) |
+| Servidores | [yoda](docs/HARDWARE.md#yoda) (Raspberry Pi 4) + [talos](docs/HARDWARE.md#talos) (Oracle Cloud VM) + [anton](docs/HARDWARE.md#anton) (Equipo x86_64, **apagado desde 2026-11-24**) |
 | Orquestación | Ansible (12 roles, 3 plays) |
 | Contenedores | Docker + Docker Compose (8 perfiles) |
 | DNS | Pi-hole (activo + failover) |
@@ -57,7 +57,7 @@ cd ansible/
 cp .env.example .env
 # Editar .env con credenciales y rutas
 
-# Todas las máquinas:
+# Todas las máquinas (requiere anton encendido):
 bash run.sh
 
 # Solo yoda:

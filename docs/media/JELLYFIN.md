@@ -2,6 +2,9 @@
 
 Jellyfin corre como contenedor Docker (linuxserver, tags `amd64-`) en [anton](../HARDWARE.md#anton). Este documento registra **la configuración aplicada y el porqué de cada decisión**, verificada empíricamente sobre el hardware real (2026-08-11).
 
+> [!NOTE]
+> [anton](../HARDWARE.md#anton) está **apagado desde el 2026-11-24** (temporal): Jellyfin no está corriendo. La configuración descrita aquí es el estado deseado y vuelve a aplicarse con `bash run.sh anton` cuando el equipo se encienda.
+
 ## Índice
 
 - [Hardware y limitaciones](#hardware-y-limitaciones)

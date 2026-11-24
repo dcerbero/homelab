@@ -25,11 +25,11 @@ Los roles `cadvisor` ([yoda](HARDWARE.md#yoda) y [anton](HARDWARE.md#anton)) y `
 
 | Exporter | Máquina | Puerto | Perfil |
 |---|---|---|---|
-| node-exporter | yoda, anton | 9100 | `monitoring` |
-| cAdvisor | yoda, anton | 9101 | `monitoring` |
-| smartctl-exporter | anton | 9633 | `smart` |
+| node-exporter | yoda, anton (apagado) | 9100 | `monitoring` |
+| cAdvisor | yoda, anton (apagado) | 9101 | `monitoring` |
+| smartctl-exporter | anton (apagado) | 9633 | `smart` |
 
-Están accesibles por LAN/Tailscale y responden en `/metrics`, pero **no hay Prometheus que los scrapee**. Mantenerlos cuesta poca RAM y deja el terreno listo para reactivar.
+En yoda están accesibles por LAN/Tailscale y responden en `/metrics`, pero **no hay Prometheus que los scrapee**. Los de anton no responden mientras el equipo esté apagado (desde 2026-11-24). Mantenerlos cuesta poca RAM y deja el terreno listo para reactivar.
 
 ## Qué se retiró
 

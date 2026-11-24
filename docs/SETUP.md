@@ -49,7 +49,7 @@ network:
 ```
 
 > [!NOTE]
-> Reemplazar `192.168.1.100` con la IP deseada y `192.168.1.1` con tu gateway.
+> Reemplazar `192.168.1.100` con la IP deseada y `192.168.1.1` con tu gateway. **Valor actual de yoda: `192.168.0.3`** (desde el 2026-11-24; antes `.2`). La IP `.3` era de anton, que quedó apagado y sin IP.
 
 Aplicar:
 

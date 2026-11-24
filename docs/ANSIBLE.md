@@ -94,7 +94,7 @@ Tres plays independientes:
 
 1. **[`yoda`](HARDWARE.md#yoda)** — RPi4 local: todos los roles
 2. **[`talos`](HARDWARE.md#talos)** — Oracle Cloud VM: Pi-hole failover (system-setup, docker, preflight, systemd-resolved, pihole)
-3. **[`anton`](HARDWARE.md#anton)** — Equipo x86_64: base + exporters de métricas + media (system-setup, docker, preflight, cadvisor, smartctl, tailscale, media) con tags `…, anton`. El rol `media` despliega los perfiles `media-streaming` (Jellyfin) y `media-download` (Transmission, Prowlarr, FlareSolverr, Sonarr, Radarr, Bazarr, Seerr).
+3. **[`anton`](HARDWARE.md#anton)** — Equipo x86_64: base + exporters de métricas + media (system-setup, docker, preflight, cadvisor, smartctl, tailscale, media) con tags `…, anton`. El rol `media` despliega los perfiles `media-streaming` (Jellyfin) y `media-download` (Transmission, Prowlarr, FlareSolverr, Sonarr, Radarr, Bazarr, Seerr). **Apagado desde 2026-11-24**: el play sigue definido y no se ejecuta hasta que el equipo vuelva.
 
 La definición exacta de roles y tags está en [`ansible/playbook.yml`](../ansible/playbook.yml).
 
@@ -120,6 +120,9 @@ inventory/
 ### SSH
 
 La conexión se resuelve via `~/.ssh/config` local (fuera del repo). Ansible solo usa el nombre del host del inventario.
+
+> [!NOTE]
+> **IPs actuales (2026-11-24):** `yoda` = `192.168.0.3` (tomó la IP que tenía anton), `talos` = IP pública de OCI + `100.85.118.45` por Tailscale, `anton` = **sin IP** (apagado).
 
 ```text
 # ~/.ssh/config

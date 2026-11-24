@@ -1,6 +1,6 @@
 # 🐋 Docker Compose — Servicios
 
-Todos los servicios se despliegan con Docker Compose usando perfiles independientes. Cada servicio vive en su propia carpeta con su `compose.yaml`, y el archivo principal los incluye a todos — así un servicio se puede arrancar solo o con todo el stack. La máquina destino depende del perfil: DNS/dashboard/infra en [yoda](HARDWARE.md#yoda), media en [anton](HARDWARE.md#anton). El perfil `metrics` (Prometheus/Grafana) está **en pausa**: no tiene máquina asignada.
+Todos los servicios se despliegan con Docker Compose usando perfiles independientes. Cada servicio vive en su propia carpeta con su `compose.yaml`, y el archivo principal los incluye a todos — así un servicio se puede arrancar solo o con todo el stack. La máquina destino depende del perfil: DNS/dashboard/infra en [yoda](HARDWARE.md#yoda), media en [anton](HARDWARE.md#anton) (**apagado desde 2026-11-24**). El perfil `metrics` (Prometheus/Grafana) está **en pausa**: no tiene máquina asignada.
 
 ## Índice
 

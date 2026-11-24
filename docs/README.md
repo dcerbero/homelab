@@ -6,7 +6,7 @@ Todo lo que necesitas saber sobre nuestro homelab, organizado por tema. Este es 
 
 | Componente | Tecnología |
 |---|---|
-| Servidor | [yoda](HARDWARE.md#yoda) — Raspberry Pi 4 (Ubuntu 24.04) + [anton](HARDWARE.md#anton) — Equipo x86_64 (servidor media) |
+| Servidor | [yoda](HARDWARE.md#yoda) — Raspberry Pi 4 (Ubuntu 24.04) + [anton](HARDWARE.md#anton) — Equipo x86_64 (servidor media, **apagado desde 2026-11-24**) |
 | Nube | [talos](HARDWARE.md#talos) — Oracle Cloud VM (failover DNS) |
 | Orquestación | Ansible |
 | Contenedores | Docker + Docker Compose |

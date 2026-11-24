@@ -39,7 +39,7 @@ graph TD
                 YodaNodeExp[🖥️ node-exporter]
             end
         end
-        subgraph Media [🎬 anton — Equipo x86_64]
+        subgraph Media [🎬 anton — Equipo x86_64 (apagado)]
             subgraph DockerAnton [🐋 Docker Engine]
                 Jellyfin[🎬 Jellyfin]
                 Transmission[⬇️ Transmission]
@@ -88,6 +88,9 @@ graph TD
     class DockerYoda,DockerAnton,PiHole,Heimdall,Nginx,OciPiHole,Jellyfin,Transmission,Prowlarr,Sonarr,Radarr,Bazarr,Seerr,FlareSolverr,YodaCAdvisor,YodaNodeExp,AntCAdvisor,AntNodeExp,Smartctl highlight;
 ```
 
+> [!NOTE]
+> [anton](HARDWARE.md#anton) está **apagado desde el 2026-11-24** (temporal): sus nodos siguen en el diagrama como estado deseado, pero no están en línea. Su IP `192.168.0.3` pasó a [yoda](HARDWARE.md#yoda).
+
 ## Flujos de Red
 
 Resumen de cómo se mueve el tráfico entre los servicios.
@@ -102,16 +105,18 @@ Resumen de cómo se mueve el tráfico entre los servicios.
 - El resto de servicios publica sus puertos solo a **LAN/Tailscale** (ver [Puertos Expuestos](#puertos-expuestos)).
 
 ### Media (descarga → biblioteca)
+> Todo este flujo está **detenido** mientras [anton](HARDWARE.md#anton) siga apagado.
+
 - **Seerr** recibe las peticiones → las envía a **Sonarr/Radarr**.
 - Sonarr/Radarr buscan en los indexadores de **Prowlarr** (FlareSolverr solo para los protegidos por Cloudflare), eligen release y lo envían a **Transmission**.
 - Al completar, Sonarr/Radarr importan con hardlink a la biblioteca; **Jellyfin** la sirve; **Bazarr** descarga los subtítulos. Detalle en [`media/README.md`](media/README.md).
 
 ### VPN
-- Tailscale mesh VPN conecta: [yoda](HARDWARE.md#yoda), [anton](HARDWARE.md#anton), [talos](HARDWARE.md#talos) y dispositivos remotos.
+- Tailscale mesh VPN conecta: [yoda](HARDWARE.md#yoda), [talos](HARDWARE.md#talos), dispositivos remotos y [anton](HARDWARE.md#anton) cuando está encendido (apagado desde 2026-11-24).
 
 ### Métricas (en pausa)
 - **No hay Prometheus ni Grafana desplegados.** El stack vivía en [talos](HARDWARE.md#talos) y se retiró de su play de Ansible: talos quedó solo con Pi-hole.
-- Los **exporters siguen corriendo**: node-exporter y cAdvisor en [yoda](HARDWARE.md#yoda) y [anton](HARDWARE.md#anton), más smartctl-exporter en [anton](HARDWARE.md#anton) (SMART del RAID). Están accesibles por LAN/Tailscale, pero **nadie los scrapea**.
+- Los **exporters siguen definidos**: node-exporter y cAdvisor en [yoda](HARDWARE.md#yoda) (y en [anton](HARDWARE.md#anton) cuando vuelva), más smartctl-exporter en anton. Están accesibles por LAN/Tailscale, pero **nadie los scrapea** y con anton apagado sus exporters no responden.
 - El código y la configuración siguen en el repo (`ansible/roles/monitoring`, `services/docker/{prometheus,grafana}`) para reubicar el stack. Estado, consecuencias y pasos de reactivación en [`MONITORING.md`](MONITORING.md).
 
 ## Puertos Expuestos
@@ -134,3 +139,6 @@ Resumen de cómo se mueve el tráfico entre los servicios.
 | 9100 | node-exporter | [yoda](HARDWARE.md#yoda), [anton](HARDWARE.md#anton) | Solo LAN o Tailscale |
 | 9101 | cAdvisor | [yoda](HARDWARE.md#yoda), [anton](HARDWARE.md#anton) | Solo LAN o Tailscale |
 | 9633 | smartctl-exporter | [anton](HARDWARE.md#anton) | Solo LAN o Tailscale |
+
+> [!NOTE]
+> Los puertos de [anton](HARDWARE.md#anton) (8082–8096, 51413, 9633) no están escuchando mientras el equipo esté apagado. Su IP `192.168.0.3` ahora pertenece a [yoda](HARDWARE.md#yoda).
