@@ -2,18 +2,21 @@
 
 Documentación de los servicios de streaming y descarga, que corren en [anton](../HARDWARE.md#anton) (perfiles `media-streaming` y `media-download`, rol `media`).
 
+> [!WARNING]
+> **Anton está apagado desde el 2026-11-24** (temporal). Todo el stack media está detenido: Jellyfin, Sonarr, Radarr, Prowlarr, Bazarr, Seerr, Transmission y FlareSolverr no están disponibles. La doc describe el estado deseado y se conserva para cuando el equipo vuelva (`bash run.sh anton`).
+
 ## Servicios
 
 | Servicio | Perfil | Doc | Estado |
 |---|---|---|---|
-| Jellyfin | `media-streaming` | [`JELLYFIN.md`](JELLYFIN.md) | En producción |
-| Sonarr | `media-download` | — *(ver [`DOCKER.md`](../DOCKER.md#sonarr-media-download))* | En producción |
-| Prowlarr | `media-download` | — *(ver [`DOCKER.md`](../DOCKER.md#prowlarr-media-download))* | En producción |
-| Transmission | `media-download` | — *(ver [`DOCKER.md`](../DOCKER.md#transmission-media-download))* | En producción |
-| FlareSolverr | `media-download` | — *(helper de Prowlarr para indexadores Cloudflare)* | En producción |
-| Bazarr | `media-download` | — *(subtítulos ES-LAT/EN para la biblioteca)* | En producción |
-| Seerr | `media-download` | — *(peticiones de contenido, ex-Jellyseerr)* | En producción |
-| Radarr | `media-download` | — *(ver [`DOCKER.md`](../DOCKER.md#radarr-media-download))* | En producción |
+| Jellyfin | `media-streaming` | [`JELLYFIN.md`](JELLYFIN.md) | Detenido (anton apagado) |
+| Sonarr | `media-download` | — *(ver [`DOCKER.md`](../DOCKER.md#sonarr-media-download))* | Detenido (anton apagado) |
+| Prowlarr | `media-download` | — *(ver [`DOCKER.md`](../DOCKER.md#prowlarr-media-download))* | Detenido (anton apagado) |
+| Transmission | `media-download` | — *(ver [`DOCKER.md`](../DOCKER.md#transmission-media-download))* | Detenido (anton apagado) |
+| FlareSolverr | `media-download` | — *(helper de Prowlarr para indexadores Cloudflare)* | Detenido (anton apagado) |
+| Bazarr | `media-download` | — *(subtítulos ES-LAT/EN para la biblioteca)* | Detenido (anton apagado) |
+| Seerr | `media-download` | — *(peticiones de contenido, ex-Jellyseerr)* | Detenido (anton apagado) |
+| Radarr | `media-download` | — *(ver [`DOCKER.md`](../DOCKER.md#radarr-media-download))* | Detenido (anton apagado) |
 
 ## Guías
 

@@ -14,8 +14,8 @@ Cada máquina de esta casa tiene un nombre, un papel y una historia. Aquí está
 
 | Máquina | Alias SSH | SO | Arquitectura | CPU | RAM | Almacenamiento | GPU / transcode | Consumo energético | Rol |
 |---|---|---|---|---|---|---|---|---|---|
-| [**anton**](#anton) | `anton` | Ubuntu 24.04.4 LTS | x86_64 | Intel Core i5-3470S (4c/4t @ 2.9GHz, Ivy Bridge) | 7.7 GiB + 4 GiB swap | sda Seagate ST1000LM035 (OS+Docker, **descartable**) · **sdb+sdc WD10EADS-00P → RAID1** (mdadm, 916G, `/server` = persistence+media) | Intel HD 2500 (`/dev/dri/renderD128`) — QSV H.264, sin HEVC | ~30–40W *(estimado)* | Servidor media (Jellyfin + arr stack) |
-| [**yoda**](#yoda) | `yoda` | Ubuntu 24.04.4 LTS | aarch64 | Raspberry Pi 4 Model B Rev 1.2 (BCM2711 Cortex-A72, 4c) | 3.7 GiB (4GB, parte reservada a GPU) | KINGSTON SA400S37240G 240GB SSD | VideoCore VI (Broadcom) — sin QSV | ~3–7W (documentado) | Pi-hole, Heimdall, nginx, OpenClaw, cAdvisor |
+| [**anton**](#anton) | `anton` | Ubuntu 24.04.4 LTS | x86_64 | Intel Core i5-3470S (4c/4t @ 2.9GHz, Ivy Bridge) | 7.7 GiB + 4 GiB swap | sda Seagate ST1000LM035 (OS+Docker, **descartable**) · **sdb+sdc WD10EADS-00P → RAID1** (mdadm, 916G, `/server` = persistence+media) | Intel HD 2500 (`/dev/dri/renderD128`) — QSV H.264, sin HEVC | ~30–40W *(estimado)* | Servidor media (Jellyfin + arr stack) — **apagado desde 2026-11-24** |
+| [**yoda**](#yoda) | `yoda` | Ubuntu 24.04.4 LTS | aarch64 | Raspberry Pi 4 Model B Rev 1.2 (BCM2711 Cortex-A72, 4c) | 3.7 GiB (4GB, parte reservada a GPU) | KINGSTON SA400S37240G 240GB SSD | VideoCore VI (Broadcom) — sin QSV | ~3–7W (documentado) | Pi-hole, Heimdall, nginx, cAdvisor |
 | [**talos**](#talos) | `talos` | Ubuntu 24.04.4 LTS | aarch64 | Ampere A1 Flex (ARM Neoverse-N1, 4c) | 23 GiB | BlockVolume OCI 150G | n/a (cloud) | n/a (nube, 0W local) | VM OCI: Pi-hole failover (DNS) |
 
 ## Origen de los nombres
@@ -24,6 +24,9 @@ Ponerle nombre a las máquinas no es un capricho: es la forma de que cada una te
 
 ### anton
 Equipo x86_64 destinado a media. Es el servidor armado de Gilfoyle en *Silicon Valley*: un PC veterano que rescaté de la jubilación y que pronto se encargará de la biblioteca media de la casa. Como el original, lo nuestro es armarlo pieza a pieza.
+
+> [!NOTE]
+> **Apagado desde el 2026-11-24** (temporal). Su IP `192.168.0.3` pasó a [yoda](#yoda) y el equipo quedó sin IP. La documentación y el código del stack media se conservan: al volver, `bash run.sh anton` lo restablece.
 
 ### yoda
 Raspberry Pi 4. El maestro Jedi pequeño, sabio y veterano que guía a todos sin moverse de su sitio: así es la Pi, el corazón del homelab que da DNS a toda la red (Pi-hole) y mantiene los servicios esenciales siempre encendidos.

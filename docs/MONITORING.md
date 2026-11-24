@@ -25,11 +25,11 @@ Los roles `cadvisor` ([yoda](HARDWARE.md#yoda) y [anton](HARDWARE.md#anton)) y `
 
 | Exporter | Máquina | Puerto | Perfil |
 |---|---|---|---|
-| node-exporter | yoda, anton | 9100 | `monitoring` |
-| cAdvisor | yoda, anton | 9101 | `monitoring` |
-| smartctl-exporter | anton | 9633 | `smart` |
+| node-exporter | yoda, anton (apagado) | 9100 | `monitoring` |
+| cAdvisor | yoda, anton (apagado) | 9101 | `monitoring` |
+| smartctl-exporter | anton (apagado) | 9633 | `smart` |
 
-Están accesibles por LAN/Tailscale y responden en `/metrics`, pero **no hay Prometheus que los scrapee**. Mantenerlos cuesta poca RAM y deja el terreno listo para reactivar.
+En yoda están accesibles por LAN/Tailscale y responden en `/metrics`, pero **no hay Prometheus que los scrapee**. Los de anton no responden mientras el equipo esté apagado (desde 2026-11-24). Mantenerlos cuesta poca RAM y deja el terreno listo para reactivar.
 
 ## Qué se retiró
 
@@ -39,7 +39,7 @@ Están accesibles por LAN/Tailscale y responden en `/metrics`, pero **no hay Pro
 
 ## Por qué se pausó
 
-[`talos`](HARDWARE.md#talos) pasó a tener un único propósito: **DNS de failover**. Mantener ahí Prometheus + Grafana + 2 exporters consumía RAM y superficie de ataque en una VM que solo necesita Pi-hole y Tailscale. La decisión fue quitar el rol y dejar el stack disponible para reubicarlo donde tenga sentido (candidato natural: [anton](HARDWARE.md#anton), 7.7 GiB y x86_64; [yoda](HARDWARE.md#yoda) queda descartado por sus 3.7 GiB compartidos con Pi-hole, nginx, Heimdall y OpenClaw).
+[`talos`](HARDWARE.md#talos) pasó a tener un único propósito: **DNS de failover**. Mantener ahí Prometheus + Grafana + 2 exporters consumía RAM y superficie de ataque en una VM que solo necesita Pi-hole y Tailscale. La decisión fue quitar el rol y dejar el stack disponible para reubicarlo donde tenga sentido (candidato natural: [anton](HARDWARE.md#anton), 7.7 GiB y x86_64; [yoda](HARDWARE.md#yoda) queda descartado por sus 3.7 GiB compartidos con Pi-hole, nginx y Heimdall).
 
 ## Cómo reactivarlo
 

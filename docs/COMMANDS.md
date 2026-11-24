@@ -65,7 +65,7 @@ docker system prune -a --volumes
 
 ## Métricas (exporters)
 
-El stack **Prometheus + Grafana está en pausa** (sin desplegar desde que talos dejó de alojarlo). Solo siguen corriendo los exporters: cAdvisor `9101` y node-exporter `9100` en [yoda](HARDWARE.md#yoda) y [anton](HARDWARE.md#anton), más smartctl-exporter `9633` en anton. Nadie los scrapea, pero siguen disponibles para cuando se reactive el stack. Detalle en [`MONITORING.md`](MONITORING.md).
+El stack **Prometheus + Grafana está en pausa** (sin desplegar desde que talos dejó de alojarlo). Solo siguen corriendo los exporters de yoda: cAdvisor `9101` y node-exporter `9100`. Los de [anton](HARDWARE.md#anton) (node-exporter, cAdvisor y smartctl `9633`) vuelven cuando el equipo se encienda. Nadie los scrapea, pero siguen disponibles para cuando se reactive el stack. Detalle en [`MONITORING.md`](MONITORING.md).
 
 ```bash
 # Estado de los contenedores de métricas (en cada máquina)
@@ -87,6 +87,9 @@ curl http://anton:9633/metrics  # smartctl-exporter de anton (SMART del RAID)
 Comandos de Prometheus/Grafana (`docker exec prometheus kill -HUP 1`, dashboard en `:3000`) quedan documentados en [`MONITORING.md`](MONITORING.md) para cuando el stack vuelva a desplegarse.
 
 ## Health Checks por Servicio
+
+> [!NOTE]
+> Los servicios de [anton](HARDWARE.md#anton) (Jellyfin, Sonarr, Radarr, Prowlarr, Bazarr, Seerr, Transmission, FlareSolverr, smartctl-exporter) **no existen mientras el equipo esté apagado** (desde 2026-11-24). Los comandos de abajo solo aplican a yoda y talos.
 
 ```bash
 # Solo contenedores unhealthy

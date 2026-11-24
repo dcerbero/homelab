@@ -34,7 +34,6 @@ bash run.sh
 | `pihole` | `pihole`, `dns` | Despliegue del contenedor Pi-hole con Docker Compose |
 | `tailscale` | `tailscale`, `vpn` | Instalación y autenticación de Tailscale VPN |
 | `cadvisor` | `cadvisor`, `monitoring` | Despliegue de cAdvisor y node-exporter (perfil `monitoring`) |
-| `openclaw` | `openclaw`, `ia` | Despliegue del contenedor OpenClaw (IA) |
 | `heimdall` | `heimdall`, `dashboard` | Despliegue del panel de control Heimdall |
 | `nginx` | `nginx`, `proxy` | Despliegue del proxy reverso nginx (recrea en drift de imagen/mount, recarga para cambios de `conf.d`) |
 
@@ -75,7 +74,7 @@ Qué hace ([`files/preflight.py`](../ansible/roles/preflight/files/preflight.py)
 
 Si alguna imagen falla, el play aborta listando los tags problemáticos antes de tocar contenedores. En [talos](HARDWARE.md#talos) solo se valida existencia (la arquitectura se resuelve en runtime con el fact `ansible_machine`, pero talos no exige `preflight_require_arch` porque no despliega los servicios media con tags `arm64v8-`).
 
-El rol `preflight` declara como tags propias la unión de las tags de los roles de servicio que despliegan compose (`pihole`, `dns`, `cadvisor`, `monitoring`, `ia`, `dashboard`, `proxy`…). Así se activa también en runs etiquetados que tocan compose y se salta en los que no (p. ej. `--tags system-setup`, `--tags docker`, `--tags tailscale`). Nota: el script escanea **todos** los compose del repo, así que también valida las imágenes de `metrics` aunque el perfil no se despliegue en ninguna máquina.
+El rol `preflight` declara como tags propias la unión de las tags de los roles de servicio que despliegan compose (`pihole`, `dns`, `cadvisor`, `monitoring`, `dashboard`, `proxy`…). Así se activa también en runs etiquetados que tocan compose y se salta en los que no (p. ej. `--tags system-setup`, `--tags docker`, `--tags tailscale`). Nota: el script escanea **todos** los compose del repo, así que también valida las imágenes de `metrics` aunque el perfil no se despliegue en ninguna máquina.
 
 **Regla de mantenimiento:** al añadir un rol de servicio que despliegue compose, hay que añadir sus tags a la lista del rol `preflight` en `playbook.yml` (los 3 plays), o un `--tags <nuevo>` reabriría el hueco en silencio. Efecto colateral conocido: `--skip-tags <tag_compartida>` también se salta preflight.
 
@@ -95,7 +94,7 @@ Tres plays independientes:
 
 1. **[`yoda`](HARDWARE.md#yoda)** — RPi4 local: todos los roles
 2. **[`talos`](HARDWARE.md#talos)** — Oracle Cloud VM: Pi-hole failover (system-setup, docker, preflight, systemd-resolved, pihole)
-3. **[`anton`](HARDWARE.md#anton)** — Equipo x86_64: base + exporters de métricas + media (system-setup, docker, preflight, cadvisor, smartctl, tailscale, media) con tags `…, anton`. El rol `media` despliega los perfiles `media-streaming` (Jellyfin) y `media-download` (Transmission, Prowlarr, FlareSolverr, Sonarr, Radarr, Bazarr, Seerr).
+3. **[`anton`](HARDWARE.md#anton)** — Equipo x86_64: base + exporters de métricas + media (system-setup, docker, preflight, cadvisor, smartctl, tailscale, media) con tags `…, anton`. El rol `media` despliega los perfiles `media-streaming` (Jellyfin) y `media-download` (Transmission, Prowlarr, FlareSolverr, Sonarr, Radarr, Bazarr, Seerr). **Apagado desde 2026-11-24**: el play sigue definido y no se ejecuta hasta que el equipo vuelva.
 
 La definición exacta de roles y tags está en [`ansible/playbook.yml`](../ansible/playbook.yml).
 
@@ -121,6 +120,9 @@ inventory/
 ### SSH
 
 La conexión se resuelve via `~/.ssh/config` local (fuera del repo). Ansible solo usa el nombre del host del inventario.
+
+> [!NOTE]
+> **IPs actuales (2026-11-24):** `yoda` = `192.168.0.3` (tomó la IP que tenía anton), `talos` = IP pública de OCI + `100.85.118.45` por Tailscale, `anton` = **sin IP** (apagado).
 
 ```text
 # ~/.ssh/config
@@ -171,9 +173,6 @@ bash run.sh talos
 # Solo un rol específico en una máquina
 bash run.sh yoda --tags pihole,dns
 bash run.sh talos --tags docker
-
-# Stack IA completo en yoda
-bash run.sh yoda --tags ia
 
 # Todo talos (aprovecha las tags talos)
 bash run.sh talos --tags talos

@@ -7,8 +7,6 @@ from datetime import datetime
 
 LEGACY_RENAMES = {
     "Pi-hole": "pihole-yoda",
-    "openclaw": "openclaw-yoda",
-    "grafana": "grafana-talos",
 }
 NEW_TO_LEGACY = {new: old for old, new in LEGACY_RENAMES.items()}
 
