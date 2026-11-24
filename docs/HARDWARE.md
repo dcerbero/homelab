@@ -31,6 +31,9 @@ Raspberry Pi 4. El maestro Jedi pequeño, sabio y veterano que guía a todos sin
 ### talos
 Oracle Cloud VM. En la mitología griega, el autómata de bronce que patrullaba las costas de Creta sin descanso, vigilando que nada se le escapara. Igual que él, esta VM vigila desde fuera y cubre las espaldas con el **failover de Pi-hole**. El stack de monitoreo que antes vivía aquí quedó en pausa (ver [`MONITORING.md`](MONITORING.md)).
 
+> [!NOTE]
+> El hostname del SO (`talos`) se gestiona **localmente** con `/etc/cloud/cloud.cfg.d/99-preserve-hostname.cfg`: `preserve_hostname: true` y `manage_etc_hosts: false` (este último anula el drop-in de OCI, que reañadía el hostname del metadata en cada boot). En OCI el `displayName` es `talos`, pero el campo `hostname` del metadata (`ollama-server-2`) es de solo lectura y se fija en el lanzamiento: renombrar la instancia en la consola no lo cambia.
+
 ## Rúbrica de puntuación (agnóstica al rol)
 
 Puntajes de aptitud de hardware pura (capacidad y eficiencia), sin considerar para qué se usa cada máquina. Escala 0–10.
